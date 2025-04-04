@@ -1,9 +1,9 @@
-package requiredjson
+package schemajson
 
 import (
 	"encoding/json"
 
-	"github.com/metafates/required/internal/wrap"
+	"github.com/metafates/schema/internal/wrap"
 )
 
 func Unmarshal[T any](data []byte, v *T) error {

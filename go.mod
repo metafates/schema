@@ -1,3 +1,3 @@
-module github.com/metafates/required
+module github.com/metafates/schema
 
 go 1.24.2

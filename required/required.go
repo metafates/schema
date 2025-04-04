@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/metafates/required/constraint"
-	"github.com/metafates/required/validate"
+	"github.com/metafates/schema/constraint"
+	"github.com/metafates/schema/validate"
 )
 
 var _ interface {
@@ -40,9 +40,9 @@ type (
 	}
 )
 
-func (r Custom[T, V]) Value() T { return r.value }
+func (c Custom[T, V]) Value() T { return c.value }
 
-func (r *Custom[T, V]) UnmarshalJSON(data []byte) error {
+func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	var value *T
 
 	if err := json.Unmarshal(data, &value); err != nil {
@@ -57,19 +57,19 @@ func (r *Custom[T, V]) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("validate: %w", err)
 	}
 
-	r.value = *value
+	c.value = *value
 
 	return nil
 }
 
-func (r *Custom[T, V]) UnmarshalText(data []byte) error {
-	return r.UnmarshalJSON(data)
+func (c *Custom[T, V]) UnmarshalText(data []byte) error {
+	return c.UnmarshalJSON(data)
 }
 
-func (r Custom[T, V]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(r.value)
+func (c Custom[T, V]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.value)
 }
 
-func (r Custom[T, V]) MarshalText() ([]byte, error) {
-	return r.MarshalJSON()
+func (c Custom[T, V]) MarshalText() ([]byte, error) {
+	return c.MarshalJSON()
 }

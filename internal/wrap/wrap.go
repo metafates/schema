@@ -79,7 +79,7 @@ func requiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 
 			// hack: we could check for sealed interface implementation
 			// but it won't work across packages
-			if field.Type.PkgPath() == "github.com/metafates/required" {
+			if field.Type.PkgPath() == "github.com/metafates/schema/required" {
 				if name == "-" {
 					return nil, fmt.Errorf(`%s: "-" is used with required type`, field.Name)
 				}

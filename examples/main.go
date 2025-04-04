@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/metafates/required"
-	requiredjson "github.com/metafates/required/json"
+	schemajson "github.com/metafates/schema/json"
+	"github.com/metafates/schema/required"
 )
 
 type Request struct {
@@ -23,7 +23,7 @@ type Request struct {
 func main() {
 	var r Request
 
-	if err := requiredjson.Unmarshal([]byte(`{"bet":42.42, "id":"hi", "x": {"nested": 24}}`), &r); err != nil {
+	if err := schemajson.Unmarshal([]byte(`{"bet":42.42, "id":"hi", "x": {"nested": 24}}`), &r); err != nil {
 		log.Fatalln(err)
 	}
 
