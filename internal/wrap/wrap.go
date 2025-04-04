@@ -37,6 +37,8 @@ func (w *Wrap[T]) UnmarshalJSON(data []byte) error {
 			return err
 		}
 
+		fmt.Printf("filled: %s\n", filled)
+
 		return json.Unmarshal(filled, &w.Inner)
 	}
 }
@@ -73,27 +75,22 @@ func requiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 		for i := 0; i < t.NumField(); i++ {
 			field := t.Field(i)
 
-			nested, err := requiredFields(field.Type, forTag)
-			if err != nil {
-				return nil, fmt.Errorf("%s: %w", field.Name, err)
-			}
+			name := getName(field, forTag)
 
 			// hack: we could check for sealed interface implementation
 			// but it won't work across packages
-			if field.Type.PkgPath() != "github.com/metafates/schema" {
-				continue
-			}
+			if field.Type.PkgPath() == "github.com/metafates/required" {
+				if name == "-" {
+					return nil, fmt.Errorf(`%s: "-" is used with required type`, field.Name)
+				}
 
-			name := getName(field, forTag)
-
-			if name == "-" {
-				return nil, fmt.Errorf(`%s: "-" is used with required type`, field.Name)
-			}
-
-			if nested != nil {
-				fields[name] = nested
-			} else {
 				fields[name] = nil
+			} else if field.Type.Kind() == reflect.Struct {
+				nested, err := requiredFields(field.Type, forTag)
+				if err != nil {
+					return nil, fmt.Errorf("%s: %w", field.Name, err)
+				}
+				fields[name] = nested
 			}
 		}
 

@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/metafates/schema"
-	rjson "github.com/metafates/schema/json"
+	"github.com/metafates/required"
+	requiredjson "github.com/metafates/required/json"
 )
 
 type Request struct {
-	ID schema.RequiredNonEmpty[string] `json:"id"`
+	ID required.NonEmpty[string] `json:"id"`
 
-	Bet schema.Required[float64] `json:"bet"`
+	Bet required.T[float64] `json:"bet"`
+
+	X struct {
+		Nested required.Positive[int] `json:"nested"`
+	} `json:"x"`
 
 	Comment string
 }
@@ -19,7 +23,7 @@ type Request struct {
 func main() {
 	var r Request
 
-	if err := rjson.Unmarshal([]byte(`{"bet":42.42, "id":"hi"}`), &r); err != nil {
+	if err := requiredjson.Unmarshal([]byte(`{"bet":42.42, "id":"hi", "x": {"nested": 24}}`), &r); err != nil {
 		log.Fatalln(err)
 	}
 

@@ -1,9 +1,9 @@
-package rjson
+package requiredjson
 
 import (
 	"encoding/json"
 
-	"github.com/metafates/schema/internal/wrap"
+	"github.com/metafates/required/internal/wrap"
 )
 
 func Unmarshal[T any](data []byte, v *T) error {
