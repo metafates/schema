@@ -3,6 +3,8 @@ package validate
 import (
 	"errors"
 	"net/mail"
+	"net/netip"
+	"net/url"
 
 	"github.com/metafates/schema/constraint"
 )
@@ -23,32 +25,44 @@ var (
 	_ Validator[int]    = (*Positive[int])(nil)
 	_ Validator[int]    = (*Negative[int])(nil)
 	_ Validator[string] = (*Email[string])(nil)
+	_ Validator[string] = (*URL[string])(nil)
+	_ Validator[string] = (*IP[string])(nil)
 
 	_ Validator[any] = (*Combined[Validator[any], Validator[any], any])(nil)
 )
 
+type empty struct{}
+
 type (
 	// Any accepts any value
-	Any[T any] struct{}
+	Any[T any] empty
 
 	// NonEmpty accepts all non empty comparable values
-	NonEmpty[T comparable] struct{}
+	NonEmpty[T comparable] empty
 
 	// Positive accepts all positive real numbers and zero
 	//
 	// See also [Negative]
-	Positive[T constraint.Real] struct{}
+	Positive[T constraint.Real] empty
 
 	// Negative accepts all negative real numbers and zero
 	//
 	// See also [Positive]
-	Negative[T constraint.Real] struct{}
+	Negative[T constraint.Real] empty
 
 	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
-	Email[T ~string] struct{}
+	Email[T constraint.Text] empty
+
+	// URL accepts a single url.
+	// The url may be relative (a path, without a host) or absolute (starting with a scheme)
+	URL[T constraint.Text] empty
+
+	// IP accepts an IP address.
+	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
+	IP[T constraint.Text] empty
 
 	// Combined is a meta validator that combines other validators
-	Combined[A Validator[T], B Validator[T], T any] struct{}
+	Combined[A Validator[T], B Validator[T], T any] empty
 )
 
 func (Any[T]) Validate(T) error {
@@ -83,6 +97,24 @@ func (Negative[T]) Validate(value T) error {
 
 func (Email[T]) Validate(value T) error {
 	_, err := mail.ParseAddress(string(value))
+	if err != nil {
+		return ValidateError{inner: err}
+	}
+
+	return nil
+}
+
+func (URL[T]) Validate(value T) error {
+	_, err := url.Parse(string(value))
+	if err != nil {
+		return ValidateError{inner: err}
+	}
+
+	return nil
+}
+
+func (IP[T]) Validate(value T) error {
+	_, err := netip.ParseAddr(string(value))
 	if err != nil {
 		return ValidateError{inner: err}
 	}

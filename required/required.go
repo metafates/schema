@@ -46,8 +46,20 @@ type (
 	}
 
 	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
-	Email[T ~string] struct {
+	Email[T constraint.Text] struct {
 		Custom[T, validate.Email[T]]
+	}
+
+	// URL accepts a single url.
+	// The url may be relative (a path, without a host) or absolute (starting with a scheme)
+	URL[T constraint.Text] struct {
+		Custom[T, validate.URL[T]]
+	}
+
+	// IP accepts an IP address.
+	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
+	IP[T constraint.Text] struct {
+		Custom[T, validate.IP[T]]
 	}
 )
 

@@ -17,3 +17,5 @@ type Unsigned interface {
 }
 
 type Real interface{ Float | Integer }
+
+type Text interface{ ~string | ~[]byte }
