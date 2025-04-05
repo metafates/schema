@@ -9,37 +9,54 @@ import (
 )
 
 type (
-	// Custom required type.
-	// Erorrs if value is missing or did not pass the validation
+	// Custom optional type.
+	// When given not-null value it errors if validation fails
 	Custom[T any, V validate.Validator[T]] struct {
 		value    T
 		hasValue bool
 	}
 
+	// Any accepts any value
 	Any[T any] struct {
 		Custom[T, validate.Any[T]]
 	}
 
+	// NonEmpty accepts all non empty comparable values
 	NonEmpty[T comparable] struct {
 		Custom[T, validate.NonEmpty[T]]
 	}
 
+	// Positive accepts all positive real numbers and zero
+	//
+	// See also [Negative]
 	Positive[T constraint.Real] struct {
 		Custom[T, validate.Positive[T]]
 	}
 
+	// Negative accepts all negative real numbers and zero
+	//
+	// See also [Positive]
 	Negative[T constraint.Real] struct {
 		Custom[T, validate.Negative[T]]
 	}
 
+	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
 	Email[T ~string] struct {
 		Custom[T, validate.Email[T]]
 	}
 )
 
-func (c Custom[T, V]) IsSchema()        {}
-func (c Custom[T, V]) HasValue() bool   { return c.hasValue }
+func (c Custom[T, V]) IsSchema() {}
+
+// HasValue returns the presence of the contained value
+func (c Custom[T, V]) HasValue() bool { return c.hasValue }
+
+// Value returns the contained value and a boolean stating its presence.
+// True if value exists, false otherwise.
 func (c Custom[T, V]) Value() (T, bool) { return c.value, c.hasValue }
+
+// Must returns the contained value and panics if it does not have one.
+// You can check for its presence using [Custom.HasValue] or use a more safe alternative [Custom.Value]
 func (c Custom[T, V]) Must() T {
 	if c.hasValue {
 		return c.value

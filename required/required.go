@@ -15,35 +15,46 @@ var _ interface {
 } = (*Custom[any, validate.Any[any]])(nil)
 
 type (
-	// Custom optional type.
-	// When given not-null value it errors if validation fails
+	// Custom required type.
+	// Erorrs if value is missing or did not pass the validation
 	Custom[T any, V validate.Validator[T]] struct {
 		value T
 	}
 
+	// Any accepts any value
 	Any[T any] struct {
 		Custom[T, validate.Any[T]]
 	}
 
+	// NonEmpty accepts all non empty comparable values
 	NonEmpty[T comparable] struct {
 		Custom[T, validate.NonEmpty[T]]
 	}
 
+	// Positive accepts all positive real numbers and zero
+	//
+	// See also [Negative]
 	Positive[T constraint.Real] struct {
 		Custom[T, validate.Positive[T]]
 	}
 
+	// Negative accepts all negative real numbers and zero
+	//
+	// See also [Positive]
 	Negative[T constraint.Real] struct {
 		Custom[T, validate.Negative[T]]
 	}
 
+	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
 	Email[T ~string] struct {
 		Custom[T, validate.Email[T]]
 	}
 )
 
 func (c Custom[T, V]) IsSchema() {}
-func (c Custom[T, V]) Value() T  { return c.value }
+
+// Value returns the contained value
+func (c Custom[T, V]) Value() T { return c.value }
 
 func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	var value *T
