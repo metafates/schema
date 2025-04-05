@@ -9,12 +9,14 @@ import (
 )
 
 type (
+	// Custom required type.
+	// Erorrs if value is missing or did not pass the validation
 	Custom[T any, V validate.Validator[T]] struct {
 		value    T
 		hasValue bool
 	}
 
-	T[T any] struct {
+	Any[T any] struct {
 		Custom[T, validate.Any[T]]
 	}
 
@@ -30,11 +32,12 @@ type (
 		Custom[T, validate.Negative[T]]
 	}
 
-	Alphanumeric[T ~string] struct {
-		Custom[T, validate.Alphanumeric[T]]
+	Email[T ~string] struct {
+		Custom[T, validate.Email[T]]
 	}
 )
 
+func (c Custom[T, V]) IsSchema()        {}
 func (c Custom[T, V]) HasValue() bool   { return c.hasValue }
 func (c Custom[T, V]) Value() (T, bool) { return c.value, c.hasValue }
 func (c Custom[T, V]) Must() T {

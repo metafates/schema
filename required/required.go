@@ -15,11 +15,13 @@ var _ interface {
 } = (*Custom[any, validate.Any[any]])(nil)
 
 type (
+	// Custom optional type.
+	// When given not-null value it errors if validation fails
 	Custom[T any, V validate.Validator[T]] struct {
 		value T
 	}
 
-	T[T any] struct {
+	Any[T any] struct {
 		Custom[T, validate.Any[T]]
 	}
 
@@ -35,12 +37,13 @@ type (
 		Custom[T, validate.Negative[T]]
 	}
 
-	Alphanumeric[T ~string] struct {
-		Custom[T, validate.Alphanumeric[T]]
+	Email[T ~string] struct {
+		Custom[T, validate.Email[T]]
 	}
 )
 
-func (c Custom[T, V]) Value() T { return c.value }
+func (c Custom[T, V]) IsSchema() {}
+func (c Custom[T, V]) Value() T  { return c.value }
 
 func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	var value *T

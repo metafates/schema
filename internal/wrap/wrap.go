@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var requiredType = reflect.TypeFor[interface{ IsRequired() }]()
+var schemaType = reflect.TypeFor[interface{ IsSchema() }]()
 
 type Wrap[T any] struct{ Inner T }
 
@@ -37,8 +37,6 @@ func (w *Wrap[T]) UnmarshalJSON(data []byte) error {
 			return err
 		}
 
-		fmt.Printf("filled: %s\n", filled)
-
 		return json.Unmarshal(filled, &w.Inner)
 	}
 }
@@ -61,7 +59,7 @@ func propogateFields(expected, actual map[string]any) {
 }
 
 func requiredFields(t reflect.Type, forTag string) (map[string]any, error) {
-	if t == nil || t.Implements(requiredType) {
+	if t == nil || t.Implements(schemaType) {
 		return nil, nil
 	}
 
@@ -77,9 +75,7 @@ func requiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 
 			name := getName(field, forTag)
 
-			// hack: we could check for sealed interface implementation
-			// but it won't work across packages
-			if field.Type.PkgPath() == "github.com/metafates/schema/required" {
+			if field.Type.Implements(schemaType) {
 				if name == "-" {
 					return nil, fmt.Errorf(`%s: "-" is used with required type`, field.Name)
 				}

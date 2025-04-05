@@ -1,3 +1,14 @@
+# Schema
+
+> Work in progress!
+
+Type-safe schema guarded structs for Go with generics and a bit of magic.
+
+## Example
+
+See [examples](./examples) for more examples
+
+```go
 package main
 
 import (
@@ -19,7 +30,7 @@ type Request struct {
 func main() {
 	var r Request
 
-	data := []byte(`{"id": "hi", "email": "John Doe <john@example.com>"}`)
+	data := []byte(`{"id":"hi", "email":"John Doe <john@example.com>"}`)
 
 	if err := schemajson.Unmarshal(data, &r); err != nil {
 		log.Fatalln(err)
@@ -28,3 +39,4 @@ func main() {
 	fmt.Println(r.ID.Value())
 	fmt.Println(r.Email.Value())
 }
+```
