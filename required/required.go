@@ -18,7 +18,8 @@ type (
 	// Custom required type.
 	// Erorrs if value is missing or did not pass the validation
 	Custom[T any, V validate.Validator[T]] struct {
-		value T
+		value   T
+		isValid bool
 	}
 
 	// Any accepts any value
@@ -84,10 +85,16 @@ type (
 	}
 )
 
-func (c Custom[T, V]) IsSchema() {}
+func (c Custom[T, V]) IsValid() bool { return c.isValid }
 
 // Value returns the contained value
-func (c Custom[T, V]) Value() T { return c.value }
+func (c Custom[T, V]) Value() T {
+	if !c.isValid {
+		panic("attempt to get a value from invalid required type")
+	}
+
+	return c.value
+}
 
 func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	var value *T
@@ -97,14 +104,17 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	}
 
 	if value == nil {
-		return errors.New("required value is missing")
+		return errors.New("required value is null")
 	}
 
 	if err := (*new(V)).Validate(*value); err != nil {
 		return fmt.Errorf("validate: %w", err)
 	}
 
-	c.value = *value
+	*c = Custom[T, V]{
+		value:   *value,
+		isValid: true,
+	}
 
 	return nil
 }

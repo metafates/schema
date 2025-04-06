@@ -79,8 +79,6 @@ type (
 	}
 )
 
-func (c Custom[T, V]) IsSchema() {}
-
 // HasValue returns the presence of the contained value
 func (c Custom[T, V]) HasValue() bool { return c.hasValue }
 
