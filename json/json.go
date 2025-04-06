@@ -7,7 +7,7 @@ import (
 )
 
 func Unmarshal[T any](data []byte, v *T) error {
-	var wrapped wrap.Wrap[T]
+	var wrapped wrap.Wrapped[T]
 
 	if err := json.Unmarshal(data, &wrapped); err != nil {
 		return err
