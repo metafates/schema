@@ -4,6 +4,14 @@
 
 Type-safe schema guarded structs for Go with generics and a bit of magic.
 
+No stable version yet, but you can use it like that.
+
+```bash
+go get github.com/metafates/schema@main
+```
+
+**Work in progress, API may change significantly without further notice!**
+
 ## Example
 
 See [examples](./examples) for more examples
