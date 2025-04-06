@@ -1,4 +1,4 @@
-# Schema
+# 📐 Schema
 
 > Work in progress!
 
