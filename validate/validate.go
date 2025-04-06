@@ -31,7 +31,7 @@ var (
 	_ Validator[int]    = (*Latitude[int])(nil)
 	_ Validator[int]    = (*Longitude[int])(nil)
 
-	_ Validator[any] = (*Combined[Validator[any], Validator[any], any])(nil)
+	_ Validator[any] = (*And[Validator[any], Validator[any], any])(nil)
 )
 
 type (
@@ -74,7 +74,7 @@ type (
 
 	// PrintableASCII combines [Printable] and [ASCII]
 	PrintableASCII[T constraint.Text] struct {
-		Combined[ASCII[T], Printable[T], T]
+		And[ASCII[T], Printable[T], T]
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
@@ -83,9 +83,17 @@ type (
 	// Longitude accepts any number in the range [-180; 180]
 	Longitude[T constraint.RealSigned] struct{}
 
-	// Combined is a meta validator that combines other validators.
+	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as type parameters.
-	Combined[A Validator[T], B Validator[T], T any] struct{}
+	//
+	// See also [Or]
+	And[A Validator[T], B Validator[T], T any] struct{}
+
+	// And is a meta validator that combines other validators with OR operator.
+	// Validators are called in the same order as type parameters.
+	//
+	// See also [And]
+	Or[A Validator[T], B Validator[T], T any] struct{}
 )
 
 func (Any[T]) Validate(T) error {
@@ -198,7 +206,7 @@ func (Longitude[T]) Validate(value T) error {
 	return nil
 }
 
-func (Combined[A, B, T]) Validate(value T) error {
+func (And[A, B, T]) Validate(value T) error {
 	if err := (*new(A)).Validate(value); err != nil {
 		return err
 	}
@@ -208,4 +216,18 @@ func (Combined[A, B, T]) Validate(value T) error {
 	}
 
 	return nil
+}
+
+func (Or[A, B, T]) Validate(value T) error {
+	errA := (*new(A)).Validate(value)
+	if errA == nil {
+		return nil
+	}
+
+	errB := (*new(B)).Validate(value)
+	if errB == nil {
+		return nil
+	}
+
+	return errors.Join(errA, errB)
 }

@@ -23,9 +23,9 @@ func (ShortStr) Validate(v string) error {
 	return nil
 }
 
-// Or combine existing validators using special [validate.Combined] type
+// Or combine existing validators using special [validate.And] type
 type NonZeroPositive[T constraint.Real] struct {
-	validate.Combined[
+	validate.And[
 		validate.NonEmpty[T],
 		validate.Positive[T],
 		T,
