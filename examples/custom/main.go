@@ -12,6 +12,7 @@ import (
 	"github.com/metafates/schema/validate"
 )
 
+// You can create your custom validator like that
 type ShortStr struct{}
 
 func (ShortStr) Validate(v string) error {
@@ -22,6 +23,7 @@ func (ShortStr) Validate(v string) error {
 	return nil
 }
 
+// Or combine existing validators using special [validate.Combined] type
 type NonZeroPositive[T constraint.Real] struct {
 	validate.Combined[
 		validate.NonEmpty[T],
@@ -30,9 +32,20 @@ type NonZeroPositive[T constraint.Real] struct {
 	]
 }
 
+// Now you can use you validators like that
 type Request struct {
 	Foo required.Custom[string, ShortStr]                  `json:"foo"`
 	Bar optional.Custom[float64, NonZeroPositive[float64]] `json:"bar"`
+}
+
+// You can also create an alias for such custom types like that
+// In fact, this is how builtin types for required and optional are implemented
+type RequiredShortString struct {
+	required.Custom[string, ShortStr]
+}
+
+type Request2 struct {
+	Foo RequiredShortString `json:"foo"`
 }
 
 func main() {
