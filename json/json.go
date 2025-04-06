@@ -3,7 +3,7 @@ package schemajson
 import (
 	"encoding/json"
 
-	"github.com/metafates/schema/internal/wrap"
+	"github.com/metafates/schema/wrap"
 )
 
 func Unmarshal[T any](data []byte, v *T) error {

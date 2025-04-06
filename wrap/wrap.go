@@ -9,6 +9,7 @@ import (
 
 var schemaType = reflect.TypeFor[interface{ IsSchema() }]()
 
+// Wrap is a type that adds support for checking the presence of the required fields, if any
 type Wrap[T any] struct{ Inner T }
 
 func (w *Wrap[T]) UnmarshalJSON(data []byte) error {
@@ -18,19 +19,24 @@ func (w *Wrap[T]) UnmarshalJSON(data []byte) error {
 	default:
 		return json.Unmarshal(data, &w.Inner)
 
+	case reflect.Slice, reflect.Array:
+		panic("unimplemented")
+
 	case reflect.Struct:
+		// TODO: find a way to reduce calls to marshal/unmarshal
+
 		var unmarshalled map[string]any
 
 		if err := json.Unmarshal(data, &unmarshalled); err != nil {
 			return err
 		}
 
-		fields, err := requiredFields(inner, "json")
+		fields, err := getRequiredFields(inner, "json")
 		if err != nil {
 			return err
 		}
 
-		propogateFields(fields, unmarshalled)
+		mergeFields(fields, unmarshalled)
 
 		filled, err := json.Marshal(unmarshalled)
 		if err != nil {
@@ -41,24 +47,24 @@ func (w *Wrap[T]) UnmarshalJSON(data []byte) error {
 	}
 }
 
-func propogateFields(expected, actual map[string]any) {
-	for k, expectedAtKey := range expected {
-		if _, ok := actual[k]; ok {
+func mergeFields(source, target map[string]any) {
+	for k, expectedAtKey := range source {
+		if _, ok := target[k]; ok {
 			continue
 		}
 
 		if expectedAtKey == nil {
-			actual[k] = nil
+			target[k] = nil
 			continue
 		}
 
-		actual[k] = make(map[string]any)
+		target[k] = make(map[string]any)
 
-		propogateFields(expectedAtKey.(map[string]any), actual[k].(map[string]any))
+		mergeFields(expectedAtKey.(map[string]any), target[k].(map[string]any))
 	}
 }
 
-func requiredFields(t reflect.Type, forTag string) (map[string]any, error) {
+func getRequiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 	if t == nil || t.Implements(schemaType) {
 		return nil, nil
 	}
@@ -82,7 +88,7 @@ func requiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 
 				fields[name] = nil
 			} else if field.Type.Kind() == reflect.Struct {
-				nested, err := requiredFields(field.Type, forTag)
+				nested, err := getRequiredFields(field.Type, forTag)
 				if err != nil {
 					return nil, fmt.Errorf("%s: %w", field.Name, err)
 				}

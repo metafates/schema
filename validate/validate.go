@@ -31,38 +31,36 @@ var (
 	_ Validator[any] = (*Combined[Validator[any], Validator[any], any])(nil)
 )
 
-type empty struct{}
-
 type (
 	// Any accepts any value
-	Any[T any] empty
+	Any[T any] struct{}
 
 	// NonEmpty accepts all non empty comparable values
-	NonEmpty[T comparable] empty
+	NonEmpty[T comparable] struct{}
 
 	// Positive accepts all positive real numbers and zero
 	//
 	// See also [Negative]
-	Positive[T constraint.Real] empty
+	Positive[T constraint.Real] struct{}
 
 	// Negative accepts all negative real numbers and zero
 	//
 	// See also [Positive]
-	Negative[T constraint.Real] empty
+	Negative[T constraint.Real] struct{}
 
 	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
-	Email[T constraint.Text] empty
+	Email[T constraint.Text] struct{}
 
 	// URL accepts a single url.
 	// The url may be relative (a path, without a host) or absolute (starting with a scheme)
-	URL[T constraint.Text] empty
+	URL[T constraint.Text] struct{}
 
 	// IP accepts an IP address.
 	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
-	IP[T constraint.Text] empty
+	IP[T constraint.Text] struct{}
 
 	// Combined is a meta validator that combines other validators
-	Combined[A Validator[T], B Validator[T], T any] empty
+	Combined[A Validator[T], B Validator[T], T any] struct{}
 )
 
 func (Any[T]) Validate(T) error {

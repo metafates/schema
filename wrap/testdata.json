@@ -1,0 +1,45 @@
+  {
+    "_id": "67f248e955b0e093a1f716e3",
+    "index": 0,
+    "guid": "6733fafa-3583-438d-b2d1-a7b7dd86d3bc",
+    "isActive": true,
+    "balance": "$2,898.56",
+    "picture": "http://placehold.it/32x32",
+    "age": 22,
+    "eyeColor": "green",
+    "name": "Patterson Mooney",
+    "gender": "male",
+    "company": "PHEAST",
+    "email": "pattersonmooney@pheast.com",
+    "phone": "+1 (813) 419-3900",
+    "address": "295 Meadow Street, Kiskimere, Oklahoma, 6370",
+    "about": "Deserunt commodo fugiat labore in irure. Nostrud ex est voluptate eiusmod ex consequat eu nisi non et elit reprehenderit culpa fugiat. Aliquip reprehenderit nisi incididunt anim cupidatat laborum ex ullamco nulla aliqua. Dolor ex quis fugiat et culpa exercitation cupidatat ut consequat minim minim dolor pariatur. Exercitation laborum Lorem amet aliquip ea cillum reprehenderit culpa in et ullamco excepteur ad. Aliqua consequat sunt consequat et elit ad sit anim fugiat deserunt veniam. Lorem cupidatat non eiusmod sint qui est qui consectetur minim anim.\r\n",
+    "registered": "2014-01-01T04:01:19 -04:00",
+    "latitude": -12.194646,
+    "longitude": -174.783872,
+    "tags": [
+      "sint",
+      "dolor",
+      "consectetur",
+      "pariatur",
+      "officia",
+      "id",
+      "Lorem"
+    ],
+    "friends": [
+      {
+        "id": 0,
+        "name": "Adriana Compton"
+      },
+      {
+        "id": 1,
+        "name": "Rocha Wiley"
+      },
+      {
+        "id": 2,
+        "name": "Elba Kinney"
+      }
+    ],
+    "greeting": "Hello, Patterson Mooney! You have 6 unread messages.",
+    "favoriteFruit": "banana"
+  }

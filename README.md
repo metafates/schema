@@ -98,3 +98,10 @@ type Request2 struct {
 	Foo RequiredShortString `json:"foo"`
 }
 ```
+
+## TODO
+
+- [ ] Make it work for slices. E.g. `type Request []Type` won't be validated for now
+- [ ] Better documentation
+- [ ] Improve performance. Right now it's 2-3x slower that default json unmarshalling. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
+- [ ] More validation types as seen in https://github.com/go-playground/validator
