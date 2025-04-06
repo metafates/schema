@@ -73,6 +73,9 @@ func getRequiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 	default:
 		return nil, nil
 
+	case reflect.Slice, reflect.Array:
+		panic("unimplemented")
+
 	case reflect.Struct:
 		fields := make(map[string]any)
 
