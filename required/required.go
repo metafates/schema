@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/metafates/schema/constraint"
-	schemaerror "github.com/metafates/schema/erorr"
+	schemaerror "github.com/metafates/schema/error"
 	"github.com/metafates/schema/validate"
 )
 
