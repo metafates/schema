@@ -2,10 +2,9 @@ package required
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 
 	"github.com/metafates/schema/constraint"
+	schemaerror "github.com/metafates/schema/erorr"
 	"github.com/metafates/schema/validate"
 )
 
@@ -18,8 +17,8 @@ type (
 	// Custom required type.
 	// Erorrs if value is missing or did not pass the validation
 	Custom[T any, V validate.Validator[T]] struct {
-		value   T
-		isValid bool
+		value    T
+		hasValue bool
 	}
 
 	// Any accepts any value
@@ -85,12 +84,22 @@ type (
 	}
 )
 
-func (c Custom[T, V]) IsValid() bool { return c.isValid }
+func (c Custom[T, V]) Validate() error {
+	if !c.hasValue {
+		return schemaerror.ValidationError{Msg: "missing value"}
+	}
+
+	if err := (*new(V)).Validate(c.value); err != nil {
+		return schemaerror.ValidationError{Inner: err}
+	}
+
+	return nil
+}
 
 // Value returns the contained value
 func (c Custom[T, V]) Value() T {
-	if !c.isValid {
-		panic("attempt to get a value from invalid required type")
+	if !c.hasValue {
+		panic("called Value() on uninitialized required value")
 	}
 
 	return c.value
@@ -104,17 +113,12 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	}
 
 	if value == nil {
-		return errors.New("required value is null")
+		*c = Custom[T, V]{}
+
+		return nil
 	}
 
-	if err := (*new(V)).Validate(*value); err != nil {
-		return fmt.Errorf("validate: %w", err)
-	}
-
-	*c = Custom[T, V]{
-		value:   *value,
-		isValid: true,
-	}
+	*c = Custom[T, V]{value: *value, hasValue: true}
 
 	return nil
 }

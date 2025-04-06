@@ -19,13 +19,15 @@ func (w *Wrap[T]) UnmarshalJSON(data []byte) error {
 	}
 
 	err := reflectwalk.WalkFields(inner, func(path string, value reflect.Value) error {
-		r, ok := value.Interface().(interface{ IsValid() bool })
+		type Validater interface{ Validate() error }
+
+		r, ok := value.Interface().(Validater)
 		if !ok {
 			return nil
 		}
 
-		if !r.IsValid() {
-			return fmt.Errorf("%s: missing required value", path)
+		if err := r.Validate(); err != nil {
+			return fmt.Errorf("%s: validate: %w", path, err)
 		}
 
 		return nil

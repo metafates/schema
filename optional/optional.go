@@ -2,9 +2,9 @@ package optional
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/metafates/schema/constraint"
+	schemaerror "github.com/metafates/schema/erorr"
 	"github.com/metafates/schema/validate"
 )
 
@@ -79,6 +79,18 @@ type (
 	}
 )
 
+func (c Custom[T, V]) Validate() error {
+	if !c.hasValue {
+		return nil
+	}
+
+	if err := (*new(V)).Validate(c.value); err != nil {
+		return schemaerror.ValidationError{Inner: err}
+	}
+
+	return nil
+}
+
 // HasValue returns the presence of the contained value
 func (c Custom[T, V]) HasValue() bool { return c.hasValue }
 
@@ -105,11 +117,8 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 
 	if value == nil {
 		*c = Custom[T, V]{}
-		return nil
-	}
 
-	if err := (*new(V)).Validate(*value); err != nil {
-		return fmt.Errorf("validate: %w", err)
+		return nil
 	}
 
 	*c = Custom[T, V]{value: *value, hasValue: true}

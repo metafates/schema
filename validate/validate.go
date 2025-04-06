@@ -12,12 +12,6 @@ import (
 	"github.com/metafates/schema/constraint"
 )
 
-type ValidateError struct{ inner error }
-
-func (v ValidateError) Error() string {
-	return v.inner.Error()
-}
-
 type Validator[T any] interface {
 	Validate(value T) error
 }
@@ -93,7 +87,7 @@ func (NonEmpty[T]) Validate(value T) error {
 	var empty T
 
 	if value == empty {
-		return ValidateError{inner: errors.New("empty value")}
+		return errors.New("empty value")
 	}
 
 	return nil
@@ -101,7 +95,7 @@ func (NonEmpty[T]) Validate(value T) error {
 
 func (Positive[T]) Validate(value T) error {
 	if value < 0 {
-		return ValidateError{inner: errors.New("negative value")}
+		return errors.New("negative value")
 	}
 
 	return nil
@@ -109,7 +103,7 @@ func (Positive[T]) Validate(value T) error {
 
 func (Negative[T]) Validate(value T) error {
 	if value > 0 {
-		return ValidateError{inner: errors.New("positive value")}
+		return errors.New("positive value")
 	}
 
 	return nil
@@ -118,7 +112,7 @@ func (Negative[T]) Validate(value T) error {
 func (Email[T]) Validate(value T) error {
 	_, err := mail.ParseAddress(string(value))
 	if err != nil {
-		return ValidateError{inner: err}
+		return err
 	}
 
 	return nil
@@ -127,7 +121,7 @@ func (Email[T]) Validate(value T) error {
 func (URL[T]) Validate(value T) error {
 	_, err := url.Parse(string(value))
 	if err != nil {
-		return ValidateError{inner: err}
+		return err
 	}
 
 	return nil
@@ -136,7 +130,7 @@ func (URL[T]) Validate(value T) error {
 func (IP[T]) Validate(value T) error {
 	_, err := netip.ParseAddr(string(value))
 	if err != nil {
-		return ValidateError{inner: err}
+		return err
 	}
 
 	return nil
@@ -148,7 +142,7 @@ func (Printable[T]) Validate(value T) error {
 	})
 
 	if contains {
-		return ValidateError{inner: errors.New("string contains unprintable character")}
+		return errors.New("string contains unprintable character")
 	}
 
 	return nil
@@ -159,7 +153,7 @@ func (Base64[T]) Validate(value T) error {
 
 	_, err := base64.StdEncoding.DecodeString(string(value))
 	if err != nil {
-		return ValidateError{inner: err}
+		return err
 	}
 
 	return nil
@@ -168,7 +162,7 @@ func (Base64[T]) Validate(value T) error {
 func (ASCII[T]) Validate(value T) error {
 	for i := 0; i < len(value); i++ {
 		if value[i] > unicode.MaxASCII {
-			return ValidateError{inner: errors.New("string contains non-ascii character")}
+			return errors.New("string contains non-ascii character")
 		}
 	}
 
