@@ -3,6 +3,7 @@ package validate
 import (
 	"encoding/base64"
 	"errors"
+	"math"
 	"net/mail"
 	"net/netip"
 	"net/url"
@@ -27,6 +28,8 @@ var (
 	_ Validator[string] = (*Printable[string])(nil)
 	_ Validator[string] = (*Base64[string])(nil)
 	_ Validator[string] = (*ASCII[string])(nil)
+	_ Validator[int]    = (*Latitude[int])(nil)
+	_ Validator[int]    = (*Longitude[int])(nil)
 
 	_ Validator[any] = (*Combined[Validator[any], Validator[any], any])(nil)
 )
@@ -73,6 +76,12 @@ type (
 	PrintableASCII[T constraint.Text] struct {
 		Combined[ASCII[T], Printable[T], T]
 	}
+
+	// Latitude accepts any number in the range [-90; 90]
+	Latitude[T constraint.RealSigned] struct{}
+
+	// Longitude accepts any number in the range [-180; 180]
+	Longitude[T constraint.RealSigned] struct{}
 
 	// Combined is a meta validator that combines other validators.
 	// Validators are called in the same order as type parameters.
@@ -164,6 +173,26 @@ func (ASCII[T]) Validate(value T) error {
 		if value[i] > unicode.MaxASCII {
 			return errors.New("string contains non-ascii character")
 		}
+	}
+
+	return nil
+}
+
+func (Latitude[T]) Validate(value T) error {
+	abs := math.Abs(float64(value))
+
+	if abs > 90 {
+		return errors.New("invalid latitude")
+	}
+
+	return nil
+}
+
+func (Longitude[T]) Validate(value T) error {
+	abs := math.Abs(float64(value))
+
+	if abs > 180 {
+		return errors.New("invalid longitude")
 	}
 
 	return nil

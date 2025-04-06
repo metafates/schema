@@ -77,6 +77,16 @@ type (
 	PrintableASCII[T constraint.Text] struct {
 		Custom[T, validate.PrintableASCII[T]]
 	}
+
+	// Latitude accepts any number in the range [-90; 90]
+	Latitude[T constraint.RealSigned] struct {
+		Custom[T, validate.Latitude[T]]
+	}
+
+	// Longitude accepts any number in the range [-180; 180]
+	Longitude[T constraint.RealSigned] struct {
+		Custom[T, validate.Longitude[T]]
+	}
 )
 
 func (c Custom[T, V]) Validate() error {
