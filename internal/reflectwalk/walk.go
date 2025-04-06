@@ -5,6 +5,8 @@ import (
 	"reflect"
 )
 
+// TODO: this was written by AI. Needs to be validated
+
 // FieldVisitor defines a function signature for the callback
 // It receives the path to the field and its value
 type FieldVisitor func(path string, value reflect.Value) error
