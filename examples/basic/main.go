@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
 	schemajson "github.com/metafates/schema/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
+	"github.com/metafates/schema/wrap"
 )
 
 type Address struct {
@@ -34,8 +36,24 @@ func main() {
 
 	data := []byte(`{"id": "hi", "email": "John Doe <john@example.com>", "address": {"street":null}}`)
 
-	if err := schemajson.Unmarshal(data, &r); err != nil {
-		log.Fatalln(err)
+	// this is important! validation won't work otherwise.
+	// you need to use [schemajson.Unmarshal]
+	{
+		if err := schemajson.Unmarshal(data, &r); err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	// as an alternative you can also do something like that.
+	// in fact, this is exactly how [schemajson.Unmarshal] is implemented.
+	{
+		var wrapped wrap.Wrapped[Request]
+
+		if err := json.Unmarshal(data, &wrapped); err != nil {
+			log.Fatalln(err)
+		}
+
+		r = wrapped.Inner
 	}
 
 	fmt.Println(r.ID.Value())
