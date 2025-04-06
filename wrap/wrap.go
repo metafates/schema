@@ -85,9 +85,10 @@ func getRequiredFields(t reflect.Type, forTag string) (map[string]any, error) {
 			name := getName(field, forTag)
 
 			if field.Type.Implements(schemaType) {
-				if name == "-" {
-					return nil, fmt.Errorf(`%s: "-" is used with required type`, field.Name)
-				}
+				// check if required type
+				// if name == "-" {
+				// 	return nil, fmt.Errorf(`%s: "-" is used with required type`, field.Name)
+				// }
 
 				fields[name] = nil
 			} else if field.Type.Kind() == reflect.Struct {
