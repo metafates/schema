@@ -61,6 +61,27 @@ type (
 	IP[T constraint.Text] struct {
 		Custom[T, validate.IP[T]]
 	}
+
+	// Printable accepts strings consisting of only printable runes.
+	// See [unicode.IsPrint] for more information
+	Printable[T constraint.Text] struct {
+		Custom[T, validate.Printable[T]]
+	}
+
+	// Base64 accepts valid base64 encoded strings
+	Base64[T constraint.Text] struct {
+		Custom[T, validate.Base64[T]]
+	}
+
+	// ASCII accepts ascii-only strings
+	ASCII[T constraint.Text] struct {
+		Custom[T, validate.ASCII[T]]
+	}
+
+	// PrintableASCII combines [Printable] and [ASCII]
+	PrintableASCII[T constraint.Text] struct {
+		Custom[T, validate.PrintableASCII[T]]
+	}
 )
 
 func (c Custom[T, V]) IsSchema() {}
