@@ -147,6 +147,22 @@ func main() {
 		request = wrapped.Inner
 	}
 
+	// moreover, it possible to separate validation from unmarshalling
+	{
+		// unmarshal it any way you want, not only json
+		if err := json.Unmarshal(data, &request); err != nil {
+			log.Fatalln(err)
+		}
+
+		// and validate it manually, that's it
+		if err := validate.Recursively(request); err != nil {
+			log.Fatalln(err)
+		}
+
+		// in fact, this is what [wrap.Wrapped] does.
+		// this seems to be more flexible approach, the API change to emphasize it
+	}
+
 	// now that we have successfully unmarshalled our json, we can use request fields.
 	// to access values of our schema-guarded fields we can use .Value() method
 	//
