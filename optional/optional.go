@@ -16,7 +16,7 @@ type (
 		hasValue bool
 	}
 
-	// Any accepts any value
+	// Any accepts any value of T
 	Any[T any] struct {
 		Custom[T, validate.Any[T]]
 	}

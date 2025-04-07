@@ -50,7 +50,7 @@ var (
 )
 
 type (
-	// Any accepts any value
+	// Any accepts any value of T
 	Any[T any] struct{}
 
 	// NonEmpty accepts all non empty comparable values
