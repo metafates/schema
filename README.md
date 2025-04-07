@@ -239,8 +239,24 @@ func main() {
 }
 ```
 
+## Performance
+
+This library does not affect unmarshalling performance itself. You can expect it to be just as fast as a regular unmarshalling. **However**, the validation itself does have an overhead:
+
+```
+goos: darwin
+goarch: arm64
+pkg: github.com/metafates/schema/validate/wrap
+cpu: Apple M3 Pro
+BenchmarkUnmarshalJSON/wrapped-12                  12250             97765 ns/op
+BenchmarkUnmarshalJSON/regular-12                  27326             44115 ns/op
+```
+
+As you can see, it's ~2x performance slowdown when using validation. The reason for it is that validation requires iterating over all unmarshalled fields and validate required and optional fields. There's a room for improvement!
+
 ## TODO
 
 - [ ] Better documentation
-- [ ] Improve performance. Right now it's 2-3x slower that default json unmarshalling. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
+- [ ] More tests
+- [ ] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
 - [ ] More validation types as seen in https://github.com/go-playground/validator

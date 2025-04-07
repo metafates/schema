@@ -6,13 +6,13 @@ import (
 	"testing"
 
 	"github.com/metafates/schema/required"
-	"github.com/metafates/schema/wrap"
+	"github.com/metafates/schema/validate/wrap"
 )
 
 //go:embed testdata.json
 var testdata []byte
 
-type Data struct {
+type Data []struct {
 	ID         string   `json:"_id"`
 	Index      int      `json:"index"`
 	GUID       string   `json:"guid"`
