@@ -216,6 +216,6 @@ func main() {
 
 	var validationErr schemaerror.ValidationError
 	if errors.As(err, &validationErr) {
-		fmt.Println("validation error occured:", validationErr)
+		fmt.Printf("validation error occured: %#+v\n", validationErr)
 	}
 }
