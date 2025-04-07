@@ -1,22 +1,3 @@
-# 📐 Schema
-
-> Work in progress!
-
-Type-safe schema guarded structs for Go with generics and a bit of magic.
-
-No stable version yet, but you can use it like that.
-
-```bash
-go get github.com/metafates/schema@main
-```
-
-**Work in progress, API may change significantly without further notice! This is just an experiment for now**
-
-## Example
-
-See [examples](./examples) for more examples
-
-```go
 package main
 
 import (
@@ -211,10 +192,3 @@ func main() {
 	fmt.Println(schemajson.Unmarshal(missingUserName, &request))
 	// validate: User.Name: missing value
 }
-```
-
-## TODO
-
-- [ ] Better documentation
-- [ ] Improve performance. Right now it's 2-3x slower that default json unmarshalling. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
-- [ ] More validation types as seen in https://github.com/go-playground/validator
