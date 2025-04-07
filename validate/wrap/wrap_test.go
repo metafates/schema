@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/metafates/schema/required"
+	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/wrap"
 )
 
@@ -41,7 +42,7 @@ type Data []struct {
 }
 
 func BenchmarkUnmarshalJSON(b *testing.B) {
-	b.Run("wrapped", func(b *testing.B) {
+	b.Run("unmarshal and validation with wrap", func(b *testing.B) {
 		for b.Loop() {
 			var w wrap.Wrapped[Data]
 
@@ -51,7 +52,21 @@ func BenchmarkUnmarshalJSON(b *testing.B) {
 		}
 	})
 
-	b.Run("regular", func(b *testing.B) {
+	b.Run("separate unmarshal and validation manually", func(b *testing.B) {
+		for b.Loop() {
+			var w Data
+
+			if err := json.Unmarshal(testdata, &w); err != nil {
+				b.Fatal(err)
+			}
+
+			if err := validate.Recursively(w); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+
+	b.Run("unmarshal without validation", func(b *testing.B) {
 		for b.Loop() {
 			var w Data
 
