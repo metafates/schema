@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	schemaerror "github.com/metafates/schema/error"
 	schemajson "github.com/metafates/schema/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
@@ -193,4 +194,12 @@ func main() {
 
 	fmt.Println(schemajson.Unmarshal(missingUserName, &request))
 	// validate: User.Name: missing value
+
+	// You can also check if it was validation error or any other json error
+	err := schemajson.Unmarshal(missingUserName, &request)
+
+	var validationErr schemaerror.ValidationError
+	if errors.As(err, &validationErr) {
+		fmt.Println("validation error occured:", validationErr)
+	}
 }
