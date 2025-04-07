@@ -82,7 +82,7 @@ func (ShortStr) Validate(v string) error {
 // but we can go extreme! we can combine multiple validators using types
 type ASCIIShortStr struct {
 	// both ASCII and ShortStr must be satisfied.
-	// you can also use [validate.Or] to ensure that any condition is satisfied.
+	// you can also use [validate.Or] to ensure that at least one condition is satisfied.
 	validate.And[
 		validate.ASCII[string],
 		ShortStr,
