@@ -98,7 +98,7 @@ type (
 // You should not call this function directly.
 func (c Custom[T, V]) Validate() error {
 	if !c.hasValue {
-		return schemaerror.ValidationError{Msg: "missing value"}
+		return schemaerror.ErrMissingRequiredValue
 	}
 
 	if err := (*new(V)).Validate(c.value); err != nil {
