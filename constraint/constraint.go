@@ -16,8 +16,6 @@ type Unsigned interface {
 	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
 }
 
-type RealSigned interface{ Float | Signed }
-
 type Real interface{ Float | Integer }
 
 type Text interface{ ~string | ~[]byte }

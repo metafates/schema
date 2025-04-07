@@ -79,16 +79,18 @@ type (
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
-	Latitude[T constraint.RealSigned] struct {
+	Latitude[T constraint.Real] struct {
 		Custom[T, validate.Latitude[T]]
 	}
 
 	// Longitude accepts any number in the range [-180; 180]
-	Longitude[T constraint.RealSigned] struct {
+	Longitude[T constraint.Real] struct {
 		Custom[T, validate.Longitude[T]]
 	}
 )
 
+// Validate implementes [validate.Validateable].
+// You should not call this function directly.
 func (c Custom[T, V]) Validate() error {
 	if !c.hasValue {
 		return nil

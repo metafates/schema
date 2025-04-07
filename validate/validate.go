@@ -17,10 +17,13 @@ import (
 )
 
 type (
+	// Validator is an interface that validators must implement
 	Validator[T any] interface {
 		Validate(value T) error
 	}
 
+	// Validateable is an interface that states "this type can validate itself".
+	// It is invoked for all values in the struct/slice/map/... by [Recursively]
 	Validateable interface {
 		Validate() error
 	}
@@ -87,10 +90,10 @@ type (
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
-	Latitude[T constraint.RealSigned] struct{}
+	Latitude[T constraint.Real] struct{}
 
 	// Longitude accepts any number in the range [-180; 180]
-	Longitude[T constraint.RealSigned] struct{}
+	Longitude[T constraint.Real] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as type parameters.
@@ -241,6 +244,8 @@ func (Or[A, B, T]) Validate(value T) error {
 	return errors.Join(errA, errB)
 }
 
+// Recursively walk public fields/elements/... of a given
+// value an call [Validateable.Validate] for each
 func Recursively(value any) error {
 	return reflectwalk.WalkFields(value, func(path string, value reflect.Value) error {
 		r, ok := value.Interface().(Validateable)
