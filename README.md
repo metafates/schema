@@ -33,20 +33,21 @@ import (
 	"github.com/metafates/schema/validate/wrap"
 )
 
-// Lets assume we have a request which accepts an user
+// Let's assume we have a request which accepts an user
 type User struct {
-	// User name is required and must no be empty
+	// User name is required and must not be empty
 	Name required.NonEmpty[string] `json:"name"`
 
 	// Birth date is optional, which means it could be null.
-	// However, if passed, it must be a valid [time.Time] with any value
+	// However, if passed, it must be an any valid [time.Time]
 	Birth optional.Any[time.Time] `json:"birth"`
 
 	// Same for email. It is optional, therefore it could be null.
-	// But, if passed, not only it must be a valid string but also a valid email string
+	// But, if passed, not only it must be a valid string, but also a valid RFC 5322 email string
 	Email optional.Email[string] `json:"email"`
 
 	// Bio is just a regular string. It may be empty, may be not.
+	// No further logic is attached to it.
 	Bio string `json:"bio"`
 }
 
@@ -101,10 +102,10 @@ type Request struct {
 	Address optional.Any[Address] `json:"address"`
 
 	// this is how we can use our validator in custom type.
-	// we could make an alias for that custom type, if needed.
-	MyShortString optional.Custom[string, ShortStr] `json:"myShortString"`
+	// we could make an alias for that custom required type, if needed.
+	MyShortString required.Custom[string, ShortStr] `json:"myShortString"`
 
-	// same as for [Request.MyShortString]
+	// same as for [Request.MyShortString] but using an optional instead.
 	ASCIIShortString optional.Custom[string, ASCIIShortStr] `json:"asciiShortString"`
 }
 
@@ -146,7 +147,7 @@ func main() {
 		request = wrapped.Inner
 	}
 
-	// now that we have succefully unmarshalled our json, we can use request fields.
+	// now that we have successfully unmarshalled our json, we can use request fields.
 	// to access values of our schema-guarded fields we can use .Value() method
 	//
 	// NOTE: calling this method for required types BEFORE we have
@@ -157,6 +158,7 @@ func main() {
 	email, ok := request.User.Email.Value()
 	fmt.Println(email, ok) // output: john@example.com true
 
+	// birth is missing
 	birth, ok := request.User.Birth.Value()
 	fmt.Println(birth, ok) // output: 0001-01-01 00:00:00 +0000 UTC false
 
