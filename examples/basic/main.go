@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,7 +9,7 @@ import (
 	schemajson "github.com/metafates/schema/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
-	"github.com/metafates/schema/wrap"
+	"github.com/metafates/schema/validate/wrap"
 )
 
 type Address struct {
@@ -39,6 +40,8 @@ func main() {
 
 	// this is important! validation won't work otherwise.
 	// you need to use [schemajson.Unmarshal]
+	//
+	// prefer this approach to others, if possible
 	{
 		if err := schemajson.Unmarshal(data, &r); err != nil {
 			log.Fatalln(err)
@@ -55,6 +58,15 @@ func main() {
 		}
 
 		r = wrapped.Inner
+	}
+
+	// you can also use decoder
+	{
+		d := schemajson.NewDecoder(bytes.NewReader(data))
+
+		if err := d.Decode(&r); err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	fmt.Println(r.ID.Value())
