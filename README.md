@@ -257,9 +257,14 @@ BenchmarkUnmarshalJSON/unmarshal_without_validation-12                     27460
 
 As you can see, it's ~40-100% performance slowdown when using validation. The reason for it is that validation requires iterating over all unmarshalled fields and validate required and optional fields. There's a room for improvement!
 
+This benchmark does not consider performance of the validators itself. Only the overhead of recursive fields iteration. E.g. email validator can be implemented differently and no matter how would you call it (manually or through this library) its own performance won't change.
+
+But validators (especially builtin) should also be fast, I'll add a separate benchmarks for validators.
+
 ## TODO
 
 - [ ] Better documentation
 - [ ] More tests
 - [ ] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
+- [ ] Add benchmarks for validators itself. E.g. email validator
 - [ ] More validation types as seen in https://github.com/go-playground/validator
