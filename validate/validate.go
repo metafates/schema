@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/metafates/schema/constraint"
@@ -30,18 +31,20 @@ type (
 )
 
 var (
-	_ Validator[any]    = (*Any[any])(nil)
-	_ Validator[any]    = (*NonEmpty[any])(nil)
-	_ Validator[int]    = (*Positive[int])(nil)
-	_ Validator[int]    = (*Negative[int])(nil)
-	_ Validator[string] = (*Email[string])(nil)
-	_ Validator[string] = (*URL[string])(nil)
-	_ Validator[string] = (*IP[string])(nil)
-	_ Validator[string] = (*Printable[string])(nil)
-	_ Validator[string] = (*Base64[string])(nil)
-	_ Validator[string] = (*ASCII[string])(nil)
-	_ Validator[int]    = (*Latitude[int])(nil)
-	_ Validator[int]    = (*Longitude[int])(nil)
+	_ Validator[any]       = (*Any[any])(nil)
+	_ Validator[any]       = (*NonEmpty[any])(nil)
+	_ Validator[int]       = (*Positive[int])(nil)
+	_ Validator[int]       = (*Negative[int])(nil)
+	_ Validator[string]    = (*Email[string])(nil)
+	_ Validator[string]    = (*URL[string])(nil)
+	_ Validator[string]    = (*IP[string])(nil)
+	_ Validator[string]    = (*Printable[string])(nil)
+	_ Validator[string]    = (*Base64[string])(nil)
+	_ Validator[string]    = (*ASCII[string])(nil)
+	_ Validator[int]       = (*Latitude[int])(nil)
+	_ Validator[int]       = (*Longitude[int])(nil)
+	_ Validator[time.Time] = (*InPast[time.Time])(nil)
+	_ Validator[time.Time] = (*InFuture[time.Time])(nil)
 
 	_ Validator[any] = (*And[Validator[any], Validator[any], any])(nil)
 )
@@ -90,10 +93,24 @@ type (
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
+	//
+	// See also [Longitude]
 	Latitude[T constraint.Real] struct{}
 
 	// Longitude accepts any number in the range [-180; 180]
+	//
+	// See also [Latitude]
 	Longitude[T constraint.Real] struct{}
+
+	// InPast accepts any time before current timestamp
+	//
+	// See also [InFuture]
+	InPast[T constraint.Time] struct{}
+
+	// InFuture accepts any time after current timestamp
+	//
+	// See also [InPast]
+	InFuture[T constraint.Time] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as type parameters.
@@ -213,6 +230,22 @@ func (Longitude[T]) Validate(value T) error {
 
 	if abs > 180 {
 		return errors.New("invalid longitude")
+	}
+
+	return nil
+}
+
+func (InPast[T]) Validate(value T) error {
+	if value.Compare(time.Now()) > 0 {
+		return errors.New("time is not in the past")
+	}
+
+	return nil
+}
+
+func (InFuture[T]) Validate(value T) error {
+	if value.Compare(time.Now()) < 0 {
+		return errors.New("time is not in the future")
 	}
 
 	return nil

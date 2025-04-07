@@ -1,5 +1,7 @@
 package constraint
 
+import "time"
+
 type Float interface {
 	~float32 | ~float64
 }
@@ -19,3 +21,7 @@ type Unsigned interface {
 type Real interface{ Float | Integer }
 
 type Text interface{ ~string | ~[]byte }
+
+type Comparable[T any] interface{ Compare(T) int }
+
+type Time = Comparable[time.Time]

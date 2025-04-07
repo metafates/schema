@@ -84,13 +84,31 @@ type (
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
+	//
+	// See also [Longitude]
 	Latitude[T constraint.Real] struct {
 		Custom[T, validate.Latitude[T]]
 	}
 
 	// Longitude accepts any number in the range [-180; 180]
+	//
+	// See also [Latitude]
 	Longitude[T constraint.Real] struct {
 		Custom[T, validate.Longitude[T]]
+	}
+
+	// InPast accepts any time before current timestamp
+	//
+	// See also [InFuture]
+	InPast[T constraint.Time] struct {
+		Custom[T, validate.InPast[T]]
+	}
+
+	// InFuture accepts any time after current timestamp
+	//
+	// See also [InPast]
+	InFuture[T constraint.Time] struct {
+		Custom[T, validate.InFuture[T]]
 	}
 )
 
