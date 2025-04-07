@@ -98,6 +98,10 @@ func (c Custom[T, V]) Validate() error {
 		return schemaerror.ValidationError{Inner: err}
 	}
 
+	if err := validate.Recursively(c.value); err != nil {
+		return err
+	}
+
 	return nil
 }
 

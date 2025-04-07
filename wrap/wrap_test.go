@@ -1,4 +1,4 @@
-package wrap
+package wrap_test
 
 import (
 	_ "embed"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/metafates/schema/required"
+	"github.com/metafates/schema/wrap"
 )
 
 //go:embed testdata.json
@@ -42,7 +43,7 @@ type Data struct {
 func BenchmarkUnmarshalJSON(b *testing.B) {
 	b.Run("wrapped", func(b *testing.B) {
 		for b.Loop() {
-			var w Wrapped[Data]
+			var w wrap.Wrapped[Data]
 
 			if err := json.Unmarshal(testdata, &w); err != nil {
 				b.Fatal(err)
@@ -68,7 +69,7 @@ func TestWrap(t *testing.T) {
 	}
 
 	t.Run("struct", func(t *testing.T) {
-		var wrapped Wrapped[User]
+		var wrapped wrap.Wrapped[User]
 
 		data := []byte(`{"name":"foo", "Age": 99}`)
 
@@ -89,7 +90,7 @@ func TestWrap(t *testing.T) {
 
 	t.Run("slice", func(t *testing.T) {
 		t.Run("ok", func(t *testing.T) {
-			var wrapped Wrapped[[]User]
+			var wrapped wrap.Wrapped[[]User]
 
 			data := []byte(`[{"name": "foo"}, {"name": "bar", "Age": 99}]`)
 
@@ -107,7 +108,7 @@ func TestWrap(t *testing.T) {
 		})
 
 		t.Run("error", func(t *testing.T) {
-			var wrapped Wrapped[[]User]
+			var wrapped wrap.Wrapped[[]User]
 
 			data := []byte(`[{"name": "foo"}, {"bar": "other"}]`)
 

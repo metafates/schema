@@ -3,16 +3,11 @@ package wrap
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 
-	"github.com/metafates/schema/internal/reflectwalk"
+	"github.com/metafates/schema/validate"
 )
 
-type Validater interface {
-	Validate() error
-}
-
-// Wrapped is a type that adds support for validating the fields that implement [Validater] interface.
+// Wrapped is a type that adds support for validating the fields that implement [Validator] interface.
 type Wrapped[T any] struct{ Inner T }
 
 func (w *Wrapped[T]) UnmarshalJSON(data []byte) error {
@@ -22,20 +17,8 @@ func (w *Wrapped[T]) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	err := reflectwalk.WalkFields(inner, func(path string, value reflect.Value) error {
-		r, ok := value.Interface().(Validater)
-		if !ok {
-			return nil
-		}
-
-		if err := r.Validate(); err != nil {
-			return fmt.Errorf("%s: validate: %w", path, err)
-		}
-
-		return nil
-	})
-	if err != nil {
-		return err
+	if err := validate.Recursively(inner); err != nil {
+		return fmt.Errorf("validate: %w", err)
 	}
 
 	w.Inner = inner

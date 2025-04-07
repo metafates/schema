@@ -12,7 +12,8 @@ import (
 )
 
 type Address struct {
-	Street optional.NonEmpty[string] `json:"street"`
+	Lat required.Latitude[float64]  `json:"lat"`
+	Lon required.Longitude[float64] `json:"lon"`
 }
 
 type Request struct {
@@ -24,7 +25,7 @@ type Request struct {
 	// if validation fails, unmarshal will return error
 	Email optional.Email[string] `json:"email"`
 
-	Address Address `json:"address"`
+	Address required.Any[Address] `json:"address"`
 
 	// this field is just a regular go value, which will be an empty string if missing.
 	// no validation or further logic is attached to it
@@ -34,7 +35,7 @@ type Request struct {
 func main() {
 	var r Request
 
-	data := []byte(`{"id": "hi", "email": "John Doe <john@example.com>", "address": {"street":null}}`)
+	data := []byte(`{"id": "hi", "email": "John Doe <john@example.com>", "address": {"lat":24,"lon": 91}}`)
 
 	// this is important! validation won't work otherwise.
 	// you need to use [schemajson.Unmarshal]

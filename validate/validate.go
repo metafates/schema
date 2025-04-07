@@ -3,19 +3,28 @@ package validate
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"math"
 	"net/mail"
 	"net/netip"
 	"net/url"
+	"reflect"
 	"strings"
 	"unicode"
 
 	"github.com/metafates/schema/constraint"
+	"github.com/metafates/schema/internal/reflectwalk"
 )
 
-type Validator[T any] interface {
-	Validate(value T) error
-}
+type (
+	Validator[T any] interface {
+		Validate(value T) error
+	}
+
+	Validateable interface {
+		Validate() error
+	}
+)
 
 var (
 	_ Validator[any]    = (*Any[any])(nil)
@@ -230,4 +239,19 @@ func (Or[A, B, T]) Validate(value T) error {
 	}
 
 	return errors.Join(errA, errB)
+}
+
+func Recursively(value any) error {
+	return reflectwalk.WalkFields(value, func(path string, value reflect.Value) error {
+		r, ok := value.Interface().(Validateable)
+		if !ok {
+			return nil
+		}
+
+		if err := r.Validate(); err != nil {
+			return fmt.Errorf("%s: %w", path, err)
+		}
+
+		return nil
+	})
 }
