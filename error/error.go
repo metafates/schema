@@ -20,8 +20,3 @@ func (v ValidationError) Error() string {
 
 	return fmt.Sprintf("%s: %s", v.Msg, v.Inner)
 }
-
-func (v ValidationError) Is(err error) bool {
-	_, ok := err.(ValidationError)
-	return ok
-}
