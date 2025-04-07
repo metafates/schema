@@ -160,7 +160,7 @@ func main() {
 		}
 
 		// in fact, this is what [wrap.Wrapped] does.
-		// this seems to be more flexible approach, the API change to emphasize it
+		// this seems to be more flexible approach, the API may change to emphasize it
 	}
 
 	// now that we have successfully unmarshalled our json, we can use request fields.
