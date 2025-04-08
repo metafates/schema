@@ -26,7 +26,7 @@ import (
 	"log"
 	"time"
 
-	schemaerror "github.com/metafates/schema/error"
+	schemajson "github.com/metafates/schema/encoding/json"
 	schemajson "github.com/metafates/schema/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"

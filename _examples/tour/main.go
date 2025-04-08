@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
+	schemajson "github.com/metafates/schema/encoding/json"
 	schemaerror "github.com/metafates/schema/error"
-	schemajson "github.com/metafates/schema/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate"
