@@ -43,6 +43,7 @@ var (
 	_ Validator[string]    = (*MAC[string])(nil)
 	_ Validator[string]    = (*CIDR[string])(nil)
 	_ Validator[string]    = (*Printable[string])(nil)
+	_ Validator[string]    = (*PrintableASCII[string])(nil)
 	_ Validator[string]    = (*Base64[string])(nil)
 	_ Validator[string]    = (*ASCII[string])(nil)
 	_ Validator[int]       = (*Latitude[int])(nil)
@@ -101,9 +102,7 @@ type (
 	ASCII[T constraint.Text] struct{}
 
 	// PrintableASCII combines [Printable] and [ASCII]
-	PrintableASCII[T constraint.Text] struct {
-		And[T, ASCII[T], Printable[T]]
-	}
+	PrintableASCII[T constraint.Text] struct{}
 
 	// Latitude accepts any number in the range [-90; 90]
 	//
@@ -246,6 +245,20 @@ func (ASCII[T]) Validate(value T) error {
 	for i := 0; i < len(value); i++ {
 		if value[i] > unicode.MaxASCII {
 			return errors.New("string contains non-ascii character")
+		}
+	}
+
+	return nil
+}
+
+func (PrintableASCII[T]) Validate(value T) error {
+	for i := 0; i < len(value); i++ {
+		if value[i] > unicode.MaxASCII {
+			return errors.New("string contains non-ascii character")
+		}
+
+		if !unicode.IsPrint(rune(value[i])) {
+			return errors.New("string contains unprintable character")
 		}
 	}
 
