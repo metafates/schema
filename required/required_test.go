@@ -15,6 +15,8 @@ func TestRequired(t *testing.T) {
 
 		requireEqual(t, false, foo.hasValue)
 		requireEqual(t, "", foo.value)
+
+		requireError(t, foo.Validate())
 	})
 
 	t.Run("invalid value", func(t *testing.T) {
@@ -27,6 +29,8 @@ func TestRequired(t *testing.T) {
 		requireEqual(t, true, foo.hasValue)
 		requireEqual(t, -24, foo.value) // won't be validated during unmarshalling
 		requireEqual(t, foo.value, foo.Value())
+
+		requireError(t, foo.Validate())
 	})
 
 	t.Run("valid value", func(t *testing.T) {
@@ -39,11 +43,25 @@ func TestRequired(t *testing.T) {
 		requireEqual(t, true, foo.hasValue)
 		requireEqual(t, 24, foo.value)
 		requireEqual(t, foo.value, foo.Value())
+
+		requireNoError(t, foo.Validate())
 	})
 }
 
 func requireEqual[T comparable](t *testing.T, want, actual T) {
 	if want != actual {
 		t.Fatalf("not equal: %v and %v", want, actual)
+	}
+}
+
+func requireNoError(t *testing.T, err error) {
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func requireError(t *testing.T, err error) {
+	if err == nil {
+		t.Fatalf("error is nil")
 	}
 }

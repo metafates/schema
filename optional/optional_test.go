@@ -15,6 +15,8 @@ func TestOptional(t *testing.T) {
 
 		requireEqual(t, false, foo.hasValue)
 		requireEqual(t, "", foo.value)
+
+		requireNoError(t, foo.Validate())
 	})
 
 	t.Run("invalid value", func(t *testing.T) {
@@ -31,6 +33,9 @@ func TestOptional(t *testing.T) {
 			requireEqual(t, foo.value, value)
 			requireEqual(t, foo.hasValue, ok)
 		}
+		requireEqual(t, foo.value, foo.Must())
+
+		requireError(t, foo.Validate())
 	})
 
 	t.Run("valid value", func(t *testing.T) {
@@ -47,11 +52,26 @@ func TestOptional(t *testing.T) {
 			requireEqual(t, foo.value, value)
 			requireEqual(t, foo.hasValue, ok)
 		}
+		requireEqual(t, foo.value, foo.Must())
+
+		requireNoError(t, foo.Validate())
 	})
 }
 
 func requireEqual[T comparable](t *testing.T, want, actual T) {
 	if want != actual {
 		t.Fatalf("not equal: %v and %v", want, actual)
+	}
+}
+
+func requireNoError(t *testing.T, err error) {
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func requireError(t *testing.T, err error) {
+	if err == nil {
+		t.Fatalf("error is nil")
 	}
 }
