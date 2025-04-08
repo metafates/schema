@@ -14,7 +14,7 @@ go get github.com/metafates/schema@main
 
 ## Example
 
-See [examples](./examples) for more examples
+See [examples](./_examples) for more examples
 
 ```go
 package main
