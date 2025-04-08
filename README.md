@@ -253,17 +253,21 @@ func main() {
 
 This library does not affect unmarshalling performance itself. You can expect it to be just as fast as a regular unmarshalling. **However**, the validation itself does have an overhead:
 
-[Benchmark source code](./validate/wrap/wrap_test.go)
+[Benchmark source code](./validate/wrap_test.go)
 
 ```
 goos: darwin
 goarch: arm64
-pkg: github.com/metafates/schema/validate/wrap
+pkg: github.com/metafates/schema/validate
 cpu: Apple M3 Pro
-BenchmarkUnmarshalJSON/unmarshal_and_validation_with_wrap-12               12141             98618 ns/op
-BenchmarkUnmarshalJSON/separate_unmarshal_and_validation_manually-12       18802             63793 ns/op
-BenchmarkUnmarshalJSON/unmarshal_without_validation-12                     27460             43477 ns/op
+BenchmarkUnmarshalJSON/unmarshal_and_validation_with_wrap-12               12702             93203 ns/op
+BenchmarkUnmarshalJSON/separate_unmarshal_and_validation_manually-12       19992             59864 ns/op
+BenchmarkUnmarshalJSON/unmarshal_without_validation-12                     28809             41701 ns/op
 ```
+
+- `unmarshal_and_validation_with_wrap` - unmarshal json nusing `validate.Wrap`.
+- `separate_unmarshal_and_validation_manually` - unmarshal using json and call `validate.Recursively` manually.
+- `unmarshal_without_validation` - unmarshal using json without any validations.
 
 As you can see, it's ~40-100% performance slowdown when using validation. The reason for it is that validation requires iterating over all unmarshalled fields and validate required and optional fields. There's a room for improvement!
 
