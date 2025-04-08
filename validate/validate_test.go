@@ -118,6 +118,22 @@ func TestValidator(t *testing.T) {
 				WantErr: true,
 			},
 		},
+		Suite[string, HTTPURL[string]]{
+			{
+				Name:  "valid https url",
+				Input: "https://example.com",
+			},
+			{
+				Name:    "relative url",
+				Input:   "/example/com",
+				WantErr: true,
+			},
+			{
+				Name:    "non-http schema",
+				Input:   "rpc://example.com",
+				WantErr: true,
+			},
+		},
 		Suite[string, IP[string]]{
 			{
 				Name:  "valid ipv4",

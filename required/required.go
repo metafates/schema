@@ -52,8 +52,17 @@ type (
 
 	// URL accepts a single url.
 	// The url may be relative (a path, without a host) or absolute (starting with a scheme)
+	//
+	// See also [HTTPURL]
 	URL[T constraint.Text] struct {
 		Custom[T, validate.URL[T]]
+	}
+
+	// HTTPURL accepts a single http(s) url.
+	//
+	// See also [URL]
+	HTTPURL[T constraint.Text] struct {
+		Custom[T, validate.HTTPURL[T]]
 	}
 
 	// IP accepts an IP address.

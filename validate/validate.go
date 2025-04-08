@@ -79,7 +79,14 @@ type (
 
 	// URL accepts a single url.
 	// The url may be relative (a path, without a host) or absolute (starting with a scheme)
+	//
+	// See also [HTTPURL]
 	URL[T constraint.Text] struct{}
+
+	// HTTPURL accepts a single http(s) url.
+	//
+	// See also [URL]
+	HTTPURL[T constraint.Text] struct{}
 
 	// IP accepts an IP address.
 	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
@@ -189,6 +196,25 @@ func (URL[T]) Validate(value T) error {
 	}
 
 	return nil
+}
+
+func (HTTPURL[T]) Validate(value T) error {
+	u, err := url.Parse(string(value))
+	if err != nil {
+		return err
+	}
+
+	if u.Host == "" {
+		return errors.New("empty host")
+	}
+
+	switch u.Scheme {
+	case "http", "https":
+		return nil
+
+	default:
+		return errors.New("non-http(s) scheme")
+	}
 }
 
 func (IP[T]) Validate(value T) error {
