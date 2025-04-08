@@ -32,6 +32,8 @@ type (
 	}
 )
 
+// ensure that all validators implement [Validator] interface
+// if something is missing - please contribute!
 var (
 	_ Validator[any]       = (*Any[any])(nil)
 	_ Validator[any]       = (*NonEmpty[any])(nil)
