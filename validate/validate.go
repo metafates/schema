@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"mime"
+	"net"
 	"net/mail"
 	"net/netip"
 	"net/url"
@@ -77,6 +79,12 @@ type (
 	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
 	IP[T constraint.Text] struct{}
 
+	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address
+	MAC[T constraint.Text] struct{}
+
+	// CIDR accepts CIDR notation IP address and prefix length, like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291
+	CIDR[T constraint.Text] struct{}
+
 	// Printable accepts strings consisting of only printable runes.
 	// See [unicode.IsPrint] for more information
 	Printable[T constraint.Text] struct{}
@@ -111,6 +119,12 @@ type (
 	//
 	// See also [InPast]
 	InFuture[T constraint.Time] struct{}
+
+	// Unique accepts an array of unique comparable values
+	Unique[S ~[]T, T comparable] struct{}
+
+	// MIME accepts RFC 1521 mime type string
+	MIME[T constraint.Text] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
@@ -182,6 +196,24 @@ func (IP[T]) Validate(value T) error {
 	return nil
 }
 
+func (MAC[T]) Validate(value T) error {
+	_, err := net.ParseMAC(string(value))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (CIDR[T]) Validate(value T) error {
+	_, _, err := net.ParseCIDR(string(value))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (Printable[T]) Validate(value T) error {
 	contains := strings.ContainsFunc(string(value), func(r rune) bool {
 		return !unicode.IsPrint(r)
@@ -246,6 +278,29 @@ func (InPast[T]) Validate(value T) error {
 func (InFuture[T]) Validate(value T) error {
 	if value.Compare(time.Now()) < 0 {
 		return errors.New("time is not in the future")
+	}
+
+	return nil
+}
+
+func (Unique[S, T]) Validate(value S) error {
+	visited := make(map[T]struct{})
+
+	for _, v := range value {
+		if _, ok := visited[v]; ok {
+			return errors.New("duplicate value found")
+		}
+
+		visited[v] = struct{}{}
+	}
+
+	return nil
+}
+
+func (MIME[T]) Validate(value T) error {
+	_, _, err := mime.ParseMediaType(string(value))
+	if err != nil {
+		return err
 	}
 
 	return nil

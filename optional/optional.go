@@ -57,6 +57,16 @@ type (
 		Custom[T, validate.IP[T]]
 	}
 
+	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address
+	MAC[T constraint.Text] struct {
+		Custom[T, validate.MAC[T]]
+	}
+
+	// CIDR accepts CIDR notation IP address and prefix length, like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291
+	CIDR[T constraint.Text] struct {
+		Custom[T, validate.CIDR[T]]
+	}
+
 	// Printable accepts strings consisting of only printable runes.
 	// See [unicode.IsPrint] for more information
 	Printable[T constraint.Text] struct {
@@ -104,6 +114,16 @@ type (
 	// See also [InPast]
 	InFuture[T constraint.Time] struct {
 		Custom[T, validate.InFuture[T]]
+	}
+
+	// Unique accepts an array of unique comparable values
+	Unique[S ~[]T, T comparable] struct {
+		Custom[S, validate.Unique[S, T]]
+	}
+
+	// MIME accepts RFC 1521 mime type string
+	MIME[T constraint.Text] struct {
+		Custom[T, validate.MIME[T]]
 	}
 )
 

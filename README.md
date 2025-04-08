@@ -278,7 +278,7 @@ But validators (especially builtin) should also be fast, I'll add a separate ben
 ## TODO
 
 - [ ] Better documentation
-- [ ] More tests
+- [x] More tests
 - [ ] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
 - [ ] Add benchmarks for validators itself. E.g. email validator
 - [ ] More validation types as seen in https://github.com/go-playground/validator
