@@ -275,6 +275,11 @@ This benchmark does not consider performance of the validators itself. Only the 
 
 But validators (especially builtin) should also be fast, I'll add a separate benchmarks for validators.
 
+## Validators
+
+Not listed here yet, but can see a full list
+of available validators in [validate/validate.go](./validate/validate.go)
+
 ## TODO
 
 - [ ] Better documentation

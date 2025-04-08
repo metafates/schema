@@ -40,6 +40,8 @@ var (
 	_ Validator[string]    = (*Email[string])(nil)
 	_ Validator[string]    = (*URL[string])(nil)
 	_ Validator[string]    = (*IP[string])(nil)
+	_ Validator[string]    = (*MAC[string])(nil)
+	_ Validator[string]    = (*CIDR[string])(nil)
 	_ Validator[string]    = (*Printable[string])(nil)
 	_ Validator[string]    = (*Base64[string])(nil)
 	_ Validator[string]    = (*ASCII[string])(nil)
@@ -47,8 +49,11 @@ var (
 	_ Validator[int]       = (*Longitude[int])(nil)
 	_ Validator[time.Time] = (*InPast[time.Time])(nil)
 	_ Validator[time.Time] = (*InFuture[time.Time])(nil)
+	_ Validator[[]string]  = (*Unique[[]string, string])(nil)
+	_ Validator[string]    = (*MIME[string])(nil)
 
 	_ Validator[any] = (*And[any, Validator[any], Validator[any]])(nil)
+	_ Validator[any] = (*Or[any, Validator[any], Validator[any]])(nil)
 )
 
 type (
