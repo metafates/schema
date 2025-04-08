@@ -12,7 +12,6 @@ import (
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate"
-	"github.com/metafates/schema/validate/wrap"
 )
 
 // Let's assume we have a request which accepts an user
@@ -89,6 +88,10 @@ type Request struct {
 
 	// same as for [Request.MyShortString] but using an optional instead.
 	ASCIIShortString optional.Custom[string, ASCIIShortStr] `json:"asciiShortString"`
+
+	// just an example of another validation
+	// which requires time to be before current timestamp
+	OccuredAt optional.InPast[time.Time] `json:"occuredAt"`
 }
 
 func main() {
@@ -109,40 +112,41 @@ func main() {
 
 	var request Request
 
-	// in order to make it all work, we need to use a special unmarshal function [schemajson.Unmarshal].
-	if err := schemajson.Unmarshal(data, &request); err != nil {
-		log.Fatalln(err)
-	}
-
-	// you can also use regular [json.Unmarshal] if you need to.
 	{
-		// just wrap your type in a special wrapper.
-		// only do it once for root type, no need to wrap each field
-		var wrapped wrap.Wrapped[Request]
-
-		// will also work for [json.Decoder]
-		if err := json.Unmarshal(data, &wrapped); err != nil {
-			log.Fatalln(err)
-		}
-
-		// and unwrap it
-		request = wrapped.Inner
-	}
-
-	// moreover, it possible to separate validation from unmarshalling
-	{
-		// unmarshal it any way you want, not only json
+		// let's unmarshal it. we can use anything we want, not only json
 		if err := json.Unmarshal(data, &request); err != nil {
 			log.Fatalln(err)
 		}
 
-		// and validate it manually, that's it
+		// but validation won't happen just yet. we need to invoke it manually
 		if err := validate.Recursively(request); err != nil {
 			log.Fatalln(err)
 		}
+		// that's it, our struct was validated successfully!
+		// no errors yet, but we will get there
+	}
 
-		// in fact, this is what [wrap.Wrapped] does.
-		// this seems to be more flexible approach, the API change to emphasize it
+	{
+		// we could also use a helper function that does *exactly that* for us.
+		if err := schemajson.Unmarshal(data, &request); err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	{
+		// there's also a utility generic type that wraps your type
+		// and validates it as part of unmarshalling.
+		//
+		// only do it once for root type, no need to wrap each field
+		var wrapped validate.Wrap[Request]
+
+		// request will be validated during unmarshalling
+		if err := json.Unmarshal(data, &wrapped); err != nil {
+			log.Fatalln(err)
+		}
+
+		// unwrap it back
+		request = wrapped.Inner
 	}
 
 	// now that we have successfully unmarshalled our json, we can use request fields.
@@ -152,11 +156,11 @@ func main() {
 	// unmarshalled our request will panic intentionally.
 	fmt.Println(request.User.Name.Value()) // output: john
 
-	// optional values return a tuple: a value and boolean stating its presence
+	// optional values return a tuple: a value and a boolean stating its presence
 	email, ok := request.User.Email.Value()
 	fmt.Println(email, ok) // output: john@example.com true
 
-	// birth is missing
+	// birth is missing so "ok" will be false
 	birth, ok := request.User.Birth.Value()
 	fmt.Println(birth, ok) // output: 0001-01-01 00:00:00 +0000 UTC false
 
@@ -202,20 +206,25 @@ func main() {
 	"myShortString": "foo"
 }`)
 
-	fmt.Println(schemajson.Unmarshal(invalidEmail, &request))
+	fmt.Println(schemajson.Unmarshal(invalidEmail, new(Request)))
 	// validate: User.Email: mail: missing '@' or angle-addr
 
-	fmt.Println(schemajson.Unmarshal(invalidShortStr, &request))
+	fmt.Println(schemajson.Unmarshal(invalidShortStr, new(Request)))
 	// validate: MyShortString: string is too long
 
-	fmt.Println(schemajson.Unmarshal(missingUserName, &request))
+	fmt.Println(schemajson.Unmarshal(missingUserName, new(Request)))
 	// validate: User.Name: missing value
 
-	// You can also check if it was validation error or any other json error
-	err := schemajson.Unmarshal(missingUserName, &request)
+	// You can check if it was validation error or any other json error.
+	// Same is applicable for [validate.Wrap]
+	err := schemajson.Unmarshal(missingUserName, new(Request))
 
 	var validationErr schemaerror.ValidationError
 	if errors.As(err, &validationErr) {
-		fmt.Printf("validation error occured: %#+v\n", validationErr)
+		fmt.Printf("validation error occured: %v\n", validationErr)
+		// validation error occured: missing required value
+
+		fmt.Println(errors.Is(err, schemaerror.ErrMissingRequiredValue))
+		// true
 	}
 }

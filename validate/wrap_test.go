@@ -1,4 +1,4 @@
-package wrap_test
+package validate_test
 
 import (
 	_ "embed"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate"
-	"github.com/metafates/schema/validate/wrap"
 )
 
 //go:embed testdata.json
@@ -44,7 +43,7 @@ type Data []struct {
 func BenchmarkUnmarshalJSON(b *testing.B) {
 	b.Run("unmarshal and validation with wrap", func(b *testing.B) {
 		for b.Loop() {
-			var w wrap.Wrapped[Data]
+			var w validate.Wrap[Data]
 
 			if err := json.Unmarshal(testdata, &w); err != nil {
 				b.Fatal(err)
@@ -84,7 +83,7 @@ func TestWrap(t *testing.T) {
 	}
 
 	t.Run("struct", func(t *testing.T) {
-		var wrapped wrap.Wrapped[User]
+		var wrapped validate.Wrap[User]
 
 		data := []byte(`{"name":"foo", "Age": 99}`)
 
@@ -105,7 +104,7 @@ func TestWrap(t *testing.T) {
 
 	t.Run("slice", func(t *testing.T) {
 		t.Run("ok", func(t *testing.T) {
-			var wrapped wrap.Wrapped[[]User]
+			var wrapped validate.Wrap[[]User]
 
 			data := []byte(`[{"name": "foo"}, {"name": "bar", "Age": 99}]`)
 
@@ -123,7 +122,7 @@ func TestWrap(t *testing.T) {
 		})
 
 		t.Run("error", func(t *testing.T) {
-			var wrapped wrap.Wrapped[[]User]
+			var wrapped validate.Wrap[[]User]
 
 			data := []byte(`[{"name": "foo"}, {"bar": "other"}]`)
 

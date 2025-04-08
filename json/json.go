@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/metafates/schema/validate"
-	"github.com/metafates/schema/validate/wrap"
 )
 
 type Decoder struct {
@@ -29,14 +28,14 @@ func (dec *Decoder) Decode(v any) error {
 	return nil
 }
 
-func Unmarshal[T any](data []byte, v *T) error {
-	var wrapped wrap.Wrapped[T]
-
-	if err := json.Unmarshal(data, &wrapped); err != nil {
+func Unmarshal(data []byte, v any) error {
+	if err := json.Unmarshal(data, v); err != nil {
 		return err
 	}
 
-	*v = wrapped.Inner
+	if err := validate.Recursively(v); err != nil {
+		return fmt.Errorf("validate: %w", err)
+	}
 
 	return nil
 }
