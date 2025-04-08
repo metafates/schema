@@ -46,7 +46,7 @@ var (
 	_ Validator[time.Time] = (*InPast[time.Time])(nil)
 	_ Validator[time.Time] = (*InFuture[time.Time])(nil)
 
-	_ Validator[any] = (*And[Validator[any], Validator[any], any])(nil)
+	_ Validator[any] = (*And[any, Validator[any], Validator[any]])(nil)
 )
 
 type (
@@ -89,7 +89,7 @@ type (
 
 	// PrintableASCII combines [Printable] and [ASCII]
 	PrintableASCII[T constraint.Text] struct {
-		And[ASCII[T], Printable[T], T]
+		And[T, ASCII[T], Printable[T]]
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
@@ -113,16 +113,16 @@ type (
 	InFuture[T constraint.Time] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
-	// Validators are called in the same order as type parameters.
+	// Validators are called in the same order as specified by type parameters.
 	//
 	// See also [Or]
-	And[A Validator[T], B Validator[T], T any] struct{}
+	And[T any, A Validator[T], B Validator[T]] struct{}
 
 	// And is a meta validator that combines other validators with OR operator.
 	// Validators are called in the same order as type parameters.
 	//
 	// See also [And]
-	Or[A Validator[T], B Validator[T], T any] struct{}
+	Or[T any, A Validator[T], B Validator[T]] struct{}
 )
 
 func (Any[T]) Validate(T) error {
@@ -251,7 +251,7 @@ func (InFuture[T]) Validate(value T) error {
 	return nil
 }
 
-func (And[A, B, T]) Validate(value T) error {
+func (And[T, A, B]) Validate(value T) error {
 	if err := (*new(A)).Validate(value); err != nil {
 		return err
 	}
@@ -263,7 +263,7 @@ func (And[A, B, T]) Validate(value T) error {
 	return nil
 }
 
-func (Or[A, B, T]) Validate(value T) error {
+func (Or[T, A, B]) Validate(value T) error {
 	errA := (*new(A)).Validate(value)
 	if errA == nil {
 		return nil
