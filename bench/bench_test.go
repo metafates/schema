@@ -42,7 +42,7 @@ type Data []struct {
 func BenchmarkUnmarshalJSON(b *testing.B) {
 	b.Run("unmarshal and validation with wrap", func(b *testing.B) {
 		for b.Loop() {
-			var w validate.Wrap[Data]
+			var w validate.OnUnmarshal[Data]
 
 			if err := json.Unmarshal(testdata, &w); err != nil {
 				b.Fatal(err)

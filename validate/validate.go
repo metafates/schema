@@ -2,6 +2,7 @@ package validate
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -58,6 +59,21 @@ var (
 	_ Validator[any] = (*And[any, Validator[any], Validator[any]])(nil)
 	_ Validator[any] = (*Or[any, Validator[any], Validator[any]])(nil)
 )
+
+// OnUnmarshal is a type that validates its inner value as part of unmarshalling
+type OnUnmarshal[T any] struct{ Inner T }
+
+func (w *OnUnmarshal[T]) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &w.Inner); err != nil {
+		return err
+	}
+
+	if err := Recursively(w.Inner); err != nil {
+		return fmt.Errorf("validate: %w", err)
+	}
+
+	return nil
+}
 
 type (
 	// Any accepts any value of T

@@ -138,15 +138,15 @@ func main() {
 		// and validates it as part of unmarshalling.
 		//
 		// only do it once for root type, no need to wrap each field
-		var wrapped validate.Wrap[Request]
+		var wrapper validate.OnUnmarshal[Request]
 
 		// request will be validated during unmarshalling
-		if err := json.Unmarshal(data, &wrapped); err != nil {
+		if err := json.Unmarshal(data, &wrapper); err != nil {
 			log.Fatalln(err)
 		}
 
 		// unwrap it back
-		request = wrapped.Inner
+		request = wrapper.Inner
 	}
 
 	// now that we have successfully unmarshalled our json, we can use request fields.
