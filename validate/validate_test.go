@@ -133,6 +133,38 @@ func TestValidator(t *testing.T) {
 				WantErr: true,
 			},
 		},
+		Suite[string, MAC[string]]{
+			{
+				Name:  "valid mac address",
+				Input: "00:00:00:00:fe:80:00:00:00:00:00:00:02:00:5e:10:00:00:00:01",
+			},
+			{
+				Name:    "invalid mac address",
+				Input:   "lorem ipsum",
+				WantErr: true,
+			},
+			{
+				Name:    "empty string",
+				Input:   "",
+				WantErr: true,
+			},
+		},
+		Suite[string, CIDR[string]]{
+			{
+				Name:  "valid cidr",
+				Input: "192.0.2.0/24",
+			},
+			{
+				Name:    "invalid cidr",
+				Input:   "192.0.2.0@24",
+				WantErr: true,
+			},
+			{
+				Name:    "empty string",
+				Input:   "",
+				WantErr: true,
+			},
+		},
 		Suite[string, Printable[string]]{
 			{
 				Name:  "printable string",
@@ -251,6 +283,41 @@ func TestValidator(t *testing.T) {
 			{
 				Name:  "time is in the future",
 				Input: time.Now().Add(time.Hour),
+			},
+		},
+		Suite[[]string, Unique[[]string, string]]{
+			{
+				Name:  "unique strings",
+				Input: []string{"foo", "bar", "foobar"},
+			},
+			{
+				Name:    "duplicate strings",
+				Input:   []string{"foo", "bar", "foo"},
+				WantErr: true,
+			},
+			{
+				Name:  "empty slice",
+				Input: []string{},
+			},
+		},
+		Suite[string, MIME[string]]{
+			{
+				Name:  "simple valid mime type",
+				Input: "application/json",
+			},
+			{
+				Name:  "complex valid mime type",
+				Input: `multipart/mixed; boundary="boundary-example"`,
+			},
+			{
+				Name:    "invalid mime type",
+				Input:   "blah blah",
+				WantErr: true,
+			},
+			{
+				Name:    "empty string",
+				Input:   "",
+				WantErr: true,
 			},
 		},
 	} {
