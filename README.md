@@ -253,12 +253,12 @@ func main() {
 
 This library does not affect unmarshalling performance itself. You can expect it to be just as fast as a regular unmarshalling. **However**, the validation itself does have an overhead:
 
-[Benchmark source code](./validate/wrap_test.go)
+[Benchmark source code](./bench/bench_test.go)
 
 ```
 goos: darwin
 goarch: arm64
-pkg: github.com/metafates/schema/validate
+pkg: github.com/metafates/schema/bench
 cpu: Apple M3 Pro
 BenchmarkUnmarshalJSON/unmarshal_and_validation_with_wrap-12               12702             93203 ns/op
 BenchmarkUnmarshalJSON/separate_unmarshal_and_validation_manually-12       19992             59864 ns/op
