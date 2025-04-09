@@ -285,5 +285,6 @@ of available validators in [validate/validate.go](./validate/validate.go)
 - [ ] Better documentation
 - [x] More tests
 - [ ] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
+- [ ] Validate gRPC generated structs somehow (codegen?)
 - [ ] Add benchmarks for validators itself. E.g. email validator
 - [ ] More validation types as seen in https://github.com/go-playground/validator
