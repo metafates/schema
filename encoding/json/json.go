@@ -22,7 +22,7 @@ func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{json.NewDecoder(r)}
 }
 
-// Decode wraps [json.Decoder.Decode] and calls [validate.Recursively] afterwards.
+// Decode wraps [json.Decoder.Decode] and calls [validate.Validate] afterwards.
 //
 // See also [Unmarshal]
 func (dec *Decoder) Decode(v any) error {
@@ -30,14 +30,14 @@ func (dec *Decoder) Decode(v any) error {
 		return err
 	}
 
-	if err := validate.Recursively(v); err != nil {
+	if err := validate.Validate(v); err != nil {
 		return fmt.Errorf("validate: %w", err)
 	}
 
 	return nil
 }
 
-// Unmarshal wraps [json.Unmarshal] and calls [validate.Recursively] afterwards.
+// Unmarshal wraps [json.Unmarshal] and calls [validate.Validate] afterwards.
 //
 // See also [Decoder.Decode]
 func Unmarshal(data []byte, v any) error {
@@ -45,7 +45,7 @@ func Unmarshal(data []byte, v any) error {
 		return err
 	}
 
-	if err := validate.Recursively(v); err != nil {
+	if err := validate.Validate(v); err != nil {
 		return fmt.Errorf("validate: %w", err)
 	}
 

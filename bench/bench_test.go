@@ -58,7 +58,7 @@ func BenchmarkUnmarshalJSON(b *testing.B) {
 				b.Fatal(err)
 			}
 
-			if err := validate.Recursively(w); err != nil {
+			if err := validate.Validate(&w); err != nil {
 				b.Fatal(err)
 			}
 		}

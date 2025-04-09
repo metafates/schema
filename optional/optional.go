@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/metafates/schema/constraint"
-	schemaerror "github.com/metafates/schema/error"
 	"github.com/metafates/schema/validate"
 )
 
@@ -12,8 +11,9 @@ type (
 	// Custom optional type.
 	// When given not-null value it errors if validation fails
 	Custom[T any, V validate.Validator[T]] struct {
-		value    T
-		hasValue bool
+		value     T
+		hasValue  bool
+		validated bool
 	}
 
 	// Any accepts any value of T
@@ -138,18 +138,21 @@ type (
 
 // Validate implementes [validate.Validateable].
 // You should not call this function directly.
-func (c Custom[T, V]) Validate() error {
+func (c *Custom[T, V]) Validate() error {
 	if !c.hasValue {
+		c.validated = true
 		return nil
 	}
 
 	if err := (*new(V)).Validate(c.value); err != nil {
-		return schemaerror.ValidationError{Inner: err}
+		return validate.ValidationError{Inner: err}
 	}
 
-	if err := validate.Recursively(c.value); err != nil {
+	if err := validate.Validate(&c.value); err != nil {
 		return err
 	}
+
+	c.validated = true
 
 	return nil
 }
@@ -159,16 +162,26 @@ func (c Custom[T, V]) HasValue() bool { return c.hasValue }
 
 // Value returns the contained value and a boolean stating its presence.
 // True if value exists, false otherwise.
-func (c Custom[T, V]) Value() (T, bool) { return c.value, c.hasValue }
+//
+// Panics if value was not validated yet
+func (c Custom[T, V]) Value() (T, bool) {
+	if c.hasValue && !c.validated {
+		panic("called Value() on unvalidated value")
+	}
+
+	return c.value, c.hasValue
+}
 
 // Must returns the contained value and panics if it does not have one.
 // You can check for its presence using [Custom.HasValue] or use a more safe alternative [Custom.Value]
 func (c Custom[T, V]) Must() T {
-	if c.hasValue {
-		return c.value
+	if !c.hasValue {
+		panic("called must on empty optional")
 	}
 
-	panic("called must on empty optional")
+	value, _ := c.Value()
+
+	return value
 }
 
 func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
@@ -178,6 +191,7 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	// validated status will reset here
 	if value == nil {
 		*c = Custom[T, V]{}
 

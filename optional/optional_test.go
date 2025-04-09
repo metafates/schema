@@ -17,6 +17,7 @@ func TestOptional(t *testing.T) {
 		requireEqual(t, "", foo.value)
 
 		requireNoError(t, foo.Validate())
+		requireEqual(t, true, foo.validated)
 	})
 
 	t.Run("invalid value", func(t *testing.T) {
@@ -28,14 +29,9 @@ func TestOptional(t *testing.T) {
 
 		requireEqual(t, true, foo.hasValue)
 		requireEqual(t, -24, foo.value) // won't be validated during unmarshalling
-		{
-			value, ok := foo.Value()
-			requireEqual(t, foo.value, value)
-			requireEqual(t, foo.hasValue, ok)
-		}
-		requireEqual(t, foo.value, foo.Must())
 
 		requireError(t, foo.Validate())
+		requireEqual(t, false, foo.validated)
 	})
 
 	t.Run("valid value", func(t *testing.T) {
@@ -47,14 +43,9 @@ func TestOptional(t *testing.T) {
 
 		requireEqual(t, true, foo.hasValue)
 		requireEqual(t, 24, foo.value)
-		{
-			value, ok := foo.Value()
-			requireEqual(t, foo.value, value)
-			requireEqual(t, foo.hasValue, ok)
-		}
-		requireEqual(t, foo.value, foo.Must())
 
 		requireNoError(t, foo.Validate())
+		requireEqual(t, true, foo.validated)
 	})
 }
 

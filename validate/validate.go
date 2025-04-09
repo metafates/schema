@@ -68,7 +68,7 @@ func (w *OnUnmarshal[T]) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if err := Recursively(w.Inner); err != nil {
+	if err := Validate(&w.Inner); err != nil {
 		return fmt.Errorf("validate: %w", err)
 	}
 
@@ -394,17 +394,32 @@ func (Or[T, A, B]) Validate(value T) error {
 	return errors.Join(errA, errB)
 }
 
-// Recursively walk public fields/elements/... of a given
-// value an call [Validateable.Validate] for each
-func Recursively(value any) error {
-	return reflectwalk.WalkFields(value, func(path string, value reflect.Value) error {
+// Validate traverses all fields in the given value pointed to by v, calling [Validateable.Validate] for each field
+// and returns [ValidationError] if validation fails.
+//
+// If v is nil or not a pointer, Validate returns an [InvalidValidateError].
+func Validate(v any) error {
+	// same thing [json.Unmarshal] does
+	rv := reflect.ValueOf(v)
+	if rv.Kind() != reflect.Pointer || rv.IsNil() {
+		return &InvalidValidateError{Type: reflect.TypeOf(v)}
+	}
+
+	return reflectwalk.WalkFields(v, func(path string, value reflect.Value) error {
+		if value.CanAddr() {
+			value = value.Addr()
+		}
+
 		r, ok := value.Interface().(Validateable)
 		if !ok {
 			return nil
 		}
 
 		if err := r.Validate(); err != nil {
-			return fmt.Errorf("%s: %w", path, err)
+			return ValidationError{
+				path:  path,
+				Inner: err,
+			}
 		}
 
 		return nil

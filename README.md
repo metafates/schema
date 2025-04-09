@@ -27,7 +27,6 @@ import (
 	"time"
 
 	schemajson "github.com/metafates/schema/encoding/json"
-	schemajson "github.com/metafates/schema/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate"
@@ -138,7 +137,8 @@ func main() {
 		}
 
 		// but validation won't happen just yet. we need to invoke it manually
-		if err := validate.Recursively(request); err != nil {
+        // (passing pointer to validate is required to maintain certain guarantees later)
+		if err := validate.Validate(&request); err != nil {
 			log.Fatalln(err)
 		}
 		// that's it, our struct was validated successfully!
@@ -171,13 +171,13 @@ func main() {
 	// now that we have successfully unmarshalled our json, we can use request fields.
 	// to access values of our schema-guarded fields we can use .Value() method
 	//
-	// NOTE: calling this method for required types BEFORE we have
-	// unmarshalled our request will panic intentionally.
+	// NOTE: calling this method BEFORE we have
+	// validated our request will panic intentionally.
 	fmt.Println(request.User.Name.Value()) // output: john
 
 	// optional values return a tuple: a value and a boolean stating its presence
 	email, ok := request.User.Email.Value()
-	fmt.Println(email, ok) // output: john@example.com true
+	fmt.Println(email, ok) // output: john@example.com (comment) true
 
 	// birth is missing so "ok" will be false
 	birth, ok := request.User.Birth.Value()
@@ -235,15 +235,15 @@ func main() {
 	// validate: User.Name: missing value
 
 	// You can check if it was validation error or any other json error.
-	// Same is applicable for [validate.Wrap]
+	// Same is applicable for [validate.OnUnmarshal]
 	err := schemajson.Unmarshal(missingUserName, new(Request))
 
-	var validationErr schemaerror.ValidationError
+	var validationErr validate.ValidationError
 	if errors.As(err, &validationErr) {
-		fmt.Printf("validation error occured: %v\n", validationErr)
-		// validation error occured: missing required value
+		fmt.Println("error while validating", validationErr.Path())
+		// error while validating User.Name
 
-		fmt.Println(errors.Is(err, schemaerror.ErrMissingRequiredValue))
+		fmt.Println(errors.Is(err, required.ErrMissingValue))
 		// true
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/metafates/schema/constraint"
-	schemaerror "github.com/metafates/schema/error"
 	"github.com/metafates/schema/validate"
 )
 
@@ -13,12 +12,15 @@ var _ interface {
 	json.Marshaler
 } = (*Custom[any, validate.Any[any]])(nil)
 
+var ErrMissingValue = validate.ValidationError{Msg: "missing required value"}
+
 type (
 	// Custom required type.
 	// Erorrs if value is missing or did not pass the validation
 	Custom[T any, V validate.Validator[T]] struct {
-		value    T
-		hasValue bool
+		value     T
+		hasValue  bool
+		validated bool
 	}
 
 	// Any accepts any value of T
@@ -143,27 +145,29 @@ type (
 
 // Validate implementes [validate.Validateable].
 // You should not call this function directly.
-func (c Custom[T, V]) Validate() error {
+func (c *Custom[T, V]) Validate() error {
 	if !c.hasValue {
-		return schemaerror.ErrMissingRequiredValue
+		return ErrMissingValue
 	}
 
 	if err := (*new(V)).Validate(c.value); err != nil {
-		return schemaerror.ValidationError{Inner: err}
+		return validate.ValidationError{Inner: err}
 	}
 
-	if err := validate.Recursively(c.value); err != nil {
+	if err := validate.Validate(&c.value); err != nil {
 		return err
 	}
+
+	c.validated = true
 
 	return nil
 }
 
 // Value returns the contained value.
-// Panics if value was not initiliased (e.g. not unmarshalled from json)
+// Panics if value was not validated yet
 func (c Custom[T, V]) Value() T {
-	if !c.hasValue {
-		panic("called Value() on uninitialized required value")
+	if !c.validated {
+		panic("called Value() on unvalidated value")
 	}
 
 	return c.value
@@ -176,6 +180,7 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	// validated status will reset here
 	if value == nil {
 		*c = Custom[T, V]{}
 
