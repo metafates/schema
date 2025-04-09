@@ -32,21 +32,29 @@ type ValidationError struct {
 	path string
 }
 
+func (v ValidationError) WithPath(path string) ValidationError {
+	v.path = path
+
+	return v
+}
+
 func (v ValidationError) Path() string {
-	switch {
-	case v.path != "":
-		return v.path
+	var recursive func(path []string, err error) []string
 
-	case v.Inner != nil:
-		inner, ok := v.Inner.(ValidationError)
-		if ok {
-			return inner.Path()
+	recursive = func(path []string, err error) []string {
+		validationErr, ok := err.(ValidationError)
+		if !ok {
+			return path
 		}
-		return ""
 
-	default:
-		return ""
+		if validationErr.path != "" {
+			path = append(path, validationErr.path)
+		}
+
+		return recursive(path, validationErr.Inner)
 	}
+
+	return strings.Join(recursive(nil, v), ".")
 }
 
 func (v ValidationError) Error() string {
