@@ -405,6 +405,15 @@ func Validate(v any) error {
 		return &InvalidValidateError{Type: reflect.TypeOf(v)}
 	}
 
+	// we can skip fields traversal in case v implements [Validateable].
+	if validatable, ok := v.(Validateable); ok {
+		if err := validatable.Validate(); err != nil {
+			return ValidationError{Inner: err}
+		}
+
+		return nil
+	}
+
 	return reflectwalk.WalkFields(v, func(path string, value reflect.Value) error {
 		if value.CanAddr() {
 			value = value.Addr()
