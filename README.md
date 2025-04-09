@@ -260,16 +260,16 @@ goos: darwin
 goarch: arm64
 pkg: github.com/metafates/schema/bench
 cpu: Apple M3 Pro
-BenchmarkUnmarshalJSON/unmarshal_and_validation_with_wrap-12               12702             93203 ns/op
-BenchmarkUnmarshalJSON/separate_unmarshal_and_validation_manually-12       19992             59864 ns/op
-BenchmarkUnmarshalJSON/unmarshal_without_validation-12                     28809             41701 ns/op
+BenchmarkUnmarshalJSON/unmarshal_and_validation_with_wrap-12               12728             93712 ns/op
+BenchmarkUnmarshalJSON/separate_unmarshal_and_validation_manually-12       20455             58709 ns/op
+BenchmarkUnmarshalJSON/unmarshal_without_validation-12                     28179             42645 ns/op
 ```
 
-- `unmarshal_and_validation_with_wrap` - unmarshal json nusing `validate.Wrap`.
-- `separate_unmarshal_and_validation_manually` - unmarshal using json and call `validate.Recursively` manually.
+- `unmarshal_and_validation_with_wrap` - unmarshal json using `validate.OnUnmarshal`.
+- `separate_unmarshal_and_validation_manually` - unmarshal using json and call `validate.Validate` manually.
 - `unmarshal_without_validation` - unmarshal using json without any validations.
 
-As you can see, it's ~40-100% performance slowdown when using validation. The reason for it is that validation requires iterating over all unmarshalled fields and validate required and optional fields. There's a room for improvement!
+As you can see, it's ~35-120% performance slowdown when using validation. The reason for it is that validation requires iterating over all unmarshalled fields and validate required and optional fields. There's a room for improvement!
 
 This benchmark does not consider performance of the validators itself. Only the overhead of recursive fields iteration. E.g. email validator can be implemented differently and no matter how would you call it (manually or through this library) its own performance won't change.
 
