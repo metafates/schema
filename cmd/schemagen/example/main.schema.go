@@ -4,8 +4,30 @@ package main
 
 import (
 	"fmt"
+	"github.com/metafates/schema/optional"
+	"github.com/metafates/schema/required"
 	validate "github.com/metafates/schema/validate"
+	"time"
 )
+
+// Ensure types are not changed
+func _() {
+	type locked struct {
+		Name  required.NonEmpty[string]  `json:"name"`
+		Birth optional.InPast[time.Time] `json:"birth"`
+		Anon  struct {
+			Foo required.ASCII[string]
+		}
+		Map   map[string]required.Any[string]
+		Slice [][]map[string]required.Email[string]
+		Bio   string
+		Ptr   *Other
+		Ptr2  *[]string
+	}
+	// Compiler error signifies that the type definition have changed.
+	// Re-run the schemagen command to regenerate validators.
+	_ = locked(MyStruct{})
+}
 
 // Validate implementes [validate.Validateable]
 func (x *MyStruct) Validate() error {
@@ -64,6 +86,14 @@ func (x *MyStruct) Validate() error {
 	return nil
 }
 
+// Ensure types are not changed
+func _() {
+	type locked []MyStruct
+	// Compiler error signifies that the type definition have changed.
+	// Re-run the schemagen command to regenerate validators.
+	_ = locked(ASlice{})
+}
+
 // Validate implementes [validate.Validateable]
 func (x ASlice) Validate() error {
 	for i18 := range x {
@@ -76,6 +106,14 @@ func (x ASlice) Validate() error {
 		}
 	}
 	return nil
+}
+
+// Ensure types are not changed
+func _() {
+	type locked map[string]MyStruct
+	// Compiler error signifies that the type definition have changed.
+	// Re-run the schemagen command to regenerate validators.
+	_ = locked(AMap{})
 }
 
 // Validate implementes [validate.Validateable]
@@ -93,9 +131,20 @@ func (x AMap) Validate() error {
 	return nil
 }
 
+// Ensure types are not changed
+func _() {}
+
 // Validate implementes [validate.Validateable]
 func (x *Basic) Validate() error {
 	return nil
+}
+
+// Ensure types are not changed
+func _() {
+	type locked map[string]map[string][]string
+	// Compiler error signifies that the type definition have changed.
+	// Re-run the schemagen command to regenerate validators.
+	_ = locked(ABasicNested{})
 }
 
 // Validate implementes [validate.Validateable]

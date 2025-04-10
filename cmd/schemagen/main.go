@@ -102,5 +102,7 @@ func main() {
 }
 
 func handleObject(f *jen.File, named *types.Named) error {
+	lockType(f, named)
+
 	return genValidate(f, named)
 }
