@@ -21,7 +21,7 @@ type Path struct {
 func (p Path) printf() (format string, args []string) {
 	var formatBuilder strings.Builder
 
-	for i, s := range p.Segments {
+	for _, s := range p.Segments[1:] {
 		var prefix, suffix string
 
 		if s.Index {
@@ -29,10 +29,6 @@ func (p Path) printf() (format string, args []string) {
 			suffix = "]"
 		} else {
 			prefix = "."
-		}
-
-		if i == 0 {
-			prefix = ""
 		}
 
 		formatBuilder.WriteString(prefix)
@@ -89,9 +85,17 @@ func genValidate(f *jen.File, named *types.Named) error {
 
 	var err error
 
+	receiverPtr := "*"
+
+	switch named.Underlying().(type) {
+	case *types.Slice, *types.Map:
+		receiverPtr = ""
+	}
+
+	f.Comment("Validate implementes [validate.Validateable]")
 	f.
 		Func().
-		Params(jen.Id(receiver).Op("*").Id(named.Obj().Name())).
+		Params(jen.Id(receiver).Op(receiverPtr).Id(named.Obj().Name())).
 		Id("Validate").
 		Params().
 		Error().

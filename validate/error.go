@@ -54,7 +54,7 @@ func (v ValidationError) Path() string {
 		return recursive(path, validationErr.Inner)
 	}
 
-	return strings.Join(recursive(nil, v), ".")
+	return strings.Join(recursive(nil, v), "")
 }
 
 func (v ValidationError) Error() string {

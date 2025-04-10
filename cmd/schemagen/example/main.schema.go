@@ -7,28 +7,29 @@ import (
 	validate "github.com/metafates/schema/validate"
 )
 
+// Validate implementes [validate.Validateable]
 func (x *MyStruct) Validate() error {
 	v2 := &x.Name
 	err1 := validate.Validate(v2)
 	if err1 != nil {
-		return validate.ValidationError{Inner: err1}.WithPath(fmt.Sprintf("x.Name"))
+		return validate.ValidationError{Inner: err1}.WithPath(fmt.Sprintf(".Name"))
 	}
 	v4 := &x.Birth
 	err3 := validate.Validate(v4)
 	if err3 != nil {
-		return validate.ValidationError{Inner: err3}.WithPath(fmt.Sprintf("x.Birth"))
+		return validate.ValidationError{Inner: err3}.WithPath(fmt.Sprintf(".Birth"))
 	}
 	v6 := &x.Anon.Foo
 	err5 := validate.Validate(v6)
 	if err5 != nil {
-		return validate.ValidationError{Inner: err5}.WithPath(fmt.Sprintf("x.Anon.Foo"))
+		return validate.ValidationError{Inner: err5}.WithPath(fmt.Sprintf(".Anon.Foo"))
 	}
 	for k7 := range x.Map {
 		v9 := x.Map[k7]
 		err8 := validate.Validate(v9)
 		x.Map[k7] = v9
 		if err8 != nil {
-			return validate.ValidationError{Inner: err8}.WithPath(fmt.Sprintf("x.Map[%v]", k7))
+			return validate.ValidationError{Inner: err8}.WithPath(fmt.Sprintf(".Map[%v]", k7))
 		}
 	}
 	for i10 := range x.Slice {
@@ -38,7 +39,7 @@ func (x *MyStruct) Validate() error {
 				err13 := validate.Validate(v14)
 				x.Slice[i10][i11][k12] = v14
 				if err13 != nil {
-					return validate.ValidationError{Inner: err13}.WithPath(fmt.Sprintf("x.Slice[%v][%v][%v]", i10, i11, k12))
+					return validate.ValidationError{Inner: err13}.WithPath(fmt.Sprintf(".Slice[%v][%v][%v]", i10, i11, k12))
 				}
 			}
 		}
@@ -47,8 +48,38 @@ func (x *MyStruct) Validate() error {
 		v16 := x.Ptr
 		err15 := validate.Validate(v16)
 		if err15 != nil {
-			return validate.ValidationError{Inner: err15}.WithPath(fmt.Sprintf("x.Ptr"))
+			return validate.ValidationError{Inner: err15}.WithPath(fmt.Sprintf(".Ptr"))
 		}
 	}
+	return nil
+}
+
+// Validate implementes [validate.Validateable]
+func (x ASlice) Validate() error {
+	for i17 := range x {
+		v19 := &x[i17]
+		err18 := validate.Validate(v19)
+		if err18 != nil {
+			return validate.ValidationError{Inner: err18}.WithPath(fmt.Sprintf("[%v]", i17))
+		}
+	}
+	return nil
+}
+
+// Validate implementes [validate.Validateable]
+func (x AMap) Validate() error {
+	for k20 := range x {
+		v22 := x[k20]
+		err21 := validate.Validate(v22)
+		x[k20] = v22
+		if err21 != nil {
+			return validate.ValidationError{Inner: err21}.WithPath(fmt.Sprintf("[%v]", k20))
+		}
+	}
+	return nil
+}
+
+// Validate implementes [validate.Validateable]
+func (x *Basic) Validate() error {
 	return nil
 }

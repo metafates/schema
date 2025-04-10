@@ -7,7 +7,13 @@ import (
 	"github.com/metafates/schema/required"
 )
 
-//go:generate schemagen -type=MyStruct
+//go:generate schemagen -type=MyStruct -type=ASlice -type=AMap -type=Basic
+
+type ASlice []MyStruct
+
+type AMap map[string]MyStruct
+
+type Basic string
 
 type MyStruct struct {
 	Name  required.NonEmpty[string]  `json:"name"`
