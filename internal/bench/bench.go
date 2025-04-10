@@ -2,7 +2,7 @@ package bench
 
 import "github.com/metafates/schema/required"
 
-//go:generate schemagen -type=DataWithGen
+//go:generate schemagen -type DataWithGen
 
 type DataWithGen []struct {
 	ID         required.NonEmpty[string]   `json:"_id"`

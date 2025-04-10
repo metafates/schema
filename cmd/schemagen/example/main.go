@@ -7,7 +7,7 @@ import (
 	"github.com/metafates/schema/required"
 )
 
-//go:generate schemagen -type=MyStruct -type=ASlice -type=AMap -type=Basic -type=ABasicNested
+//go:generate schemagen -type MyStruct,ASlice,AMap,Basic,ABasicNested
 
 type ASlice []MyStruct
 
