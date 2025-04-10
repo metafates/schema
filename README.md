@@ -251,7 +251,7 @@ func main() {
 
 ## Performance
 
-NOTE: I am working on codegen which allows you to reduce validation overhead to *zero*. WIP!
+NOTE: I am working on codegen which allows you to reduce validation overhead to *zero*. WIP! See [schemagen](./cmd/schemagen)
 
 This library does not affect unmarshalling performance itself. You can expect it to be just as fast as a regular unmarshalling. **However**, the validation itself does have an overhead:
 
