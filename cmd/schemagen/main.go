@@ -70,7 +70,7 @@ func genPackage(pattern string) {
 		genType(f, obj.Type().(*types.Named))
 	}
 
-	if err := f.Save(outputPath(pattern)); err != nil {
+	if err := f.Save(outputPath(pkg.Dir)); err != nil {
 		log.Fatalln(err)
 	}
 }
