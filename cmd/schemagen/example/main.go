@@ -7,11 +7,13 @@ import (
 	"github.com/metafates/schema/required"
 )
 
-//go:generate schemagen -type=MyStruct -type=ASlice -type=AMap -type=Basic
+//go:generate schemagen -type=MyStruct -type=ASlice -type=AMap -type=Basic -type=ABasicNested
 
 type ASlice []MyStruct
 
 type AMap map[string]MyStruct
+
+type ABasicNested map[string]map[string][]string
 
 type Basic string
 
@@ -23,6 +25,7 @@ type MyStruct struct {
 	Slice [][]map[string]required.Email[string]
 	Bio   string
 	Ptr   *Other
+	Ptr2  *[]string
 }
 
 type Other struct {

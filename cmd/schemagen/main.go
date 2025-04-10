@@ -2,77 +2,15 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"go/types"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/metafates/schema/optional"
-	"github.com/metafates/schema/required"
-	"github.com/metafates/schema/validate"
 	"golang.org/x/tools/go/packages"
 )
-
-//go:generate schemagen -type MyStruct
-
-type MyStruct struct {
-	Name  required.NonEmpty[string]  `json:"name"`
-	Birth optional.InPast[time.Time] `json:"birth"`
-	Anon  struct{ Foo required.ASCII[string] }
-	Map   map[string]required.Any[string]
-	Slice [][]map[string]required.Email[string]
-	Bio   string
-	Ptr   *Other
-}
-
-type Other struct {
-	ID required.NonEmpty[string]
-}
-
-func (x *Other) Validate() error {
-	if err := x.ID.Validate(); err != nil {
-		return validate.ValidationError{Inner: err}.WithPath("ID")
-	}
-
-	return nil
-}
-
-// example codegen
-func (x *MyStruct) Validate() error {
-	if err := x.Name.Validate(); err != nil {
-		return validate.ValidationError{Inner: err}.WithPath("Name")
-	}
-
-	if err := x.Birth.Validate(); err != nil {
-		return validate.ValidationError{Inner: err}.WithPath("Birth")
-	}
-
-	if err := x.Anon.Foo.Validate(); err != nil {
-		return validate.ValidationError{Inner: err}.WithPath("Anon.Foo")
-	}
-
-	for i1 := range x.Slice {
-		for i2 := range x.Slice[i1] {
-			for k1, v1 := range x.Slice[i1][i2] {
-				if err := v1.Validate(); err != nil {
-					return validate.ValidationError{Inner: err}.WithPath(fmt.Sprintf("Slice[%v][%v][%v]", i1, i2, k1))
-				}
-			}
-		}
-	}
-
-	if x.Ptr != nil {
-		if err := x.Ptr.Validate(); err != nil {
-			return validate.ValidationError{Inner: err}.WithPath("Ptr")
-		}
-	}
-
-	return nil
-}
 
 type Env struct {
 	File string

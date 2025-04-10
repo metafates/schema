@@ -25,30 +25,40 @@ func (x *MyStruct) Validate() error {
 		return validate.ValidationError{Inner: err5}.WithPath(fmt.Sprintf(".Anon.Foo"))
 	}
 	for k7 := range x.Map {
-		v9 := x.Map[k7]
-		err8 := validate.Validate(v9)
-		x.Map[k7] = v9
-		if err8 != nil {
-			return validate.ValidationError{Inner: err8}.WithPath(fmt.Sprintf(".Map[%v]", k7))
+		{
+			v9 := x.Map[k7]
+			err8 := validate.Validate(v9)
+			x.Map[k7] = v9
+			if err8 != nil {
+				return validate.ValidationError{Inner: err8}.WithPath(fmt.Sprintf(".Map[%v]", k7))
+			}
 		}
 	}
 	for i10 := range x.Slice {
-		for i11 := range x.Slice[i10] {
-			for k12 := range x.Slice[i10][i11] {
-				v14 := x.Slice[i10][i11][k12]
-				err13 := validate.Validate(v14)
-				x.Slice[i10][i11][k12] = v14
-				if err13 != nil {
-					return validate.ValidationError{Inner: err13}.WithPath(fmt.Sprintf(".Slice[%v][%v][%v]", i10, i11, k12))
+		{
+			for i11 := range x.Slice[i10] {
+				{
+					for k12 := range x.Slice[i10][i11] {
+						{
+							v14 := x.Slice[i10][i11][k12]
+							err13 := validate.Validate(v14)
+							x.Slice[i10][i11][k12] = v14
+							if err13 != nil {
+								return validate.ValidationError{Inner: err13}.WithPath(fmt.Sprintf(".Slice[%v][%v][%v]", i10, i11, k12))
+							}
+						}
+					}
 				}
 			}
 		}
 	}
 	if x.Ptr != nil {
-		v16 := x.Ptr
-		err15 := validate.Validate(v16)
-		if err15 != nil {
-			return validate.ValidationError{Inner: err15}.WithPath(fmt.Sprintf(".Ptr"))
+		{
+			v16 := x.Ptr
+			err15 := validate.Validate(v16)
+			if err15 != nil {
+				return validate.ValidationError{Inner: err15}.WithPath(fmt.Sprintf(".Ptr"))
+			}
 		}
 	}
 	return nil
@@ -56,11 +66,13 @@ func (x *MyStruct) Validate() error {
 
 // Validate implementes [validate.Validateable]
 func (x ASlice) Validate() error {
-	for i17 := range x {
-		v19 := &x[i17]
-		err18 := validate.Validate(v19)
-		if err18 != nil {
-			return validate.ValidationError{Inner: err18}.WithPath(fmt.Sprintf("[%v]", i17))
+	for i18 := range x {
+		{
+			v20 := &x[i18]
+			err19 := validate.Validate(v20)
+			if err19 != nil {
+				return validate.ValidationError{Inner: err19}.WithPath(fmt.Sprintf("[%v]", i18))
+			}
 		}
 	}
 	return nil
@@ -68,12 +80,14 @@ func (x ASlice) Validate() error {
 
 // Validate implementes [validate.Validateable]
 func (x AMap) Validate() error {
-	for k20 := range x {
-		v22 := x[k20]
-		err21 := validate.Validate(v22)
-		x[k20] = v22
-		if err21 != nil {
-			return validate.ValidationError{Inner: err21}.WithPath(fmt.Sprintf("[%v]", k20))
+	for k21 := range x {
+		{
+			v23 := x[k21]
+			err22 := validate.Validate(v23)
+			x[k21] = v23
+			if err22 != nil {
+				return validate.ValidationError{Inner: err22}.WithPath(fmt.Sprintf("[%v]", k21))
+			}
 		}
 	}
 	return nil
@@ -81,5 +95,10 @@ func (x AMap) Validate() error {
 
 // Validate implementes [validate.Validateable]
 func (x *Basic) Validate() error {
+	return nil
+}
+
+// Validate implementes [validate.Validateable]
+func (x ABasicNested) Validate() error {
 	return nil
 }

@@ -64,7 +64,7 @@ func (p Path) String() string {
 	rest.Grow(50)
 
 	for _, s := range p.Segments[1:] {
-		if s.Dynamic {
+		if s.Index {
 			rest.WriteString("[" + s.Name + "]")
 		} else {
 			rest.WriteString("." + s.Name)
@@ -83,8 +83,6 @@ type PathSegment struct {
 func genValidate(f *jen.File, named *types.Named) error {
 	const receiver = "x"
 
-	var err error
-
 	receiverPtr := "*"
 
 	switch named.Underlying().(type) {
@@ -102,81 +100,106 @@ func genValidate(f *jen.File, named *types.Named) error {
 		BlockFunc(func(g *jen.Group) {
 			var path Path
 
-			err = genValidateBody(g, path.Join(PathSegment{Name: receiver}), named.Underlying(), true)
+			genValidateBody(g, path.Join(PathSegment{Name: receiver}), named.Underlying(), false, true)
 
 			g.Return().Nil()
 		})
 
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
-func genValidateBody(g *jen.Group, path Path, t types.Type, addressable bool) error {
+func genValidateBody(g *jen.Group, path Path, t types.Type, isPtr, addressable bool) bool {
 	switch t := t.(type) {
 	default:
-		genValidateBot(g, path, false, addressable)
-		return nil
+		genValidateBot(g, path, isPtr, addressable)
+		return true
 
 	case *types.Pointer:
-		g.If(jen.Id(path.String()).Op("!=").Nil()).BlockFunc(func(g *jen.Group) {
-			genValidateBot(g, path, true, addressable)
-		})
-		return nil
+		return genValidateBodyPointer(g, path, t, addressable)
 
 	case *types.Slice:
-		return genValidateBodySlice(g, path, t, addressable)
+		return genValidateBodySlice(g, path, t, isPtr, addressable)
 
 	case *types.Map:
-		return genValidateBodyMap(g, path, t)
+		return genValidateBodyMap(g, path, t, isPtr)
 
 	case *types.Struct:
-		return genValidateBodyStruct(g, path, t, addressable)
+		return genValidateBodyStruct(g, path, t, isPtr, addressable)
 
 	case *types.Basic:
-		return nil
+		return false
 	}
 }
 
-func genValidateBodySlice(g *jen.Group, path Path, s *types.Slice, addressable bool) error {
+func genValidateBodyPointer(g *jen.Group, path Path, s *types.Pointer, addressable bool) bool {
+	var generated bool
+
+	ifBody := jen.BlockFunc(func(g *jen.Group) {
+		generated = genValidateBody(g, path, s.Elem(), true, addressable)
+	})
+
+	if generated {
+		g.If(jen.Id(path.String()).Op("!=").Nil()).Block(ifBody)
+	}
+
+	return generated
+}
+
+func genValidateBodySlice(g *jen.Group, path Path, s *types.Slice, isPtr, addressable bool) bool {
 	i := unique("i")
 
-	g.For(jen.Id(i).Op(":=").Range().Id(path.String())).BlockFunc(func(g *jen.Group) {
+	var generatedAny bool
+
+	loopBody := jen.BlockFunc(func(g *jen.Group) {
 		itemPath := path.Join(PathSegment{Name: i, Dynamic: true, Index: true})
 
-		genValidateBody(g, itemPath, s.Elem(), addressable)
+		if genValidateBody(g, itemPath, s.Elem(), isPtr, addressable) {
+			generatedAny = true
+		}
 	})
 
-	return nil
+	if generatedAny {
+		g.For(jen.Id(i).Op(":=").Range().Id(path.String())).Block(loopBody)
+	}
+
+	return generatedAny
 }
 
-func genValidateBodyMap(g *jen.Group, path Path, s *types.Map) error {
+func genValidateBodyMap(g *jen.Group, path Path, s *types.Map, isPtr bool) bool {
 	k := unique("k")
 
-	g.For(jen.Id(k).Op(":=").Range().Id(path.String())).BlockFunc(func(g *jen.Group) {
+	var generatedAny bool
+
+	loopBody := jen.BlockFunc(func(g *jen.Group) {
 		valuePath := path.Join(PathSegment{Name: k, Dynamic: true, Index: true})
 
-		genValidateBody(g, valuePath, s.Elem(), false)
+		if genValidateBody(g, valuePath, s.Elem(), isPtr, false) {
+			generatedAny = true
+		}
 	})
 
-	return nil
+	if generatedAny {
+		g.For(jen.Id(k).Op(":=").Range().Id(path.String())).Block(loopBody)
+	}
+
+	return generatedAny
 }
 
-func genValidateBodyStruct(g *jen.Group, path Path, s *types.Struct, addressable bool) error {
+func genValidateBodyStruct(g *jen.Group, path Path, s *types.Struct, isPtr, addressable bool) bool {
+	var generatedAny bool
+
 	for field := range s.Fields() {
 		if !field.Exported() {
 			continue
 		}
 		fieldPath := path.Join(PathSegment{Name: field.Name()})
 
-		if err := genValidateBody(g, fieldPath, field.Type(), addressable); err != nil {
-			return err
+		if genValidateBody(g, fieldPath, field.Type(), isPtr, addressable) {
+			generatedAny = true
 		}
 	}
 
-	return nil
+	return generatedAny
 }
 
 func genValidateBot(g *jen.Group, path Path, isPtr, addressable bool) {
