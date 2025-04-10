@@ -47,6 +47,16 @@ type (
 		Custom[T, validate.Negative[T]]
 	}
 
+	// Even accepts real numbers divisible by two
+	Even[T constraint.Integer] struct {
+		Custom[T, validate.Even[T]]
+	}
+
+	// Odd accepts real numbers not divisible by two
+	Odd[T constraint.Integer] struct {
+		Custom[T, validate.Odd[T]]
+	}
+
 	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
 	Email[T constraint.Text] struct {
 		Custom[T, validate.Email[T]]

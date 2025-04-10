@@ -92,6 +92,12 @@ type (
 	// See also [Positive]
 	Negative[T constraint.Real] struct{}
 
+	// Even accepts integers divisible by two
+	Even[T constraint.Integer] struct{}
+
+	// Odd accepts integers not divisible by two
+	Odd[T constraint.Integer] struct{}
+
 	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
 	Email[T constraint.Text] struct{}
 
@@ -193,6 +199,22 @@ func (Positive[T]) Validate(value T) error {
 func (Negative[T]) Validate(value T) error {
 	if value > 0 {
 		return errors.New("positive value")
+	}
+
+	return nil
+}
+
+func (Even[T]) Validate(value T) error {
+	if value%2 != 0 {
+		return fmt.Errorf("value must be even")
+	}
+
+	return nil
+}
+
+func (Odd[T]) Validate(value T) error {
+	if value%2 == 0 {
+		return fmt.Errorf("value must be odd")
 	}
 
 	return nil
@@ -399,19 +421,19 @@ func (Or[T, A, B]) Validate(value T) error {
 //
 // If v is nil or not a pointer, Validate returns an [InvalidValidateError].
 func Validate(v any) error {
-	// same thing [json.Unmarshal] does
-	rv := reflect.ValueOf(v)
-	if rv.Kind() != reflect.Pointer || rv.IsNil() {
-		return &InvalidValidateError{Type: reflect.TypeOf(v)}
-	}
-
-	// we can skip fields traversal in case v implements [Validateable].
+	// we can skip reflection in case v implements [Validateable].
 	if validatable, ok := v.(Validateable); ok {
 		if err := validatable.Validate(); err != nil {
 			return ValidationError{Inner: err}
 		}
 
 		return nil
+	}
+
+	// same thing [json.Unmarshal] does
+	rv := reflect.ValueOf(v)
+	if rv.Kind() != reflect.Pointer || rv.IsNil() {
+		return &InvalidValidateError{Type: reflect.TypeOf(v)}
 	}
 
 	return reflectwalk.WalkFields(v, func(path string, value reflect.Value) error {
