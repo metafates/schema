@@ -32,12 +32,14 @@ type ValidationError struct {
 	path string
 }
 
+// WithPath returns a copy of [ValidationError] with the given path set
 func (v ValidationError) WithPath(path string) ValidationError {
 	v.path = path
 
 	return v
 }
 
+// Path returns the path to the value which raised this error
 func (v ValidationError) Path() string {
 	var recursive func(path []string, err error) []string
 
