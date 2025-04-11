@@ -2,7 +2,7 @@
 
 > Work in progress!
 
-Go validation library with type-safe schema guarded types.
+Go type-safe validation library. No field tags or code-duplicating schemas, pure types!
 
 No stable version yet, but you can use it like that.
 
@@ -11,6 +11,13 @@ go get github.com/metafates/schema@main
 ```
 
 **Work in progress, API may change significantly without further notice! This is just an experiment for now**
+
+## Features
+
+- Type-safe
+- Zero setup
+- Zero overhead (can be achieved with optional codegen)
+- No DSL or code duplication, schema **is** types themselves
 
 ## Example
 
