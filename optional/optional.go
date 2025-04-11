@@ -9,7 +9,7 @@ import (
 
 type (
 	// Custom optional type.
-	// When given not-null value it errors if validation fails
+	// When given non-null value it errors if validation fails
 	Custom[T any, V validate.Validator[T]] struct {
 		value     T
 		hasValue  bool

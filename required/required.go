@@ -16,7 +16,7 @@ var ErrMissingValue = validate.ValidationError{Msg: "missing required value"}
 
 type (
 	// Custom required type.
-	// Erorrs if value is missing or did not pass the validation
+	// Errors if value is missing or did not pass the validation
 	Custom[T any, V validate.Validator[T]] struct {
 		value     T
 		hasValue  bool
