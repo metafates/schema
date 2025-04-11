@@ -2,7 +2,7 @@
 
 > Work in progress!
 
-Type-safe schema guarded structs for Go with generics and a bit of magic.
+Go validation library with type-safe schema guarded types.
 
 No stable version yet, but you can use it like that.
 
@@ -251,31 +251,23 @@ func main() {
 
 ## Performance
 
-NOTE: I am working on codegen which allows you to reduce validation overhead to *zero*. WIP! See [schemagen](./cmd/schemagen)
+**TL;DR:** you can use codegen for max performance (0-1% overhead) or fallback to reflection (35%-120%).
 
-This library does not affect unmarshalling performance itself. You can expect it to be just as fast as a regular unmarshalling. **However**, the validation itself does have an overhead:
+This library does not affect unmarshalling performance itself.
+You can expect it to be just as fast as a regular unmarshalling.
 
-[Benchmark source code](./bench/bench_test.go)
+**However!**
 
-```
-goos: darwin
-goarch: arm64
-pkg: github.com/metafates/schema/bench
-cpu: Apple M3 Pro
-BenchmarkUnmarshalJSON/unmarshal_and_validation_with_wrap-12               12728             93712 ns/op
-BenchmarkUnmarshalJSON/separate_unmarshal_and_validation_manually-12       20455             58709 ns/op
-BenchmarkUnmarshalJSON/unmarshal_without_validation-12                     28179             42645 ns/op
-```
+Validation, by default, requires reflection to traverse over all struct fields. Again, reflection is only used to traverse fields, validators themself do not use reflection at all.
 
-- `unmarshal_and_validation_with_wrap` - unmarshal json using `validate.OnUnmarshal`.
-- `separate_unmarshal_and_validation_manually` - unmarshal using json and call `validate.Validate` manually.
-- `unmarshal_without_validation` - unmarshal using json without any validations.
+Such reflection traversal introduces ~35-120% performance overhead.
 
-As you can see, it's ~35-120% performance slowdown when using validation. The reason for it is that validation requires iterating over all unmarshalled fields and validate required and optional fields. There's a room for improvement!
+As an alternative, you can use [schemagen](./cmd/schemagen) [WIP] to generate field traversal logic.
+As a result, overhead will reduced to 0-1% even for large structures. No need to change anything else.
 
-This benchmark does not consider performance of the validators itself. Only the overhead of recursive fields iteration. E.g. email validator can be implemented differently and no matter how would you call it (manually or through this library) its own performance won't change.
+Using reflection is easier because it does not require any codegen setup, but it does introduce minor performance decrease.
 
-But validators (especially builtin) should also be fast, I'll add a separate benchmarks for validators.
+Unless performance is top-priority and validation is indeed a bottleneck (usually it's not), I'd recommend sticking with the reflection - it makes your codebase simpler to maintain.
 
 ## Validators
 
@@ -284,9 +276,10 @@ of available validators in [validate/validate.go](./validate/validate.go)
 
 ## TODO
 
+- [ ] Stabilize API
 - [ ] Better documentation
 - [x] More tests
 - [ ] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
-- [ ] Validate gRPC generated structs somehow (codegen?)
+- [ ] Think about validating gRPC generated structs somehow (codegen?)
 - [ ] Add benchmarks for validators itself. E.g. email validator
 - [ ] More validation types as seen in https://github.com/go-playground/validator
