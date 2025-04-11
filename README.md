@@ -241,7 +241,7 @@ func main() {
 
 ## Performance
 
-**TL;DR:** you can use codegen for max performance (0-1% overhead) or fallback to reflection (35%-120%).
+**TL;DR:** you can use codegen for max performance (0-1% overhead) or fallback to reflection (35%).
 
 This library does not affect unmarshalling performance itself.
 You can expect it to be just as fast as a regular unmarshalling.
@@ -250,7 +250,7 @@ You can expect it to be just as fast as a regular unmarshalling.
 
 Validation, by default, requires reflection to traverse over all struct fields. Again, reflection is only used to traverse fields, validators themself do not use reflection at all.
 
-Such reflection traversal introduces ~35-120% performance overhead.
+Such reflection traversal introduce ~35% performance overhead.
 
 As an alternative, you can use [schemagen](./cmd/schemagen) [WIP] to generate field traversal logic.
 As a result, overhead will reduced to 0-1% even for large structures. No need to change anything else.
