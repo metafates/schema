@@ -94,9 +94,9 @@ func parsePackage(pattern string) *packages.Package {
 		log.Fatalf("error: %d packages found", len(pkgs))
 	}
 
-	if packages.PrintErrors(pkgs) > 0 {
-		os.Exit(1)
-	}
+	// if packages.PrintErrors(pkgs) > 0 {
+	// 	os.Exit(1)
+	// }
 
 	return pkgs[0]
 }
