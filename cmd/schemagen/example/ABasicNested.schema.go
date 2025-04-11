@@ -2,7 +2,7 @@
 
 package main
 
-// Ensure types are not changed
+// Ensure that [ABasicNested] type was not changed
 func _() {
 	type locked map[string]map[string][]string
 	var v ABasicNested
@@ -11,7 +11,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implementes [validate.Validateable]
+// Validate implements [validate.Validateable]
 func (x ABasicNested) Validate() error {
 	return nil
 }

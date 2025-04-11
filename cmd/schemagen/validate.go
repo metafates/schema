@@ -19,7 +19,7 @@ func genValidate(f *jen.File, named *types.Named) {
 		receiverPtr = ""
 	}
 
-	f.Comment("Validate implementes [validate.Validateable]")
+	f.Comment("Validate implements [validate.Validateable]")
 	f.
 		Func().
 		Params(jen.Id(receiver).Op(receiverPtr).Id(named.Obj().Name())).

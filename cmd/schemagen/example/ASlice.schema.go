@@ -7,7 +7,7 @@ import (
 	validate "github.com/metafates/schema/validate"
 )
 
-// Ensure types are not changed
+// Ensure that [ASlice] type was not changed
 func _() {
 	type locked []MyStruct
 	var v ASlice
@@ -16,7 +16,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implementes [validate.Validateable]
+// Validate implements [validate.Validateable]
 func (x ASlice) Validate() error {
 	for i0 := range x {
 		{

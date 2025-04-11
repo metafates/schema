@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Ensure types are not changed
+// Ensure that [MyStruct] type was not changed
 func _() {
 	type locked struct {
 		Name  required.NonEmpty[string]  `json:"name"`
@@ -30,7 +30,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implementes [validate.Validateable]
+// Validate implements [validate.Validateable]
 func (x *MyStruct) Validate() error {
 	err0 := validate.Validate(&x.Name)
 	if err0 != nil {

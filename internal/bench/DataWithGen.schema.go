@@ -8,7 +8,7 @@ import (
 	validate "github.com/metafates/schema/validate"
 )
 
-// Ensure types are not changed
+// Ensure that [DataWithGen] type was not changed
 func _() {
 	type locked []struct {
 		ID         required.NonEmpty[string]   `json:"_id"`
@@ -43,7 +43,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implementes [validate.Validateable]
+// Validate implements [validate.Validateable]
 func (x DataWithGen) Validate() error {
 	for i0 := range x {
 		{

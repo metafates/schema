@@ -8,7 +8,7 @@ import (
 )
 
 func genLock(f *jen.File, named *types.Named) {
-	f.Comment("Ensure types are not changed")
+	f.Commentf("Ensure that [%s] type was not changed", named.Obj().Name())
 	f.Func().Id("_").Params().BlockFunc(func(g *jen.Group) {
 		underlying := named.Underlying()
 

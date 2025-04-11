@@ -7,7 +7,7 @@ import (
 	validate "github.com/metafates/schema/validate"
 )
 
-// Ensure types are not changed
+// Ensure that [AMap] type was not changed
 func _() {
 	type locked map[string]MyStruct
 	var v AMap
@@ -16,7 +16,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implementes [validate.Validateable]
+// Validate implements [validate.Validateable]
 func (x AMap) Validate() error {
 	for k0 := range x {
 		{

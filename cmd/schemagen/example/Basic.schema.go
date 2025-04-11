@@ -2,7 +2,7 @@
 
 package main
 
-// Ensure types are not changed
+// Ensure that [Basic] type was not changed
 func _() {
 	type locked string
 	var v Basic
@@ -11,7 +11,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implementes [validate.Validateable]
+// Validate implements [validate.Validateable]
 func (x *Basic) Validate() error {
 	return nil
 }
