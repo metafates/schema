@@ -8,21 +8,23 @@ import (
 )
 
 func genLock(f *jen.File, named *types.Named) {
-	switch t := named.Underlying().(type) {
-	default:
-	case *types.Struct, *types.Map, *types.Slice:
-		f.Comment("Ensure types are not changed")
-		f.Func().Id("_").Params().BlockFunc(func(g *jen.Group) {
-			converter := typeconv.NewTypeConverter()
-			typeCode := converter.ConvertType(t)
+	f.Comment("Ensure types are not changed")
+	f.Func().Id("_").Params().BlockFunc(func(g *jen.Group) {
+		underlying := named.Underlying()
 
-			converter.AddImports(f)
+		converter := typeconv.NewTypeConverter()
+		typeCode := converter.ConvertType(underlying)
 
-			g.Type().Id("locked").Add(typeCode)
+		converter.AddImports(f)
 
-			g.Comment("Compiler error signifies that the type definition have changed.")
-			g.Comment("Re-run the schemagen command to regenerate this file.")
-			g.Id("_").Op("=").Id("locked").Params(jen.Id(named.Obj().Name()).Values())
-		})
-	}
+		g.Type().Id("locked").Add(typeCode)
+
+		varName := "v"
+
+		g.Var().Id(varName).Id(named.Obj().Name())
+
+		g.Comment("Compiler error signifies that the type definition have changed.")
+		g.Comment("Re-run the schemagen command to regenerate this file.")
+		g.Id("_").Op("=").Id("locked").Params(jen.Id(varName))
+	})
 }
