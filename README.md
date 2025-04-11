@@ -159,22 +159,6 @@ func main() {
 		}
 	}
 
-	{
-		// there's also a utility generic type that wraps your type
-		// and validates it as part of unmarshalling.
-		//
-		// only do it once for root type, no need to wrap each field
-		var wrapper validate.OnUnmarshal[Request]
-
-		// request will be validated during unmarshalling
-		if err := json.Unmarshal(data, &wrapper); err != nil {
-			log.Fatalln(err)
-		}
-
-		// unwrap it back
-		request = wrapper.Inner
-	}
-
 	// now that we have successfully unmarshalled our json, we can use request fields.
 	// to access values of our schema-guarded fields we can use .Value() method
 	//
@@ -242,7 +226,6 @@ func main() {
 	// validate: User.Name: missing value
 
 	// You can check if it was validation error or any other json error.
-	// Same is applicable for [validate.OnUnmarshal]
 	err := schemajson.Unmarshal(missingUserName, new(Request))
 
 	var validationErr validate.ValidationError
@@ -275,6 +258,19 @@ As a result, overhead will reduced to 0-1% even for large structures. No need to
 Using reflection is easier because it does not require any codegen setup, but it does introduce minor performance decrease.
 
 Unless performance is top-priority and validation is indeed a bottleneck (usually it's not), I'd recommend sticking with the reflection - it makes your codebase simpler to maintain.
+
+**Benchmark:**
+
+```
+goos: darwin
+goarch: arm64
+pkg: github.com/metafates/schema/bench
+cpu: Apple M3 Pro
+BenchmarkUnmarshalJSON/reflection/with_validation-12      66221 ns/op
+BenchmarkUnmarshalJSON/reflection/without_validation-12   45593 ns/op
+BenchmarkUnmarshalJSON/codegen/with_validation-12         45936 ns/op
+BenchmarkUnmarshalJSON/codegen/without_validation-12      45649 ns/op
+```
 
 ## Validators
 

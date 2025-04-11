@@ -13,18 +13,8 @@ import (
 var testdata []byte
 
 func BenchmarkUnmarshalJSON(b *testing.B) {
-	b.Run("without codegen", func(b *testing.B) {
-		b.Run("unmarshal and validation with wrap", func(b *testing.B) {
-			for b.Loop() {
-				var w validate.OnUnmarshal[bench.Data]
-
-				if err := json.Unmarshal(testdata, &w); err != nil {
-					b.Fatal(err)
-				}
-			}
-		})
-
-		b.Run("separate unmarshal and validation manually", func(b *testing.B) {
+	b.Run("reflection", func(b *testing.B) {
+		b.Run("with validation", func(b *testing.B) {
 			for b.Loop() {
 				var w bench.Data
 
@@ -38,7 +28,7 @@ func BenchmarkUnmarshalJSON(b *testing.B) {
 			}
 		})
 
-		b.Run("unmarshal without validation", func(b *testing.B) {
+		b.Run("without validation", func(b *testing.B) {
 			for b.Loop() {
 				var w bench.Data
 
@@ -49,18 +39,8 @@ func BenchmarkUnmarshalJSON(b *testing.B) {
 		})
 	})
 
-	b.Run("with codegen", func(b *testing.B) {
-		b.Run("unmarshal and validation with wrap", func(b *testing.B) {
-			for b.Loop() {
-				var w validate.OnUnmarshal[bench.DataWithGen]
-
-				if err := json.Unmarshal(testdata, &w); err != nil {
-					b.Fatal(err)
-				}
-			}
-		})
-
-		b.Run("separate unmarshal and validation manually", func(b *testing.B) {
+	b.Run("codegen", func(b *testing.B) {
+		b.Run("with validation", func(b *testing.B) {
 			for b.Loop() {
 				var w bench.DataWithGen
 
@@ -74,7 +54,7 @@ func BenchmarkUnmarshalJSON(b *testing.B) {
 			}
 		})
 
-		b.Run("unmarshal without validation", func(b *testing.B) {
+		b.Run("without validation", func(b *testing.B) {
 			for b.Loop() {
 				var w bench.DataWithGen
 

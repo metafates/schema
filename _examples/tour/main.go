@@ -133,22 +133,6 @@ func main() {
 		}
 	}
 
-	{
-		// there's also a utility generic type that wraps your type
-		// and validates it as part of unmarshalling.
-		//
-		// only do it once for root type, no need to wrap each field
-		var wrapper validate.OnUnmarshal[Request]
-
-		// request will be validated during unmarshalling
-		if err := json.Unmarshal(data, &wrapper); err != nil {
-			log.Fatalln(err)
-		}
-
-		// unwrap it back
-		request = wrapper.Inner
-	}
-
 	// now that we have successfully unmarshalled our json, we can use request fields.
 	// to access values of our schema-guarded fields we can use .Value() method
 	//
@@ -216,7 +200,6 @@ func main() {
 	// validate: User.Name: missing value
 
 	// You can check if it was validation error or any other json error.
-	// Same is applicable for [validate.OnUnmarshal]
 	err := schemajson.Unmarshal(missingUserName, new(Request))
 
 	var validationErr validate.ValidationError

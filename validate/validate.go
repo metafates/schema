@@ -2,7 +2,6 @@ package validate
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -27,7 +26,7 @@ type (
 	}
 
 	// Validateable is an interface that states "this type can validate itself".
-	// It is invoked for all values in the struct/slice/map/... by [Recursively]
+	// It is invoked for all values in the struct/slice/map/... by [Validate]
 	Validateable interface {
 		Validate() error
 	}
@@ -59,21 +58,6 @@ var (
 	_ Validator[any] = (*And[any, Validator[any], Validator[any]])(nil)
 	_ Validator[any] = (*Or[any, Validator[any], Validator[any]])(nil)
 )
-
-// OnUnmarshal is a type that validates its inner value as part of unmarshalling
-type OnUnmarshal[T any] struct{ Inner T }
-
-func (w *OnUnmarshal[T]) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &w.Inner); err != nil {
-		return err
-	}
-
-	if err := Validate(&w.Inner); err != nil {
-		return fmt.Errorf("validate: %w", err)
-	}
-
-	return nil
-}
 
 type (
 	// Any accepts any value of T
@@ -416,12 +400,17 @@ func (Or[T, A, B]) Validate(value T) error {
 	return errors.Join(errA, errB)
 }
 
-// Validate traverses all fields in the given value pointed to by v, calling [Validateable.Validate] for each field
-// and returns [ValidationError] if validation fails.
+// Validate checks if the provided value can be validated and reports any validation errors.
+//
+// The validation process follows these steps:
+//  1. If v directly implements the [Validateable] interface, its [Validateable.Validate] method is called.
+//  2. Otherwise, Validate traverses all fields in the struct/slice/map pointed to by v, calling
+//     [Validateable.Validate] for each field that implements the [Validateable] interface.
+//
+// A [ValidationError] is returned if any validation fails during either step.
 //
 // If v is nil or not a pointer, Validate returns an [InvalidValidateError].
 func Validate(v any) error {
-	// we can skip reflection in case v implements [Validateable].
 	if validatable, ok := v.(Validateable); ok {
 		if err := validatable.Validate(); err != nil {
 			return ValidationError{Inner: err}
