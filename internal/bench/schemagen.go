@@ -46,23 +46,19 @@ func _() {
 func (x DataWithGen) Validate() error {
 	for i0 := range x {
 		{
-			v0 := &x[i0].ID
-			err0 := validate.Validate(v0)
+			err0 := validate.Validate(&x[i0].ID)
 			if err0 != nil {
 				return validate.ValidationError{Inner: err0}.WithPath(fmt.Sprintf("[%v].ID", i0))
 			}
-			v1 := &x[i0].Age
-			err1 := validate.Validate(v1)
+			err1 := validate.Validate(&x[i0].Age)
 			if err1 != nil {
 				return validate.ValidationError{Inner: err1}.WithPath(fmt.Sprintf("[%v].Age", i0))
 			}
-			v2 := &x[i0].Latitude
-			err2 := validate.Validate(v2)
+			err2 := validate.Validate(&x[i0].Latitude)
 			if err2 != nil {
 				return validate.ValidationError{Inner: err2}.WithPath(fmt.Sprintf("[%v].Latitude", i0))
 			}
-			v3 := &x[i0].Longitude
-			err3 := validate.Validate(v3)
+			err3 := validate.Validate(&x[i0].Longitude)
 			if err3 != nil {
 				return validate.ValidationError{Inner: err3}.WithPath(fmt.Sprintf("[%v].Longitude", i0))
 			}

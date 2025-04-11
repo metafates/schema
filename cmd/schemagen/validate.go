@@ -142,21 +142,22 @@ func (vg *validateGenerator) genStruct(g *jen.Group, path Path, s *types.Struct,
 func (vg *validateGenerator) genBot(g *jen.Group, path Path, isPtr, addressable bool) {
 	errName := vg.unique("err")
 
-	var value string
+	value := path.String()
 
-	if isPtr || !addressable {
-		value = path.String()
-	} else {
-		value = "&" + path.String()
-	}
+	switch {
+	case isPtr:
+		g.Id(errName).Op(":=").Qual(validatePkg, "Validate").Call(jen.Id(value))
 
-	valueName := vg.unique("v")
+	case addressable:
+		g.Id(errName).Op(":=").Qual(validatePkg, "Validate").Call(jen.Op("&").Id(value))
 
-	g.Id(valueName).Op(":=").Id(value)
+	default:
+		valueName := vg.unique("v")
 
-	g.Id(errName).Op(":=").Qual(validatePkg, "Validate").Call(jen.Id(valueName))
+		g.Id(valueName).Op(":=").Id(value)
 
-	if !addressable {
+		g.Id(errName).Op(":=").Qual(validatePkg, "Validate").Call(jen.Op("&").Id(valueName))
+
 		g.Id(path.String()).Op("=").Id(valueName)
 	}
 

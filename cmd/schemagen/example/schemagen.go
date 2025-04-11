@@ -31,26 +31,23 @@ func _() {
 
 // Validate implementes [validate.Validateable]
 func (x *MyStruct) Validate() error {
-	v0 := &x.Name
-	err0 := validate.Validate(v0)
+	err0 := validate.Validate(&x.Name)
 	if err0 != nil {
 		return validate.ValidationError{Inner: err0}.WithPath(fmt.Sprintf(".Name"))
 	}
-	v1 := &x.Birth
-	err1 := validate.Validate(v1)
+	err1 := validate.Validate(&x.Birth)
 	if err1 != nil {
 		return validate.ValidationError{Inner: err1}.WithPath(fmt.Sprintf(".Birth"))
 	}
-	v2 := &x.Anon.Foo
-	err2 := validate.Validate(v2)
+	err2 := validate.Validate(&x.Anon.Foo)
 	if err2 != nil {
 		return validate.ValidationError{Inner: err2}.WithPath(fmt.Sprintf(".Anon.Foo"))
 	}
 	for k0 := range x.Map {
 		{
-			v3 := x.Map[k0]
-			err3 := validate.Validate(v3)
-			x.Map[k0] = v3
+			v0 := x.Map[k0]
+			err3 := validate.Validate(&v0)
+			x.Map[k0] = v0
 			if err3 != nil {
 				return validate.ValidationError{Inner: err3}.WithPath(fmt.Sprintf(".Map[%v]", k0))
 			}
@@ -62,9 +59,9 @@ func (x *MyStruct) Validate() error {
 				{
 					for k1 := range x.Slice[i0][i1] {
 						{
-							v4 := x.Slice[i0][i1][k1]
-							err4 := validate.Validate(v4)
-							x.Slice[i0][i1][k1] = v4
+							v1 := x.Slice[i0][i1][k1]
+							err4 := validate.Validate(&v1)
+							x.Slice[i0][i1][k1] = v1
 							if err4 != nil {
 								return validate.ValidationError{Inner: err4}.WithPath(fmt.Sprintf(".Slice[%v][%v][%v]", i0, i1, k1))
 							}
@@ -76,8 +73,7 @@ func (x *MyStruct) Validate() error {
 	}
 	if x.Ptr != nil {
 		{
-			v5 := x.Ptr
-			err5 := validate.Validate(v5)
+			err5 := validate.Validate(x.Ptr)
 			if err5 != nil {
 				return validate.ValidationError{Inner: err5}.WithPath(fmt.Sprintf(".Ptr"))
 			}
@@ -98,8 +94,7 @@ func _() {
 func (x ASlice) Validate() error {
 	for i0 := range x {
 		{
-			v0 := &x[i0]
-			err0 := validate.Validate(v0)
+			err0 := validate.Validate(&x[i0])
 			if err0 != nil {
 				return validate.ValidationError{Inner: err0}.WithPath(fmt.Sprintf("[%v]", i0))
 			}
@@ -121,7 +116,7 @@ func (x AMap) Validate() error {
 	for k0 := range x {
 		{
 			v0 := x[k0]
-			err0 := validate.Validate(v0)
+			err0 := validate.Validate(&v0)
 			x[k0] = v0
 			if err0 != nil {
 				return validate.ValidationError{Inner: err0}.WithPath(fmt.Sprintf("[%v]", k0))
