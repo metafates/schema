@@ -170,7 +170,7 @@ type (
 	}
 )
 
-// Validate implementes [validate.Validateable].
+// Validate implements the [validate.Validateable] interface.
 // You should not call this function directly.
 func (c *Custom[T, V]) Validate() error {
 	if !c.hasValue {

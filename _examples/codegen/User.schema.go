@@ -33,7 +33,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implements [validate.Validateable]
+// Validate implements the [validate.Validateable] interface
 func (x *User) Validate() error {
 	err0 := validate.Validate(&x.ID)
 	if err0 != nil {

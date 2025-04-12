@@ -16,7 +16,7 @@ func (c *Custom[T, V]) UnmarshalText(data []byte) error {
 	return c.UnmarshalJSON(data)
 }
 
-// MarshalText implements [encoding.TextMarshaler] interface
+// MarshalText implements the [encoding.TextMarshaler] interface
 func (c Custom[T, V]) MarshalText() ([]byte, error) {
 	return c.MarshalJSON()
 }

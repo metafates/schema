@@ -43,7 +43,7 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implements [validate.Validateable]
+// Validate implements the [validate.Validateable] interface.
 func (x DataWithGen) Validate() error {
 	for i0 := range x {
 		{
