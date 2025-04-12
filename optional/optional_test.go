@@ -3,6 +3,8 @@ package optional
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/metafates/schema/internal/testutil"
 )
 
 func TestOptional(t *testing.T) {
@@ -13,11 +15,11 @@ func TestOptional(t *testing.T) {
 			t.Fatalf("unmarshal error: %v", err)
 		}
 
-		requireEqual(t, false, foo.hasValue)
-		requireEqual(t, "", foo.value)
+		testutil.RequireEqual(t, false, foo.hasValue)
+		testutil.RequireEqual(t, "", foo.value)
 
-		requireNoError(t, foo.Validate())
-		requireEqual(t, true, foo.validated)
+		testutil.RequireNoError(t, foo.Validate())
+		testutil.RequireEqual(t, true, foo.validated)
 	})
 
 	t.Run("invalid value", func(t *testing.T) {
@@ -27,11 +29,11 @@ func TestOptional(t *testing.T) {
 			t.Fatalf("unmarshal error: %v", err)
 		}
 
-		requireEqual(t, true, foo.hasValue)
-		requireEqual(t, -24, foo.value) // won't be validated during unmarshalling
+		testutil.RequireEqual(t, true, foo.hasValue)
+		testutil.RequireEqual(t, -24, foo.value) // won't be validated during unmarshalling
 
-		requireError(t, foo.Validate())
-		requireEqual(t, false, foo.validated)
+		testutil.RequireError(t, foo.Validate())
+		testutil.RequireEqual(t, false, foo.validated)
 	})
 
 	t.Run("valid value", func(t *testing.T) {
@@ -41,28 +43,10 @@ func TestOptional(t *testing.T) {
 			t.Fatalf("unmarshal error: %v", err)
 		}
 
-		requireEqual(t, true, foo.hasValue)
-		requireEqual(t, 24, foo.value)
+		testutil.RequireEqual(t, true, foo.hasValue)
+		testutil.RequireEqual(t, 24, foo.value)
 
-		requireNoError(t, foo.Validate())
-		requireEqual(t, true, foo.validated)
+		testutil.RequireNoError(t, foo.Validate())
+		testutil.RequireEqual(t, true, foo.validated)
 	})
-}
-
-func requireEqual[T comparable](t *testing.T, want, actual T) {
-	if want != actual {
-		t.Fatalf("not equal: %v and %v", want, actual)
-	}
-}
-
-func requireNoError(t *testing.T, err error) {
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-}
-
-func requireError(t *testing.T, err error) {
-	if err == nil {
-		t.Fatalf("error is nil")
-	}
 }
