@@ -37,26 +37,28 @@ func xtob(x1, x2 byte) (byte, bool) {
 //
 // https://github.com/google/uuid/blob/0f11ee6918f41a04c201eceeadf612a377bc7fbc/uuid.go#L195
 func Validate(s []byte) error {
+	const standardLen = 36
+
 	switch len(s) {
 	// Standard UUID format
-	case 36:
+	case standardLen:
 
 	// UUID with "urn:uuid:" prefix
-	case 36 + 9:
+	case standardLen + 9:
 		if !bytes.EqualFold(s[:9], []byte("urn:uuid:")) {
 			return fmt.Errorf("invalid urn prefix: %q", s[:9])
 		}
 		s = s[9:]
 
 	// UUID enclosed in braces
-	case 36 + 2:
+	case standardLen + 2:
 		if s[0] != '{' || s[len(s)-1] != '}' {
 			return fmt.Errorf("invalid bracketed UUID format")
 		}
 		s = s[1 : len(s)-1]
 
 	// UUID without hyphens
-	case 32:
+	case standardLen - 4:
 		for i := 0; i < len(s); i += 2 {
 			_, ok := xtob(s[i], s[i+1])
 			if !ok {
@@ -69,7 +71,7 @@ func Validate(s []byte) error {
 	}
 
 	// Check for standard UUID format
-	if len(s) == 36 {
+	if len(s) == standardLen {
 		if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
 			return errors.New("invalid UUID format")
 		}
