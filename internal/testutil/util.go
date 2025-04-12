@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func RequireEqual[T comparable](t *testing.T, want, actual T) {
+func Equal[T comparable](t *testing.T, want, actual T) {
 	t.Helper()
 
 	if want != actual {
@@ -12,7 +12,7 @@ func RequireEqual[T comparable](t *testing.T, want, actual T) {
 	}
 }
 
-func RequireNoError(t *testing.T, err error) {
+func NoError(t *testing.T, err error) {
 	t.Helper()
 
 	if err != nil {
@@ -20,7 +20,7 @@ func RequireNoError(t *testing.T, err error) {
 	}
 }
 
-func RequireError(t *testing.T, err error) {
+func Error(t *testing.T, err error) {
 	t.Helper()
 
 	if err == nil {
@@ -28,7 +28,7 @@ func RequireError(t *testing.T, err error) {
 	}
 }
 
-func RequirePanic(t *testing.T, f func()) {
+func Panic(t *testing.T, f func()) {
 	t.Helper()
 
 	defer func() {
@@ -40,7 +40,7 @@ func RequirePanic(t *testing.T, f func()) {
 	f()
 }
 
-func RequireNoPanic(t *testing.T, f func()) {
+func NoPanic(t *testing.T, f func()) {
 	t.Helper()
 
 	defer func() {

@@ -31,9 +31,9 @@ func (s Suite[T, V]) Test(t *testing.T) {
 			err := v.Validate(tc.Input)
 
 			if tc.WantErr {
-				testutil.RequireError(t, err)
+				testutil.Error(t, err)
 			} else {
-				testutil.RequireNoError(t, err)
+				testutil.NoError(t, err)
 			}
 		})
 	}
@@ -126,6 +126,11 @@ func TestValidator(t *testing.T) {
 			{
 				Name:  "valid https url",
 				Input: "https://example.com",
+			},
+			{
+				Name:    "invalid url",
+				Input:   "http s://e xample.com",
+				WantErr: true,
 			},
 			{
 				Name:    "relative url",
@@ -376,6 +381,18 @@ func TestValidator(t *testing.T) {
 			{Name: "even", Input: 2, WantErr: true},
 			{Name: "odd", Input: 3},
 		},
+		Suite[int, And[int, NonEmpty[int], Positive[int]]]{
+			{Name: "positive non zero", Input: 2},
+			{Name: "zero", Input: 0, WantErr: true},
+			{Name: "negative", Input: -2, WantErr: true},
+		},
+		Suite[int, Or[int, Even[int], Positive[int]]]{
+			{Name: "positive even", Input: 2},
+			{Name: "positive odd", Input: 3},
+			{Name: "zero", Input: 0},
+			{Name: "negative even", Input: -2},
+			{Name: "negative odd", Input: -3, WantErr: true},
+		},
 	} {
 		t.Run(tc.GetName(), tc.Test)
 	}
@@ -392,17 +409,10 @@ func TestValidate(t *testing.T) {
 
 		data := []byte(`{"name":"foo", "Age": 99}`)
 
-		if err := schemajson.Unmarshal(data, &user); err != nil {
-			t.Fatalf("unmarshal: %v", err)
-		}
+		testutil.NoError(t, schemajson.Unmarshal(data, &user))
 
-		if user.Name.Get() != "foo" {
-			t.Errorf("name value: want %q, got %q", "foo", user.Name.Get())
-		}
-
-		if user.Age != 99 {
-			t.Errorf("age: want 99 got %d", user.Age)
-		}
+		testutil.Equal(t, "foo", user.Name.Get())
+		testutil.Equal(t, 99, user.Age)
 	})
 
 	t.Run("slice", func(t *testing.T) {
@@ -411,14 +421,10 @@ func TestValidate(t *testing.T) {
 
 			data := []byte(`[{"name": "foo"}, {"name": "bar", "Age": 99}]`)
 
-			if err := schemajson.Unmarshal(data, &users); err != nil {
-				t.Fatalf("unmarshal: %v", err)
-			}
+			testutil.NoError(t, schemajson.Unmarshal(data, &users))
 
 			for i, name := range []string{"foo", "bar"} {
-				if users[i].Name.Get() != name {
-					t.Errorf("[%d].name: want %q, got %q", i, name, users[i].Name.Get())
-				}
+				testutil.Equal(t, name, users[i].Name.Get())
 			}
 		})
 
@@ -427,9 +433,7 @@ func TestValidate(t *testing.T) {
 
 			data := []byte(`[{"name": "foo"}, {"bar": "other"}]`)
 
-			if err := schemajson.Unmarshal(data, &users); err == nil {
-				t.Fatal("unmarshal: no error")
-			}
+			testutil.Error(t, schemajson.Unmarshal(data, &users))
 		})
 	})
 }
