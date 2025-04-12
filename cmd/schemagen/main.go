@@ -107,7 +107,7 @@ func parsePackage(pattern string) *packages.Package {
 	}
 
 	// if packages.PrintErrors(pkgs) > 0 {
-	// 	os.Exit(1)
+	// os.Exit(1)
 	// }
 
 	return pkgs[0]

@@ -111,6 +111,11 @@ type (
 	// See [unicode.IsPrint] for more information
 	Printable[T constraint.Text] struct{}
 
+	// NonEmptyPrintable combines [NonEmpty] and [Printable]
+	NonEmptyPrintable[T ~string] struct {
+		And[T, NonEmpty[T], Printable[T]]
+	}
+
 	// Base64 accepts valid base64 encoded strings
 	Base64[T constraint.Text] struct{}
 

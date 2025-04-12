@@ -1,0 +1,26 @@
+{
+	"id": "32541419-1294-47e4-b070-833db7684866",
+	"name": "John",
+	"birth": "2006-01-02T15:04:05Z",
+	"meta": {
+		"preferences": ["dark_theme", "large_font"],
+		"admin": false
+	},
+	"friends": [
+		{
+			"id": "9f840137-af40-4a5e-b544-dfbdb433cc37",
+			"name": "Jane"
+		}
+	],
+	"addresses": [
+		{
+			"tag": "home",
+			"latitude": 12.1231,
+			"longitude": 30.99
+		},
+		{
+			"latitude": 59.1231,
+			"longitude": 30.99
+		}
+	]
+}

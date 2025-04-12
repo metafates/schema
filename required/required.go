@@ -160,6 +160,15 @@ type (
 	UUID[T constraint.Text] struct {
 		Custom[T, validate.UUID[T]]
 	}
+
+	// NonEmptyPrintable combines [NonEmpty] and [Printable]
+	NonEmptyPrintable[T ~string] struct {
+		Custom[T, validate.And[
+			T,
+			validate.NonEmpty[T],
+			validate.Printable[T],
+		]]
+	}
 )
 
 // Validate implementes [validate.Validateable].
