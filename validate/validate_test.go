@@ -6,6 +6,7 @@ import (
 	"time"
 
 	schemajson "github.com/metafates/schema/encoding/json"
+	"github.com/metafates/schema/internal/testutil"
 	"github.com/metafates/schema/required"
 	. "github.com/metafates/schema/validate"
 )
@@ -29,11 +30,10 @@ func (s Suite[T, V]) Test(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			err := v.Validate(tc.Input)
 
-			switch {
-			case !tc.WantErr && err != nil:
-				t.Errorf("unexpected error: %v", err)
-			case tc.WantErr && err == nil:
-				t.Error("error did not occur")
+			if tc.WantErr {
+				testutil.RequireError(t, err)
+			} else {
+				testutil.RequireNoError(t, err)
 			}
 		})
 	}
@@ -381,7 +381,7 @@ func TestValidator(t *testing.T) {
 	}
 }
 
-func TestWrap(t *testing.T) {
+func TestValidate(t *testing.T) {
 	type User struct {
 		Name required.NonEmpty[string] `json:"name"`
 		Age  int

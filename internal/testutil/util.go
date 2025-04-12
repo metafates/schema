@@ -8,7 +8,7 @@ func RequireEqual[T comparable](t *testing.T, want, actual T) {
 	t.Helper()
 
 	if want != actual {
-		t.Fatalf("not equal: %v and %v", want, actual)
+		t.Fatalf("not equal: want %v, got %v", want, actual)
 	}
 }
 

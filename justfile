@@ -1,0 +1,6 @@
+test:
+	go test ./...
+
+coverage:
+	go test -coverprofile=coverage.html ./...
+	go tool cover -html=coverage.html
