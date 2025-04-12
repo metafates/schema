@@ -340,6 +340,42 @@ func TestValidator(t *testing.T) {
 				WantErr: true,
 			},
 		},
+		Suite[string, UUID[string]]{
+			{
+				Name:  "standard valid uuid",
+				Input: "550e8400-e29b-41d4-a716-446655440000",
+			},
+			{
+				Name:  "urn valid uuid",
+				Input: "urn:uuid:9b9773f5-ceb6-4e20-9bf6-7f83d6964877",
+			},
+			{
+				Name:  "no-hyphens valid uuid",
+				Input: "f47ac10b58cc4372a5670e02b2c3d479",
+			},
+			{
+				Name:  "curly-braces valid uuid",
+				Input: "{3d673a77-5f73-4608-a364-2a7c5c271d0c}",
+			},
+			{
+				Name:    "empty string",
+				Input:   "",
+				WantErr: true,
+			},
+			{
+				Name:    "invalid uuid",
+				Input:   "XXXXXXXXXXXXXXXX hi",
+				WantErr: true,
+			},
+		},
+		Suite[int, Even[int]]{
+			{Name: "even", Input: 2},
+			{Name: "odd", Input: 3, WantErr: true},
+		},
+		Suite[int, Odd[int]]{
+			{Name: "even", Input: 2, WantErr: true},
+			{Name: "odd", Input: 3},
+		},
 	} {
 		t.Run(tc.GetName(), tc.Test)
 	}
