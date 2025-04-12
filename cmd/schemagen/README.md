@@ -33,8 +33,6 @@ type Foo struct {
 }
 
 type Bar map[string]MyStruct
-
-type MySlice map[string]MyStruct
 ```
 
 </details>
@@ -67,8 +65,6 @@ type Foo struct {
 }
 
 type Bar map[string]MyStruct
-
-type MySlice map[string]MyStruct
 ```
 
 </details>
