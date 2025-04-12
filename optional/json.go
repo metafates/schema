@@ -1,7 +1,17 @@
 package optional
 
-import "encoding/json"
+import (
+	"encoding/json"
 
+	"github.com/metafates/schema/validate"
+)
+
+var _ interface {
+	json.Unmarshaler
+	json.Marshaler
+} = (*Custom[any, validate.Validator[any]])(nil)
+
+// UnmarshalJSON implements the [json.Unmarshaler] interface.
 func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	var value *T
 
@@ -21,7 +31,12 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON implements the [json.Marshaler] interface.
 func (c Custom[T, V]) MarshalJSON() ([]byte, error) {
+	if c.hasValue && !c.validated {
+		panic("called MarshalJSON() on unvalidated value")
+	}
+
 	if c.hasValue {
 		return json.Marshal(c.value)
 	}

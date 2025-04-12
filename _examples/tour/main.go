@@ -134,18 +134,18 @@ func main() {
 	}
 
 	// now that we have successfully unmarshalled our json, we can use request fields.
-	// to access values of our schema-guarded fields we can use .Value() method
+	// to access values of our schema-guarded fields we can use Get() method
 	//
 	// NOTE: calling this method BEFORE we have
 	// validated our request will panic intentionally.
-	fmt.Println(request.User.Name.Value()) // output: john
+	fmt.Println(request.User.Name.Get()) // output: john
 
 	// optional values return a tuple: a value and a boolean stating its presence
-	email, ok := request.User.Email.Value()
+	email, ok := request.User.Email.Get()
 	fmt.Println(email, ok) // output: john@example.com (comment) true
 
 	// birth is missing so "ok" will be false
-	birth, ok := request.User.Birth.Value()
+	birth, ok := request.User.Birth.Get()
 	fmt.Println(birth, ok) // output: 0001-01-01 00:00:00 +0000 UTC false
 
 	// let's try to pass an INVALID jsons.

@@ -1,16 +1,15 @@
+// Required types must be present.
+//
+// They support the following encoding/decoding:
+// - json
+// - sql
+// - text
 package required
 
 import (
-	"encoding/json"
-
 	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/validate"
 )
-
-var _ interface {
-	json.Unmarshaler
-	json.Marshaler
-} = (*Custom[any, validate.Any[any]])(nil)
 
 var ErrMissingValue = validate.ValidationError{Msg: "missing required value"}
 
@@ -191,11 +190,11 @@ func (c *Custom[T, V]) Validate() error {
 	return nil
 }
 
-// Value returns the contained value.
+// Get returns the contained value.
 // Panics if value was not validated yet
-func (c Custom[T, V]) Value() T {
+func (c Custom[T, V]) Get() T {
 	if !c.validated {
-		panic("called Value() on unvalidated value")
+		panic("called Get() on unvalidated value")
 	}
 
 	return c.value

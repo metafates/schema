@@ -54,7 +54,7 @@ func main() {
 			log.Fatalln(err)
 		}
 
-		fmt.Println(user.ID.Value())
+		fmt.Println(user.ID.Get())
 		// 32541419-1294-47e4-b070-833db7684866
 	}
 	{
@@ -65,6 +65,6 @@ func main() {
 			// validate: .Name: string contains unprintable character
 		}
 
-		fmt.Println(user.ID.Value())
+		fmt.Println(user.ID.Get())
 	}
 }

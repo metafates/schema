@@ -360,8 +360,8 @@ func TestWrap(t *testing.T) {
 			t.Fatalf("unmarshal: %v", err)
 		}
 
-		if user.Name.Value() != "foo" {
-			t.Errorf("name value: want %q, got %q", "foo", user.Name.Value())
+		if user.Name.Get() != "foo" {
+			t.Errorf("name value: want %q, got %q", "foo", user.Name.Get())
 		}
 
 		if user.Age != 99 {
@@ -380,8 +380,8 @@ func TestWrap(t *testing.T) {
 			}
 
 			for i, name := range []string{"foo", "bar"} {
-				if users[i].Name.Value() != name {
-					t.Errorf("[%d].name: want %q, got %q", i, name, users[i].Name.Value())
+				if users[i].Name.Get() != name {
+					t.Errorf("[%d].name: want %q, got %q", i, name, users[i].Name.Get())
 				}
 			}
 		})

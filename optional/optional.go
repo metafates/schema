@@ -1,3 +1,9 @@
+// Optional types may be either empty or contain a value.
+//
+// They support the following encoding/decoding:
+// - json
+// - sql
+// - text
 package optional
 
 import (
@@ -186,11 +192,11 @@ func (c *Custom[T, V]) Validate() error {
 // HasValue returns the presence of the contained value
 func (c Custom[T, V]) HasValue() bool { return c.hasValue }
 
-// Value returns the contained value and a boolean stating its presence.
+// Get returns the contained value and a boolean stating its presence.
 // True if value exists, false otherwise.
 //
 // Panics if value was not validated yet
-func (c Custom[T, V]) Value() (T, bool) {
+func (c Custom[T, V]) Get() (T, bool) {
 	if c.hasValue && !c.validated {
 		panic("called Value() on unvalidated value")
 	}
@@ -199,13 +205,13 @@ func (c Custom[T, V]) Value() (T, bool) {
 }
 
 // Must returns the contained value and panics if it does not have one.
-// You can check for its presence using [Custom.HasValue] or use a more safe alternative [Custom.Value]
+// You can check for its presence using [Custom.HasValue] or use a more safe alternative [Custom.Get]
 func (c Custom[T, V]) Must() T {
 	if !c.hasValue {
 		panic("called must on empty optional")
 	}
 
-	value, _ := c.Value()
+	value, _ := c.Get()
 
 	return value
 }
