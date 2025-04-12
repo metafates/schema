@@ -20,6 +20,11 @@ func TestOptional(t *testing.T) {
 
 		testutil.RequireNoError(t, foo.Validate())
 		testutil.RequireEqual(t, true, foo.validated)
+
+		testutil.RequireNoPanic(t, func() { foo.Get() })
+		testutil.RequireNoPanic(t, func() { foo.MarshalJSON() })
+		testutil.RequireNoPanic(t, func() { foo.MarshalText() })
+		testutil.RequireNoPanic(t, func() { foo.Value() })
 	})
 
 	t.Run("invalid value", func(t *testing.T) {
@@ -34,6 +39,11 @@ func TestOptional(t *testing.T) {
 
 		testutil.RequireError(t, foo.Validate())
 		testutil.RequireEqual(t, false, foo.validated)
+
+		testutil.RequirePanic(t, func() { foo.Get() })
+		testutil.RequirePanic(t, func() { foo.MarshalJSON() })
+		testutil.RequirePanic(t, func() { foo.MarshalText() })
+		testutil.RequirePanic(t, func() { foo.Value() })
 	})
 
 	t.Run("valid value", func(t *testing.T) {
@@ -48,5 +58,10 @@ func TestOptional(t *testing.T) {
 
 		testutil.RequireNoError(t, foo.Validate())
 		testutil.RequireEqual(t, true, foo.validated)
+
+		testutil.RequireNoPanic(t, func() { foo.Get() })
+		testutil.RequireNoPanic(t, func() { foo.MarshalJSON() })
+		testutil.RequireNoPanic(t, func() { foo.MarshalText() })
+		testutil.RequireNoPanic(t, func() { foo.Value() })
 	})
 }

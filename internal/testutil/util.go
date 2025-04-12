@@ -1,6 +1,8 @@
 package testutil
 
-import "testing"
+import (
+	"testing"
+)
 
 func RequireEqual[T comparable](t *testing.T, want, actual T) {
 	t.Helper()
@@ -24,4 +26,28 @@ func RequireError(t *testing.T, err error) {
 	if err == nil {
 		t.Fatalf("error is nil")
 	}
+}
+
+func RequirePanic(t *testing.T, f func()) {
+	t.Helper()
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatalf("did not panic")
+		}
+	}()
+
+	f()
+}
+
+func RequireNoPanic(t *testing.T, f func()) {
+	t.Helper()
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatalf("unexpected panic")
+		}
+	}()
+
+	f()
 }
