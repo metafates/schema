@@ -40,7 +40,7 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 				for i := 0; i < typeArgs.Len(); i++ {
 					args = append(args, c.ConvertType(typeArgs.At(i)))
 				}
-				return qual.Index(args...)
+				return qual.Types(args...)
 			}
 
 			return qual
