@@ -17,6 +17,7 @@ import (
 
 	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/internal/reflectwalk"
+	"github.com/metafates/schema/internal/validateutil/uuid"
 )
 
 type (
@@ -144,6 +145,13 @@ type (
 
 	// MIME accepts RFC 1521 mime type string
 	MIME[T constraint.Text] struct{}
+
+	// UUID accepts a properly formatted UUID in one of the following formats:
+	//   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+	//   urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+	//   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+	UUID[T constraint.Text] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
@@ -368,6 +376,15 @@ func (Unique[S, T]) Validate(value S) error {
 func (MIME[T]) Validate(value T) error {
 	_, _, err := mime.ParseMediaType(string(value))
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (UUID[T]) Validate(value T) error {
+	// converting to bytes is cheaper than vice versa
+	if err := uuid.Validate([]byte(value)); err != nil {
 		return err
 	}
 

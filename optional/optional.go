@@ -144,6 +144,15 @@ type (
 	MIME[T constraint.Text] struct {
 		Custom[T, validate.MIME[T]]
 	}
+
+	// UUID accepts a properly formatted UUID in one of the following formats:
+	//   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+	//   urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+	//   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+	UUID[T constraint.Text] struct {
+		Custom[T, validate.UUID[T]]
+	}
 )
 
 // Validate implementes [validate.Validateable].

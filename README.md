@@ -241,7 +241,7 @@ func main() {
 
 ## Performance
 
-**TL;DR:** you can use codegen for max performance (0-1% overhead) or fallback to reflection (35%).
+**TL;DR:** you can use codegen for max performance (0-1% overhead) or fallback to reflection (35% overhead).
 
 This library does not affect unmarshalling performance itself.
 You can expect it to be just as fast as a regular unmarshalling.
