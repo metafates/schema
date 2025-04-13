@@ -2,6 +2,7 @@ package validate
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -115,6 +116,9 @@ type (
 	//   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 	UUID[T constraint.Text] struct{}
+
+	// JSON accepts valid json encoded text
+	JSON[T constraint.Text] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
@@ -349,6 +353,14 @@ func (UUID[T]) Validate(value T) error {
 	// converting to bytes is cheaper than vice versa
 	if err := uuid.Validate([]byte(value)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (JSON[T]) Validate(value T) error {
+	if !json.Valid([]byte(value)) {
+		return errors.New("invalid json")
 	}
 
 	return nil

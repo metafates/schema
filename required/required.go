@@ -168,6 +168,11 @@ type (
 			validate.Printable[T],
 		]]
 	}
+
+	// JSON accepts valid json encoded text
+	JSON[T constraint.Text] struct {
+		Custom[T, validate.JSON[T]]
+	}
 )
 
 // TypeValidate implements the [validate.TypeValidateable] interface.

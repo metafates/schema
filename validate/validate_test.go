@@ -381,6 +381,17 @@ func TestValidator(t *testing.T) {
 			{Name: "even", Input: 2, WantErr: true},
 			{Name: "odd", Input: 3},
 		},
+		Suite[string, JSON[string]]{
+			{
+				Name:  "valid json",
+				Input: `{"key":"value","array":[1, 2, 3]}`,
+			},
+			{
+				Name:    "invalid json",
+				Input:   `{"key" - "value" wait is going on??,"array":[1, 2, 3]}`,
+				WantErr: true,
+			},
+		},
 		Suite[int, And[int, NonEmpty[int], Positive[int]]]{
 			{Name: "positive non zero", Input: 2},
 			{Name: "zero", Input: 0, WantErr: true},
