@@ -33,8 +33,8 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implements the [validate.Validateable] interface
-func (x *User) Validate() error {
+// TypeValidate implements the [validate.TypeValidateable] interface.
+func (x *User) TypeValidate() error {
 	err0 := validate.Validate(&x.ID)
 	if err0 != nil {
 		return validate.ValidationError{Inner: err0}.WithPath(fmt.Sprintf(".ID"))

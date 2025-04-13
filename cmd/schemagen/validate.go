@@ -19,11 +19,11 @@ func genValidate(f *jen.File, named *types.Named) {
 		receiverPtr = ""
 	}
 
-	f.Comment("Validate implements the [validate.Validateable] interface.")
+	f.Comment("TypeValidate implements the [validate.TypeValidateable] interface.")
 	f.
 		Func().
 		Params(jen.Id(receiver).Op(receiverPtr).Id(named.Obj().Name())).
-		Id("Validate").
+		Id("TypeValidate").
 		Params().
 		Error().
 		BlockFunc(func(g *jen.Group) {

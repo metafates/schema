@@ -17,7 +17,7 @@ func TestOptional(t *testing.T) {
 		testutil.Equal(t, foo.hasValue, foo.HasValue())
 		testutil.Equal(t, "", foo.value)
 
-		testutil.NoError(t, foo.Validate())
+		testutil.NoError(t, foo.TypeValidate())
 		testutil.Equal(t, true, foo.validated)
 
 		testutil.Panic(t, func() { foo.Must() })
@@ -36,7 +36,7 @@ func TestOptional(t *testing.T) {
 		testutil.Equal(t, foo.hasValue, foo.HasValue())
 		testutil.Equal(t, -24, foo.value)
 
-		testutil.Error(t, foo.Validate())
+		testutil.Error(t, foo.TypeValidate())
 		testutil.Equal(t, false, foo.validated)
 
 		testutil.Panic(t, func() { foo.Must() })
@@ -54,7 +54,7 @@ func TestOptional(t *testing.T) {
 		var foo Any[Foo]
 
 		testutil.NoError(t, json.Unmarshal([]byte(`{"field":-1}`), &foo))
-		testutil.Error(t, foo.Validate())
+		testutil.Error(t, foo.TypeValidate())
 	})
 
 	t.Run("valid value", func(t *testing.T) {
@@ -66,7 +66,7 @@ func TestOptional(t *testing.T) {
 		testutil.Equal(t, foo.hasValue, foo.HasValue())
 		testutil.Equal(t, 24, foo.value)
 
-		testutil.NoError(t, foo.Validate())
+		testutil.NoError(t, foo.TypeValidate())
 		testutil.Equal(t, true, foo.validated)
 
 		testutil.NoPanic(t, func() { foo.Must() })
@@ -83,7 +83,7 @@ func TestOptional(t *testing.T) {
 			testutil.Equal(t, true, foo.hasValue)
 			testutil.Equal(t, -24, foo.value)
 
-			testutil.Error(t, foo.Validate())
+			testutil.Error(t, foo.TypeValidate())
 			testutil.Equal(t, false, foo.validated)
 
 			testutil.Panic(t, func() { foo.Must() })

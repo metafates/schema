@@ -88,9 +88,22 @@ type Request struct {
 	// same as for [Request.MyShortString] but using an optional instead.
 	ASCIIShortString optional.Custom[string, ASCIIShortStr] `json:"asciiShortString"`
 
-	// just an example of another validation
-	// which requires time to be before current timestamp
-	OccuredAt optional.InPast[time.Time] `json:"occuredAt"`
+	PermitBio bool `json:"permitBio"`
+}
+
+// - "How do I do cross-field validation?"
+// - Implement [validate.Validateable] interface for your struct
+//
+// This method will be called AFTER required and optional fields are validated.
+// It is optional - you may skip defining it if you don't need to.
+func (r *Request) Validate() error {
+	if !r.PermitBio {
+		if r.User.Bio != "" {
+			return errors.New("bio is not permitted")
+		}
+	}
+
+	return nil
 }
 
 func main() {
@@ -106,7 +119,8 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "foo"
+	"myShortString": "foo",
+	"permitBio": true
 }`)
 
 	var request Request
@@ -124,6 +138,9 @@ func main() {
 		}
 		// that's it, our struct was validated successfully!
 		// no errors yet, but we will get there
+		//
+		// remember our custom cross-field validation?
+		// it was called as part of this function
 	}
 
 	{
@@ -160,7 +177,8 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "foo"
+	"myShortString": "foo",
+	"permitBio": true
 }`)
 
 	invalidShortStr := []byte(`
@@ -174,7 +192,8 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "super long string that shall not pass!!!!!!!!"
+	"myShortString": "super long string that shall not pass!!!!!!!!",
+	"permitBio": true
 }`)
 
 	missingUserName := []byte(`
@@ -187,7 +206,23 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "foo"
+	"myShortString": "foo",
+	"permitBio": true
+}`)
+
+	bioNotPermitted := []byte(`
+{
+	"user": {
+		"name": "john",
+		"email": "john@example.com",
+		"bio": "lorem ipsum"
+	},
+	"address": {
+		"latitude": 81.111,
+		"longitude": 100.101
+	},
+	"myShortString": "foo",
+	"permitBio": false
 }`)
 
 	fmt.Println(schemajson.Unmarshal(invalidEmail, new(Request)))
@@ -198,6 +233,9 @@ func main() {
 
 	fmt.Println(schemajson.Unmarshal(missingUserName, new(Request)))
 	// validate: User.Name: missing value
+
+	fmt.Println(schemajson.Unmarshal(bioNotPermitted, new(Request)))
+	// validate: bio is not permitted
 
 	// You can check if it was validation error or any other json error.
 	err := schemajson.Unmarshal(missingUserName, new(Request))

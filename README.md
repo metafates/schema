@@ -2,7 +2,13 @@
 
 > Work in progress!
 
-Go type-safe validation library. No field tags or code-duplicating schemas, pure types!
+Go schema declaration and validation with static types.
+No field tags or code duplication.
+
+Schema is designed to be as developer-friendly as possible.
+The goal is to eliminate duplicative type declarations.
+You declare a schema once and it will be used as both schema and type itself.
+It's easy to compose simpler types into complex data structures.
 
 No stable version yet, but you can use it like that.
 
@@ -10,14 +16,16 @@ No stable version yet, but you can use it like that.
 go get github.com/metafates/schema@main
 ```
 
-**Work in progress, API may change significantly without further notice! This is just an experiment for now**
+**Work in progress, API may (and will) change significantly without further notice! This is just an experiment for now**
 
 ## Features
 
 - Type-safe
-- Zero setup
+- Zero setup required
 - Zero overhead (can be achieved with optional codegen)
-- No DSL or code duplication, schema **is** types themselves
+- No DSL or code duplication
+- Cross-field validation support
+- Helpful errors
 
 ## Example
 
@@ -114,9 +122,22 @@ type Request struct {
 	// same as for [Request.MyShortString] but using an optional instead.
 	ASCIIShortString optional.Custom[string, ASCIIShortStr] `json:"asciiShortString"`
 
-	// just an example of another validation
-	// which requires time to be before current timestamp
-	OccuredAt optional.InPast[time.Time] `json:"occuredAt"`
+	PermitBio bool `json:"permitBio"`
+}
+
+// - "How do I do cross-field validation?"
+// - Implement [validate.Validateable] interface for your struct
+//
+// This method will be called AFTER required and optional fields are validated.
+// It is optional - you may skip defining it if you don't need to.
+func (r *Request) Validate() error {
+	if !r.PermitBio {
+		if r.User.Bio != "" {
+			return errors.New("bio is not permitted")
+		}
+	}
+
+	return nil
 }
 
 func main() {
@@ -132,7 +153,8 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "foo"
+	"myShortString": "foo",
+	"permitBio": true
 }`)
 
 	var request Request
@@ -150,6 +172,9 @@ func main() {
 		}
 		// that's it, our struct was validated successfully!
 		// no errors yet, but we will get there
+		//
+		// remember our custom cross-field validation?
+		// it was called as part of this function
 	}
 
 	{
@@ -186,7 +211,8 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "foo"
+	"myShortString": "foo",
+	"permitBio": true
 }`)
 
 	invalidShortStr := []byte(`
@@ -200,7 +226,8 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "super long string that shall not pass!!!!!!!!"
+	"myShortString": "super long string that shall not pass!!!!!!!!",
+	"permitBio": true
 }`)
 
 	missingUserName := []byte(`
@@ -213,7 +240,23 @@ func main() {
 		"latitude": 81.111,
 		"longitude": 100.101
 	},
-	"myShortString": "foo"
+	"myShortString": "foo",
+	"permitBio": true
+}`)
+
+	bioNotPermitted := []byte(`
+{
+	"user": {
+		"name": "john",
+		"email": "john@example.com",
+		"bio": "lorem ipsum"
+	},
+	"address": {
+		"latitude": 81.111,
+		"longitude": 100.101
+	},
+	"myShortString": "foo",
+	"permitBio": false
 }`)
 
 	fmt.Println(schemajson.Unmarshal(invalidEmail, new(Request)))
@@ -224,6 +267,9 @@ func main() {
 
 	fmt.Println(schemajson.Unmarshal(missingUserName, new(Request)))
 	// validate: User.Name: missing value
+
+	fmt.Println(schemajson.Unmarshal(bioNotPermitted, new(Request)))
+	// validate: bio is not permitted
 
 	// You can check if it was validation error or any other json error.
 	err := schemajson.Unmarshal(missingUserName, new(Request))
@@ -279,10 +325,11 @@ of available validators in [validate/validate.go](./validate/validate.go)
 
 ## TODO
 
+- [ ] Support for manual construction (similar to `.parse(...)` in zod) (using codegen)
 - [ ] Stabilize API
 - [ ] Better documentation
 - [x] More tests
-- [ ] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
+- [x] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
 - [ ] Think about validating gRPC generated structs somehow (codegen?)
 - [ ] Add benchmarks for validators itself. E.g. email validator
 - [ ] More validation types as seen in https://github.com/go-playground/validator

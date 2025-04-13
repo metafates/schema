@@ -43,8 +43,8 @@ func _() {
 	_ = locked(v)
 }
 
-// Validate implements the [validate.Validateable] interface.
-func (x DataWithGen) Validate() error {
+// TypeValidate implements the [validate.TypeValidateable] interface.
+func (x DataWithGen) TypeValidate() error {
 	for i0 := range x {
 		{
 			err0 := validate.Validate(&x[i0].ID)

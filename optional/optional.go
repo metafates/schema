@@ -168,9 +168,9 @@ type (
 	}
 )
 
-// Validate implements the [validate.Validateable] interface.
+// TypeValidate implements the [validate.TypeValidateable] interface.
 // You should not call this function directly.
-func (c *Custom[T, V]) Validate() error {
+func (c *Custom[T, V]) TypeValidate() error {
 	if !c.hasValue {
 		c.validated = true
 		return nil
