@@ -94,7 +94,7 @@ func genPackage(pattern string) {
 func parsePackage(pattern string) *packages.Package {
 	cfg := packages.Config{
 		Mode:  packages.LoadAllSyntax,
-		Tests: false,
+		Tests: false, // TODO: enable
 	}
 
 	pkgs, err := packages.Load(&cfg, pattern)
