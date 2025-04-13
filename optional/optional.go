@@ -215,3 +215,22 @@ func (c Custom[T, V]) Must() T {
 
 	return value
 }
+
+// Parse checks if given value is valid.
+// If it is, a value is used to initialize this type.
+// Initialized type is validated, therfore it is safe to call [Custom.Get] afterwards
+func (c *Custom[T, V]) Parse(value *T) error {
+	var aux Custom[T, V]
+
+	if value != nil {
+		aux.hasValue = true
+		aux.value = *value
+	}
+
+	if err := aux.TypeValidate(); err != nil {
+		return err
+	}
+
+	*c = aux
+	return nil
+}
