@@ -44,21 +44,21 @@ func TestWalkFields(t *testing.T) {
 	}
 
 	want := map[string]any{
-		"":              mock,
-		"Anon":          mock.Anon,
-		"Anon.Exported": mock.Anon.Exported,
-		"Foo":           mock.Foo,
-		"Foo.Bar":       mock.Foo.Bar,
-		"Map":           mock.Map,
-		"Map[key2]":     mock.Map["key2"],
-		"Map[key]":      mock.Map["key"],
-		"Map[key][0]":   mock.Map["key"][0],
-		"Map[key][1]":   mock.Map["key"][1],
-		"Map[key][2]":   mock.Map["key"][2],
-		"Name":          mock.Name,
-		"Ptr":           *mock.Ptr,
-		"Ptr.Bar":       mock.Ptr.Bar,
-		"Ptr2":          mock.Ptr2,
+		"":               mock,
+		".Anon":          mock.Anon,
+		".Anon.Exported": mock.Anon.Exported,
+		".Foo":           mock.Foo,
+		".Foo.Bar":       mock.Foo.Bar,
+		".Map":           mock.Map,
+		".Map[key2]":     mock.Map["key2"],
+		".Map[key]":      mock.Map["key"],
+		".Map[key][0]":   mock.Map["key"][0],
+		".Map[key][1]":   mock.Map["key"][1],
+		".Map[key][2]":   mock.Map["key"][2],
+		".Name":          mock.Name,
+		".Ptr":           *mock.Ptr,
+		".Ptr.Bar":       mock.Ptr.Bar,
+		".Ptr2":          mock.Ptr2,
 	}
 
 	visited := make(map[string]any)

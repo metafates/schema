@@ -65,7 +65,7 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 
 			var fieldPath string
 			if path == "" {
-				fieldPath = fieldName
+				fieldPath = "." + fieldName
 			} else {
 				fieldPath = path + "." + fieldName
 			}

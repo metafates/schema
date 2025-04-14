@@ -226,13 +226,13 @@ func main() {
 }`)
 
 	fmt.Println(schemajson.Unmarshal(invalidEmail, new(Request)))
-	// validate: User.Email: mail: missing '@' or angle-addr
+	// validate: .User.Email: mail: missing '@' or angle-addr
 
 	fmt.Println(schemajson.Unmarshal(invalidShortStr, new(Request)))
-	// validate: MyShortString: string is too long
+	// validate: .MyShortString: string is too long
 
 	fmt.Println(schemajson.Unmarshal(missingUserName, new(Request)))
-	// validate: User.Name: missing value
+	// validate: .User.Name: missing value
 
 	fmt.Println(schemajson.Unmarshal(bioNotPermitted, new(Request)))
 	// validate: bio is not permitted
@@ -243,7 +243,7 @@ func main() {
 	var validationErr validate.ValidationError
 	if errors.As(err, &validationErr) {
 		fmt.Println("error while validating", validationErr.Path())
-		// error while validating User.Name
+		// error while validating .User.Name
 
 		fmt.Println(errors.Is(err, required.ErrMissingValue))
 		// true
