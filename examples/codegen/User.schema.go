@@ -13,18 +13,18 @@ import (
 // Ensure that [User] type was not changed
 func _() {
 	type locked struct {
-		ID    required.UUID[string]              `json:"id"`
-		Name  required.NonEmptyPrintable[string] `json:"name"`
-		Birth optional.InPast[time.Time]         `json:"birth"`
+		ID    required.UUID[string]             `json:"id"`
+		Name  required.NonZeroPrintable[string] `json:"name"`
+		Birth optional.InPast[time.Time]        `json:"birth"`
 		Meta  struct {
 			Preferences optional.Unique[[]string, string] `json:"preferences"`
 			Admin       bool                              `json:"admin"`
 		} `json:"meta"`
 		Friends   []UserFriend `json:"friends"`
 		Addresses []struct {
-			Tag       optional.NonEmptyPrintable[string] `json:"tag"`
-			Latitude  required.Latitude[float64]         `json:"latitude"`
-			Longitude required.Longitude[float64]        `json:"longitude"`
+			Tag       optional.NonZeroPrintable[string] `json:"tag"`
+			Latitude  required.Latitude[float64]        `json:"latitude"`
+			Longitude required.Longitude[float64]       `json:"longitude"`
 		} `json:"addresses"`
 	}
 	var v User

@@ -1,7 +1,7 @@
 test: generate
 	go test ./...
-	go run ./_examples/tour/main.go
-	go run ./_examples/codegen/main.go
+	go run ./examples/tour
+	go run ./examples/codegen
 
 coverage:
 	go test -coverprofile=coverage.html ./...

@@ -29,7 +29,7 @@ go get github.com/metafates/schema@main
 
 ## Example
 
-See [examples](./_examples) for more examples
+See [examples](./examples) for more examples
 
 ```go
 package main
