@@ -16,6 +16,7 @@ import (
 	"unicode"
 
 	"github.com/metafates/schema/constraint"
+	"github.com/metafates/schema/internal/validateutil/iso"
 	"github.com/metafates/schema/internal/validateutil/uuid"
 )
 
@@ -119,6 +120,20 @@ type (
 
 	// JSON accepts valid json encoded text
 	JSON[T constraint.Text] struct{}
+
+	// CountryAlpha2 accepts ISO 3166 2-letter country code
+	CountryAlpha2[T constraint.Text] struct{}
+
+	// CountryAlpha2 accepts ISO 3166 3-letter country code
+	CountryAlpha3[T constraint.Text] struct{}
+
+	// CountryAlpha2 accepts either [CountryAlpha2] or [CountryAlpha3]
+	Country[T constraint.Text] struct {
+		Or[T, CountryAlpha2[T], CountryAlpha3[T]]
+	}
+
+	// CurrencyAlpha accepts ISO 4217 alphabetic currency code
+	CurrencyAlpha[T constraint.Text] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
@@ -361,6 +376,30 @@ func (UUID[T]) Validate(value T) error {
 func (JSON[T]) Validate(value T) error {
 	if !json.Valid([]byte(value)) {
 		return errors.New("invalid json")
+	}
+
+	return nil
+}
+
+func (CountryAlpha2[T]) Validate(value T) error {
+	if _, ok := iso.CountryAlpha2[string(value)]; !ok {
+		return errors.New("unknown 2-letter country code")
+	}
+
+	return nil
+}
+
+func (CountryAlpha3[T]) Validate(value T) error {
+	if _, ok := iso.CountryAlpha3[string(value)]; !ok {
+		return errors.New("unknown 3-letter country code")
+	}
+
+	return nil
+}
+
+func (CurrencyAlpha[T]) Validate(value T) error {
+	if _, ok := iso.CurrencyAlpha[string(value)]; !ok {
+		return errors.New("unknown currency alphabetic code")
 	}
 
 	return nil

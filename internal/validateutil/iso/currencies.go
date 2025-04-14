@@ -1,6 +1,6 @@
 package iso
 
-var CurrencyCode = map[string]struct{}{
+var CurrencyAlpha = map[string]struct{}{
 	"AFN": {},
 	"EUR": {},
 	"ALL": {},

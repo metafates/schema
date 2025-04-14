@@ -65,7 +65,7 @@ def gen_currencies():
 
         p(f"package {PKG}")
         p()
-        p("var CurrencyCode = map[string]struct{}{")
+        p("var CurrencyAlpha = map[string]struct{}{")
         for row in data:
             code = row["AlphabeticCode"]
 
