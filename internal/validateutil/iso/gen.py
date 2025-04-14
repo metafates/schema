@@ -1,16 +1,21 @@
 import csv
 
+# go package name
 PKG = "iso"
-COUNTRIES = "ISO-3166.csv"
-CURRENCIES = "ISO-4217.csv"
+
+# https://github.com/datasets/country-codes/blob/main/data/country-codes.csv
+COUNTRIES = "countries.csv"
+COUNTRIES_OUT = "countries.go"
+
+# https://github.com/datasets/currency-codes/blob/main/data/codes-all.csv
+CURRENCIES = "currencies.csv"
+CURRENCIES_OUT = "currencies.go"
 
 
 def make_p(f): return lambda *s: print(*s, file=f)
 
 
 def gen_countries():
-    OUTPUT = "countries.go"
-
     data = []
 
     with open(COUNTRIES, newline='') as csvfile:
@@ -24,27 +29,25 @@ def gen_countries():
             data.append(row)
 
 
-    with open(OUTPUT, "w") as f:
+    with open(COUNTRIES_OUT, "w") as f:
         p = make_p(f)
 
         p(f"package {PKG}")
         p()
         p("var CountryAlpha2 = map[string]struct{}{")
         for row in data:
-            alpha2 = row["alpha-2"].lower()
+            alpha2 = row["ISO3166-1-Alpha-2"].lower()
             p(f'\t"{alpha2}": {{}},')
         p("}")
         p()
         p("var CountryAlpha3 = map[string]struct{}{")
         for row in data:
-            alpha3 = row["alpha-3"].lower()
+            alpha3 = row["ISO3166-1-Alpha-3"].lower()
             p(f'\t"{alpha3}": {{}},')
         p("}")
 
 
 def gen_currencies():
-    OUTPUT = "currencies.go"
-
     data = []
 
     with open(CURRENCIES, newline='') as csvfile:
@@ -58,7 +61,7 @@ def gen_currencies():
             data.append(row)
 
 
-    with open(OUTPUT, "w") as f:
+    with open(CURRENCIES_OUT, "w") as f:
         p = make_p(f)
 
         visited = set()
