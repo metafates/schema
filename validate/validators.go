@@ -121,10 +121,10 @@ type (
 	// JSON accepts valid json encoded text
 	JSON[T constraint.Text] struct{}
 
-	// CountryAlpha2 accepts ISO 3166 2-letter country code
+	// CountryAlpha2 accepts case-insensitive ISO 3166 2-letter country code
 	CountryAlpha2[T constraint.Text] struct{}
 
-	// CountryAlpha2 accepts ISO 3166 3-letter country code
+	// CountryAlpha2 accepts case-insensitive ISO 3166 3-letter country code
 	CountryAlpha3[T constraint.Text] struct{}
 
 	// CountryAlpha2 accepts either [CountryAlpha2] or [CountryAlpha3]
@@ -132,7 +132,7 @@ type (
 		Or[T, CountryAlpha2[T], CountryAlpha3[T]]
 	}
 
-	// CurrencyAlpha accepts ISO 4217 alphabetic currency code
+	// CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code
 	CurrencyAlpha[T constraint.Text] struct{}
 
 	// And is a meta validator that combines other validators with AND operator.
@@ -382,7 +382,9 @@ func (JSON[T]) Validate(value T) error {
 }
 
 func (CountryAlpha2[T]) Validate(value T) error {
-	if _, ok := iso.CountryAlpha2[string(value)]; !ok {
+	v := strings.ToLower(string(value))
+
+	if _, ok := iso.CountryAlpha2[v]; !ok {
 		return errors.New("unknown 2-letter country code")
 	}
 
@@ -390,7 +392,9 @@ func (CountryAlpha2[T]) Validate(value T) error {
 }
 
 func (CountryAlpha3[T]) Validate(value T) error {
-	if _, ok := iso.CountryAlpha3[string(value)]; !ok {
+	v := strings.ToLower(string(value))
+
+	if _, ok := iso.CountryAlpha3[v]; !ok {
 		return errors.New("unknown 3-letter country code")
 	}
 
@@ -398,7 +402,9 @@ func (CountryAlpha3[T]) Validate(value T) error {
 }
 
 func (CurrencyAlpha[T]) Validate(value T) error {
-	if _, ok := iso.CurrencyAlpha[string(value)]; !ok {
+	v := strings.ToLower(string(value))
+
+	if _, ok := iso.CurrencyAlpha[v]; !ok {
 		return errors.New("unknown currency alphabetic code")
 	}
 

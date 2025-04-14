@@ -31,13 +31,13 @@ def gen_countries():
         p()
         p("var CountryAlpha2 = map[string]struct{}{")
         for row in data:
-            alpha2 = row["alpha-2"]
+            alpha2 = row["alpha-2"].lower()
             p(f'\t"{alpha2}": {{}},')
         p("}")
         p()
         p("var CountryAlpha3 = map[string]struct{}{")
         for row in data:
-            alpha3 = row["alpha-3"]
+            alpha3 = row["alpha-3"].lower()
             p(f'\t"{alpha3}": {{}},')
         p("}")
 
@@ -67,7 +67,7 @@ def gen_currencies():
         p()
         p("var CurrencyAlpha = map[string]struct{}{")
         for row in data:
-            code = row["AlphabeticCode"]
+            code = row["AlphabeticCode"].lower()
 
             if code not in visited and code != "":
                 p(f'\t"{code}": {{}},')

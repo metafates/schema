@@ -392,6 +392,76 @@ func TestValidator(t *testing.T) {
 				WantErr: true,
 			},
 		},
+		Suite[string, CountryAlpha2[string]]{
+			{
+				Name:  "valid country code",
+				Input: "us",
+			},
+			{
+				Name:  "valid uppercase country code",
+				Input: "US",
+			},
+			{
+				Name:    "invalid country code",
+				Input:   "..",
+				WantErr: true,
+			},
+			{
+				Name:    "empty country code",
+				Input:   "",
+				WantErr: true,
+			},
+			{
+				Name:    "long country code",
+				Input:   "usa",
+				WantErr: true,
+			},
+		},
+		Suite[string, CountryAlpha3[string]]{
+			{
+				Name:  "valid country code",
+				Input: "usa",
+			},
+			{
+				Name:  "valid uppercase country code",
+				Input: "USA",
+			},
+			{
+				Name:    "invalid country code",
+				Input:   "...",
+				WantErr: true,
+			},
+			{
+				Name:    "empty country code",
+				Input:   "",
+				WantErr: true,
+			},
+			{
+				Name:    "short country code",
+				Input:   "us",
+				WantErr: true,
+			},
+		},
+		Suite[string, CurrencyAlpha[string]]{
+			{
+				Name:  "valid currency code",
+				Input: "usd",
+			},
+			{
+				Name:  "valid currency country code",
+				Input: "USD",
+			},
+			{
+				Name:    "invalid currency code",
+				Input:   "...",
+				WantErr: true,
+			},
+			{
+				Name:    "empty currency code",
+				Input:   "",
+				WantErr: true,
+			},
+		},
 		Suite[int, And[int, NonEmpty[int], Positive[int]]]{
 			{Name: "positive non zero", Input: 2},
 			{Name: "zero", Input: 0, WantErr: true},

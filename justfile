@@ -1,6 +1,9 @@
-test:
+test: generate
 	go test ./...
 
 coverage:
 	go test -coverprofile=coverage.html ./...
 	go tool cover -html=coverage.html
+
+generate:
+	go generate ./...

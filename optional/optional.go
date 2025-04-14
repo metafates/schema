@@ -172,12 +172,12 @@ type (
 		Custom[T, validate.JSON[T]]
 	}
 
-	// CountryAlpha2 accepts ISO 3166 2-letter country code
+	// CountryAlpha2 accepts case-insensitive ISO 3166 2-letter country code
 	CountryAlpha2[T constraint.Text] struct {
 		Custom[T, validate.CountryAlpha2[T]]
 	}
 
-	// CountryAlpha3 accepts ISO 3166 3-letter country code
+	// CountryAlpha3 accepts case-insensitive ISO 3166 3-letter country code
 	CountryAlpha3[T constraint.Text] struct {
 		Custom[T, validate.CountryAlpha3[T]]
 	}
@@ -187,7 +187,7 @@ type (
 		Custom[T, validate.Country[T]]
 	}
 
-	// CurrencyAlpha accepts ISO 4217 alphabetic currency code
+	// CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code
 	CurrencyAlpha[T constraint.Text] struct {
 		Custom[T, validate.CurrencyAlpha[T]]
 	}
