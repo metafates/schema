@@ -190,9 +190,9 @@ type (
 		Custom[T, validate.CountryAlpha3[T]]
 	}
 
-	// CountryAlpha2 accepts either [CountryAlpha2] or [CountryAlpha3]
-	Country[T constraint.Text] struct {
-		Custom[T, validate.Country[T]]
+	// CountryAlpha accepts either [CountryAlpha2] or [CountryAlpha3]
+	CountryAlpha[T constraint.Text] struct {
+		Custom[T, validate.CountryAlpha[T]]
 	}
 
 	// CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code

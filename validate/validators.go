@@ -136,7 +136,7 @@ type (
 	CountryAlpha3[T constraint.Text] struct{}
 
 	// CountryAlpha2 accepts either [CountryAlpha2] or [CountryAlpha3]
-	Country[T constraint.Text] struct {
+	CountryAlpha[T constraint.Text] struct {
 		Or[T, CountryAlpha2[T], CountryAlpha3[T]]
 	}
 
