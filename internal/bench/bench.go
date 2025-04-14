@@ -5,7 +5,7 @@ import "github.com/metafates/schema/required"
 //go:generate schemagen -type DataWithGen
 
 type DataWithGen []struct {
-	ID         required.NonEmpty[string]   `json:"_id"`
+	ID         required.NonZero[string]    `json:"_id"`
 	Index      int                         `json:"index"`
 	GUID       string                      `json:"guid"`
 	IsActive   bool                        `json:"isActive"`
@@ -33,7 +33,7 @@ type DataWithGen []struct {
 }
 
 type Data []struct {
-	ID         required.NonEmpty[string]   `json:"_id"`
+	ID         required.NonZero[string]    `json:"_id"`
 	Index      int                         `json:"index"`
 	GUID       string                      `json:"guid"`
 	IsActive   bool                        `json:"isActive"`

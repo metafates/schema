@@ -11,7 +11,7 @@ import (
 // Ensure that [DataWithGen] type was not changed
 func _() {
 	type locked []struct {
-		ID         required.NonEmpty[string]   `json:"_id"`
+		ID         required.NonZero[string]    `json:"_id"`
 		Index      int                         `json:"index"`
 		GUID       string                      `json:"guid"`
 		IsActive   bool                        `json:"isActive"`

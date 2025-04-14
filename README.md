@@ -50,7 +50,7 @@ import (
 // Let's assume we have a request which accepts an user
 type User struct {
 	// User name is required and must not be empty
-	Name required.NonEmpty[string] `json:"name"`
+	Name required.NonZero[string] `json:"name"`
 
 	// Birth date is optional, which means it could be null.
 	// However, if passed, it must be an any valid [time.Time]

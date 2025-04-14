@@ -24,8 +24,13 @@ type (
 	// Any accepts any value of T
 	Any[T any] struct{}
 
-	// NonEmpty accepts all non empty comparable values
-	NonEmpty[T comparable] struct{}
+	// NonZero accepts all non-zero values
+	//
+	// The zero value is:
+	// - 0 for numeric types,
+	// - false for the boolean type, and
+	// - "" (the empty string) for strings.
+	NonZero[T comparable] struct{}
 
 	// Positive accepts all positive real numbers and zero
 	//
@@ -71,9 +76,9 @@ type (
 	// See [unicode.IsPrint] for more information
 	Printable[T constraint.Text] struct{}
 
-	// NonEmptyPrintable combines [NonEmpty] and [Printable]
-	NonEmptyPrintable[T ~string] struct {
-		And[T, NonEmpty[T], Printable[T]]
+	// NonZeroPrintable combines [NonZero] and [Printable]
+	NonZeroPrintable[T ~string] struct {
+		And[T, NonZero[T], Printable[T]]
 	}
 
 	// Base64 accepts valid base64 encoded strings
@@ -105,8 +110,11 @@ type (
 	// See also [InPast]
 	InFuture[T constraint.Time] struct{}
 
-	// Unique accepts an array of unique comparable values
+	// Unique accepts a slice of unique values
 	Unique[S ~[]T, T comparable] struct{}
+
+	// NonEmpty accepts a non-empty slice (len > 0)
+	NonEmpty[S ~[]T, T any] struct{}
 
 	// MIME accepts RFC 1521 mime type string
 	MIME[T constraint.Text] struct{}
@@ -152,7 +160,7 @@ func (Any[T]) Validate(T) error {
 	return nil
 }
 
-func (NonEmpty[T]) Validate(value T) error {
+func (NonZero[T]) Validate(value T) error {
 	var empty T
 
 	if value == empty {
@@ -350,6 +358,14 @@ func (Unique[S, T]) Validate(value S) error {
 		}
 
 		visited[v] = struct{}{}
+	}
+
+	return nil
+}
+
+func (NonEmpty[S, T]) Validate(value S) error {
+	if len(value) == 0 {
+		return errors.New("empty slice")
 	}
 
 	return nil

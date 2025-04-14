@@ -46,13 +46,13 @@ type Testable interface {
 
 func TestValidator(t *testing.T) {
 	for _, tc := range []Testable{
-		Suite[string, NonEmpty[string]]{
+		Suite[string, NonZero[string]]{
 			{
-				Name:  "non empty string",
+				Name:  "non zero string",
 				Input: "foo bar",
 			},
 			{
-				Name:    "empty string",
+				Name:    "zero string",
 				Input:   "",
 				WantErr: true,
 			},
@@ -325,6 +325,22 @@ func TestValidator(t *testing.T) {
 				Input: []string{},
 			},
 		},
+		Suite[[]int, NonEmpty[[]int, int]]{
+			{
+				Name:  "non-empty slice",
+				Input: []int{1, 2, 3},
+			},
+			{
+				Name:    "empty slice",
+				Input:   []int{},
+				WantErr: true,
+			},
+			{
+				Name:    "nil slice",
+				Input:   nil,
+				WantErr: true,
+			},
+		},
 		Suite[string, MIME[string]]{
 			{
 				Name:  "simple valid mime type",
@@ -462,7 +478,7 @@ func TestValidator(t *testing.T) {
 				WantErr: true,
 			},
 		},
-		Suite[int, And[int, NonEmpty[int], Positive[int]]]{
+		Suite[int, And[int, NonZero[int], Positive[int]]]{
 			{Name: "positive non zero", Input: 2},
 			{Name: "zero", Input: 0, WantErr: true},
 			{Name: "negative", Input: -2, WantErr: true},
@@ -481,7 +497,7 @@ func TestValidator(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	type User struct {
-		Name required.NonEmpty[string] `json:"name"`
+		Name required.NonZero[string] `json:"name"`
 		Age  int
 	}
 

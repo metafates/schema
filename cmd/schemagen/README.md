@@ -28,7 +28,7 @@ Then you can use it with `go:generate` directive (notice the `go tool` prefix)
 //go:generate go tool schemagen -type Foo,Bar
 
 type Foo struct {
-    A required.NonEmpty[string]
+    A required.NonZero[string]
     B optional.Negative[int]
 }
 
@@ -60,7 +60,7 @@ Then you can use it with `go:generate` directive
 //go:generate schemagen -type Foo,Bar
 
 type Foo struct {
-    A required.NonEmpty[string]
+    A required.NonZero[string]
     B optional.Negative[int]
 }
 

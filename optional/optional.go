@@ -25,9 +25,14 @@ type (
 		Custom[T, validate.Any[T]]
 	}
 
-	// NonEmpty accepts all non empty comparable values
-	NonEmpty[T comparable] struct {
-		Custom[T, validate.NonEmpty[T]]
+	// NonZero accepts all non-zero values
+	//
+	// The zero value is:
+	// - 0 for numeric types,
+	// - false for the boolean type, and
+	// - "" (the empty string) for strings.
+	NonZero[T comparable] struct {
+		Custom[T, validate.NonZero[T]]
 	}
 
 	// Positive accepts all positive real numbers and zero
@@ -144,6 +149,11 @@ type (
 		Custom[S, validate.Unique[S, T]]
 	}
 
+	// NonEmpty accepts a non-empty slice (len > 0)
+	NonEmpty[S ~[]T, T comparable] struct {
+		Custom[S, validate.NonEmpty[S, T]]
+	}
+
 	// MIME accepts RFC 1521 mime type string
 	MIME[T constraint.Text] struct {
 		Custom[T, validate.MIME[T]]
@@ -158,13 +168,9 @@ type (
 		Custom[T, validate.UUID[T]]
 	}
 
-	// NonEmptyPrintable combines [NonEmpty] and [Printable]
-	NonEmptyPrintable[T ~string] struct {
-		Custom[T, validate.And[
-			T,
-			validate.NonEmpty[T],
-			validate.Printable[T],
-		]]
+	// NonZeroPrintable combines [NonZero] and [Printable]
+	NonZeroPrintable[T ~string] struct {
+		Custom[T, validate.NonZeroPrintable[T]]
 	}
 
 	// JSON accepts valid json encoded text
