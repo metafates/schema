@@ -3,6 +3,9 @@ test: generate
 	go run ./examples/tour
 	go run ./examples/codegen
 
+bench: generate
+	go test ./... -bench=. -benchmem
+
 coverage:
 	go test -coverprofile=coverage.html ./...
 	go tool cover -html=coverage.html

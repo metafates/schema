@@ -1,10 +1,11 @@
 package testutil
 
-import (
-	"testing"
-)
+type Handle interface {
+	Helper()
+	Fatalf(format string, args ...any)
+}
 
-func Equal[T comparable](t *testing.T, want, actual T) {
+func Equal[T comparable](t Handle, want, actual T) {
 	t.Helper()
 
 	if want != actual {
@@ -12,7 +13,7 @@ func Equal[T comparable](t *testing.T, want, actual T) {
 	}
 }
 
-func NoError(t *testing.T, err error) {
+func NoError(t Handle, err error) {
 	t.Helper()
 
 	if err != nil {
@@ -20,7 +21,7 @@ func NoError(t *testing.T, err error) {
 	}
 }
 
-func Error(t *testing.T, err error) {
+func Error(t Handle, err error) {
 	t.Helper()
 
 	if err == nil {
@@ -28,7 +29,7 @@ func Error(t *testing.T, err error) {
 	}
 }
 
-func Panic(t *testing.T, f func()) {
+func Panic(t Handle, f func()) {
 	t.Helper()
 
 	defer func() {
@@ -40,7 +41,7 @@ func Panic(t *testing.T, f func()) {
 	f()
 }
 
-func NoPanic(t *testing.T, f func()) {
+func NoPanic(t Handle, f func()) {
 	t.Helper()
 
 	defer func() {
