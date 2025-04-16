@@ -83,7 +83,12 @@ type (
 	Base64[T constraint.Text] struct{}
 
 	// Charset accepts text which contains only runes acceptable by filter
+	//
+	// NOTE: empty strings will also pass. Use [NonZeroCharset] if you need non-empty strings
 	Charset[T constraint.Text, F charset.Filter] struct{}
+
+	// NonZeroCharset combines [NonZero] and [Charset]
+	NonZeroCharset[T constraint.Text, F charset.Filter] struct{}
 
 	// Latitude accepts any number in the range [-90; 90]
 	//
@@ -105,11 +110,29 @@ type (
 	// See also [InPast]
 	InFuture[T constraint.Time] struct{}
 
-	// Unique accepts a slice of unique values
+	// Unique accepts a slice-like of unique values
+	//
+	// See [UniqueSlice] for a slice shortcut
 	Unique[S ~[]T, T comparable] struct{}
 
-	// NonEmpty accepts a non-empty slice (len > 0)
+	// Unique accepts a slice of unique values
+	//
+	// See [Unique] for a more generic version
+	UniqueSlice[T comparable] struct {
+		Unique[[]T, T]
+	}
+
+	// NonEmpty accepts a non-empty slice-like (len > 0)
+	//
+	// See [NonEmptySlice] for a slice shortcut
 	NonEmpty[S ~[]T, T any] struct{}
+
+	// NonEmpty accepts a non-empty slice (len > 0)
+	//
+	// See [NonEmpty] for a more generic version
+	NonEmptySlice[T any] struct {
+		NonEmpty[[]T, T]
+	}
 
 	// MIME accepts RFC 1521 mime type string
 	MIME[T constraint.Text] struct{}
@@ -308,6 +331,14 @@ func (Charset[T, F]) Validate(value T) error {
 	}
 
 	return nil
+}
+
+func (NonZeroCharset[T, F]) Validate(value T) error {
+	if len(value) == 0 {
+		return errors.New("empty text")
+	}
+
+	return (*new(Charset[T, F])).Validate(value)
 }
 
 func (Latitude[T]) Validate(value T) error {

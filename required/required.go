@@ -104,17 +104,15 @@ type (
 	}
 
 	// Charset accepts text which contains only runes acceptable by filter
+	//
+	// NOTE: empty strings will also pass. Use [NonZeroCharset] if you need non-empty strings
 	Charset[T constraint.Text, F charset.Filter] struct {
 		Custom[T, validate.Charset[T, F]]
 	}
 
 	// NonZeroCharset combines [NonZero] and [Charset]
-	NonZeroCharset[T ~string, F charset.Filter] struct {
-		Custom[T, validate.And[
-			T,
-			validate.NonZero[T],
-			validate.Charset[T, F],
-		]]
+	NonZeroCharset[T constraint.Text, F charset.Filter] struct {
+		Custom[T, validate.NonZeroCharset[T, F]]
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
@@ -145,14 +143,32 @@ type (
 		Custom[T, validate.InFuture[T]]
 	}
 
-	// Unique accepts an array of unique comparable values
+	// Unique accepts a slice-like of unique values
+	//
+	// See [UniqueSlice] for a slice shortcut
 	Unique[S ~[]T, T comparable] struct {
 		Custom[S, validate.Unique[S, T]]
 	}
 
-	// NonEmpty accepts a non-empty slice (len > 0)
-	NonEmpty[S ~[]T, T comparable] struct {
+	// Unique accepts a slice of unique values
+	//
+	// See [Unique] for a more generic version
+	UniqueSlice[T comparable] struct {
+		Custom[[]T, validate.UniqueSlice[T]]
+	}
+
+	// NonEmpty accepts a non-empty slice-like (len > 0)
+	//
+	// See [NonEmptySlice] for a slice shortcut
+	NonEmpty[S ~[]T, T any] struct {
 		Custom[S, validate.NonEmpty[S, T]]
+	}
+
+	// NonEmpty accepts a non-empty slice (len > 0)
+	//
+	// See [NonEmpty] for a more generic version
+	NonEmptySlice[T any] struct {
+		Custom[[]T, validate.NonEmptySlice[T]]
 	}
 
 	// MIME accepts RFC 1521 mime type string

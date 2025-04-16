@@ -14,6 +14,8 @@ var _ interface {
 } = (*Custom[any, validate.Validator[any]])(nil)
 
 // Scan implements the [sql.Scanner] interface.
+//
+// Use [Custom.Parse] instead if you need to construct this value manually
 func (c *Custom[T, V]) Scan(src any) error {
 	if src == nil {
 		*c = Custom[T, V]{}
