@@ -42,33 +42,29 @@ type (
 	// - "" (the empty string) for strings.
 	//
 	// See [Zero]
-	NonZero[T comparable] struct {
-		Not[T, Zero[T]]
-	}
+	NonZero[T comparable] struct{}
 
 	// Positive accepts all positive real numbers excluding zero.
 	//
-	// See [PositiveZero] for zero inlcuding variant.
+	// See [Positive0] for zero inlcuding variant.
 	Positive[T constraint.Real] struct{}
 
 	// Negative accepts all negative real numbers excluding zero.
 	//
-	// See [NegativeZero] for zero including variant.
-	Negative[T constraint.Real] struct {
-		Not[T, PositiveZero[T]]
-	}
+	// See [Negative0] for zero including variant.
+	Negative[T constraint.Real] struct{}
 
-	// PositiveZero accepts all positive real numbers including zero.
+	// Positive0 accepts all positive real numbers including zero.
 	//
 	// See [Positive] for zero excluding variant.
-	PositiveZero[T constraint.Real] struct {
+	Positive0[T constraint.Real] struct {
 		Or[T, Positive[T], Zero[T]]
 	}
 
-	// NegativeZero accepts all negative real numbers including zero.
+	// Negative0 accepts all negative real numbers including zero.
 	//
 	// See [Negative] for zero excluding variant.
-	NegativeZero[T constraint.Real] struct {
+	Negative0[T constraint.Real] struct {
 		Or[T, Negative[T], Zero[T]]
 	}
 
@@ -76,9 +72,7 @@ type (
 	Even[T constraint.Integer] struct{}
 
 	// Odd accepts integers not divisible by two.
-	Odd[T constraint.Integer] struct {
-		Not[T, Even[T]]
-	}
+	Odd[T constraint.Integer] struct{}
 
 	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>".
 	Email[T constraint.Text] struct{}
@@ -114,13 +108,13 @@ type (
 	// Base64 accepts valid base64 encoded strings.
 	Base64[T constraint.Text] struct{}
 
-	// Charset accepts text which contains only runes acceptable by filter.
+	// Charset0 accepts (possibly empty) text which contains only runes acceptable by filter.
 	//
-	// NOTE: empty strings will also pass. Use [NonZeroCharset] if you need non-empty strings
-	Charset[T constraint.Text, F charset.Filter] struct{}
+	// See [Charset] for a non-empty variant.
+	Charset0[T constraint.Text, F charset.Filter] struct{}
 
-	// NonZeroCharset combines [NonZero] and [Charset]
-	NonZeroCharset[T constraint.Text, F charset.Filter] struct{}
+	// Charset accepts non-empty text which contains only runes acceptable by filter.
+	Charset[T constraint.Text, F charset.Filter] struct{}
 
 	// Latitude accepts any number in the range [-90; 90]
 	//
@@ -215,7 +209,6 @@ func (Any[T]) Validate(T) error {
 	return nil
 }
 
-func (Zero[T]) String() string { return "zero value" }
 func (Zero[T]) Validate(value T) error {
 	var empty T
 
@@ -226,7 +219,16 @@ func (Zero[T]) Validate(value T) error {
 	return nil
 }
 
-func (Positive[T]) String() string { return "positive" }
+func (NonZero[T]) Validate(value T) error {
+	var empty T
+
+	if value == empty {
+		return errors.New("zero value")
+	}
+
+	return nil
+}
+
 func (Positive[T]) Validate(value T) error {
 	if value < 0 {
 		return errors.New("negative value")
@@ -239,10 +241,29 @@ func (Positive[T]) Validate(value T) error {
 	return nil
 }
 
-func (Even[T]) String() string { return "even" }
+func (Negative[T]) Validate(value T) error {
+	if value > 0 {
+		return errors.New("positive value")
+	}
+
+	if value == 0 {
+		return errors.New("zero value")
+	}
+
+	return nil
+}
+
 func (Even[T]) Validate(value T) error {
 	if value%2 != 0 {
 		return fmt.Errorf("odd value")
+	}
+
+	return nil
+}
+
+func (Odd[T]) Validate(value T) error {
+	if value%2 == 0 {
+		return fmt.Errorf("even value")
 	}
 
 	return nil
@@ -349,7 +370,7 @@ func (Base64[T]) Validate(value T) error {
 	return nil
 }
 
-func (Charset[T, F]) Validate(value T) error {
+func (Charset0[T, F]) Validate(value T) error {
 	var f F
 
 	for _, r := range string(value) {
@@ -361,12 +382,12 @@ func (Charset[T, F]) Validate(value T) error {
 	return nil
 }
 
-func (NonZeroCharset[T, F]) Validate(value T) error {
+func (Charset[T, F]) Validate(value T) error {
 	if len(value) == 0 {
 		return errors.New("empty text")
 	}
 
-	return (*new(Charset[T, F])).Validate(value)
+	return (*new(Charset0[T, F])).Validate(value)
 }
 
 func (Latitude[T]) Validate(value T) error {
@@ -516,5 +537,5 @@ func (Not[T, V]) Validate(value T) error {
 		return nil
 	}
 
-	return errors.New("not: " + fmt.Sprint(v))
+	return errors.New(fmt.Sprint(v))
 }

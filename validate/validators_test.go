@@ -203,7 +203,7 @@ var suites = []Testable{
 			WantErr: true,
 		},
 	},
-	Suite[string, Charset[string, charset.ASCII]]{
+	Suite[string, Charset0[string, charset.ASCII]]{
 		{
 			Name:  "ascii only",
 			Input: "The quick brown fox jumps over the lazy dog",

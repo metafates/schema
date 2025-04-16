@@ -99,7 +99,7 @@ func (Not[F]) Filter(r rune) error {
 		return nil
 	}
 
-	return errors.New("not: " + fmt.Sprint(f))
+	return errors.New(fmt.Sprint(f))
 }
 
 func assert(condition bool, msg string) error {

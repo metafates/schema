@@ -118,12 +118,12 @@ type (
 	//
 	// NOTE: empty strings will also pass. Use [NonZeroCharset] if you need non-empty strings
 	Charset[T constraint.Text, F charset.Filter] struct {
-		Custom[T, validate.Charset[T, F]]
+		Custom[T, validate.Charset0[T, F]]
 	}
 
 	// NonZeroCharset combines [NonZero] and [Charset]
 	NonZeroCharset[T constraint.Text, F charset.Filter] struct {
-		Custom[T, validate.NonZeroCharset[T, F]]
+		Custom[T, validate.Charset[T, F]]
 	}
 
 	// Latitude accepts any number in the range [-90; 90]

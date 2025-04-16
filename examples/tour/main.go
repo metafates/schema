@@ -16,7 +16,7 @@ import (
 
 // Let's assume we have a request which accepts an user
 type User struct {
-	// User name is required and must not be empty
+	// User name is required and must not be empty string
 	Name required.NonZero[string] `json:"name"`
 
 	// Birth date is optional, which means it could be null.
@@ -66,7 +66,7 @@ type ASCIIShortStr struct {
 	// you can also use [validate.Or] to ensure that at least one condition is satisfied.
 	validate.And[
 		string,
-		validate.Charset[string, charset.ASCII],
+		validate.Charset0[string, charset.ASCII],
 		ShortStr,
 	]
 }
