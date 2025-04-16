@@ -9,6 +9,7 @@ package optional
 import (
 	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate/charset"
 )
 
 type (
@@ -95,25 +96,23 @@ type (
 		Custom[T, validate.CIDR[T]]
 	}
 
-	// Printable accepts strings consisting of only printable runes.
-	// See [unicode.IsPrint] for more information
-	Printable[T constraint.Text] struct {
-		Custom[T, validate.Printable[T]]
-	}
-
 	// Base64 accepts valid base64 encoded strings
 	Base64[T constraint.Text] struct {
 		Custom[T, validate.Base64[T]]
 	}
 
-	// ASCII accepts ascii-only strings
-	ASCII[T constraint.Text] struct {
-		Custom[T, validate.ASCII[T]]
+	// Charset accepts text which contains only runes acceptable by filter
+	Charset[T constraint.Text, F charset.Filter] struct {
+		Custom[T, validate.Charset[T, F]]
 	}
 
-	// PrintableASCII combines [Printable] and [ASCII]
-	PrintableASCII[T constraint.Text] struct {
-		Custom[T, validate.PrintableASCII[T]]
+	// NonZeroCharset combines [NonZero] and [Charset]
+	NonZeroCharset[T ~string, F charset.Filter] struct {
+		Custom[T, validate.And[
+			T,
+			validate.NonZero[T],
+			validate.Charset[T, F],
+		]]
 	}
 
 	// Latitude accepts any number in the range [-90; 90]
@@ -166,11 +165,6 @@ type (
 	//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 	UUID[T constraint.Text] struct {
 		Custom[T, validate.UUID[T]]
-	}
-
-	// NonZeroPrintable combines [NonZero] and [Printable]
-	NonZeroPrintable[T ~string] struct {
-		Custom[T, validate.NonZeroPrintable[T]]
 	}
 
 	// JSON accepts valid json encoded text

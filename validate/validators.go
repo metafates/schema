@@ -13,11 +13,11 @@ import (
 	"net/url"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/internal/validateutil/iso"
 	"github.com/metafates/schema/internal/validateutil/uuid"
+	"github.com/metafates/schema/validate/charset"
 )
 
 type (
@@ -66,29 +66,24 @@ type (
 	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
 	IP[T constraint.Text] struct{}
 
+	// IP accepts an IP V4 address (e.g. "192.0.2.1").
+	IPV4[T constraint.Text] struct{}
+
+	// IP accepts an IP V6 address, including IPv4-mapped IPv6 addresses.
+	// The address can be regular IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
+	IPV6[T constraint.Text] struct{}
+
 	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address
 	MAC[T constraint.Text] struct{}
 
 	// CIDR accepts CIDR notation IP address and prefix length, like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291
 	CIDR[T constraint.Text] struct{}
 
-	// Printable accepts strings consisting of only printable runes.
-	// See [unicode.IsPrint] for more information
-	Printable[T constraint.Text] struct{}
-
-	// NonZeroPrintable combines [NonZero] and [Printable]
-	NonZeroPrintable[T ~string] struct {
-		And[T, NonZero[T], Printable[T]]
-	}
-
 	// Base64 accepts valid base64 encoded strings
 	Base64[T constraint.Text] struct{}
 
-	// ASCII accepts ascii-only strings
-	ASCII[T constraint.Text] struct{}
-
-	// PrintableASCII combines [Printable] and [ASCII]
-	PrintableASCII[T constraint.Text] struct{}
+	// Charset accepts text which contains only runes acceptable by filter
+	Charset[T constraint.Text, F charset.Filter] struct{}
 
 	// Latitude accepts any number in the range [-90; 90]
 	//
@@ -248,6 +243,32 @@ func (IP[T]) Validate(value T) error {
 	return nil
 }
 
+func (IPV4[T]) Validate(value T) error {
+	a, err := netip.ParseAddr(string(value))
+	if err != nil {
+		return err
+	}
+
+	if !a.Is4() {
+		return errors.New("ipv6 address")
+	}
+
+	return nil
+}
+
+func (IPV6[T]) Validate(value T) error {
+	a, err := netip.ParseAddr(string(value))
+	if err != nil {
+		return err
+	}
+
+	if !a.Is6() {
+		return errors.New("ipv6 address")
+	}
+
+	return nil
+}
+
 func (MAC[T]) Validate(value T) error {
 	_, err := net.ParseMAC(string(value))
 	if err != nil {
@@ -266,18 +287,6 @@ func (CIDR[T]) Validate(value T) error {
 	return nil
 }
 
-func (Printable[T]) Validate(value T) error {
-	contains := strings.ContainsFunc(string(value), func(r rune) bool {
-		return !unicode.IsPrint(r)
-	})
-
-	if contains {
-		return errors.New("string contains unprintable character")
-	}
-
-	return nil
-}
-
 func (Base64[T]) Validate(value T) error {
 	// TODO: implement it without allocating buffer and converting to string
 
@@ -289,24 +298,12 @@ func (Base64[T]) Validate(value T) error {
 	return nil
 }
 
-func (ASCII[T]) Validate(value T) error {
-	for i := 0; i < len(value); i++ {
-		if value[i] > unicode.MaxASCII {
-			return errors.New("string contains non-ascii character")
-		}
-	}
+func (Charset[T, F]) Validate(value T) error {
+	var f F
 
-	return nil
-}
-
-func (PrintableASCII[T]) Validate(value T) error {
-	for i := 0; i < len(value); i++ {
-		if value[i] > unicode.MaxASCII {
-			return errors.New("string contains non-ascii character")
-		}
-
-		if !unicode.IsPrint(rune(value[i])) {
-			return errors.New("string contains unprintable character")
+	for _, r := range string(value) {
+		if err := f.Filter(r); err != nil {
+			return err
 		}
 	}
 

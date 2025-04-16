@@ -11,6 +11,7 @@ import (
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate/charset"
 )
 
 // Let's assume we have a request which accepts an user
@@ -65,7 +66,7 @@ type ASCIIShortStr struct {
 	// you can also use [validate.Or] to ensure that at least one condition is satisfied.
 	validate.And[
 		string,
-		validate.ASCII[string],
+		validate.Charset[string, charset.ASCII],
 		ShortStr,
 	]
 }

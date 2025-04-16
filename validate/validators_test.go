@@ -9,6 +9,7 @@ import (
 	"github.com/metafates/schema/internal/testutil"
 	"github.com/metafates/schema/required"
 	. "github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate/charset"
 )
 
 type TestCase[T any] struct {
@@ -211,22 +212,6 @@ var suites = []Testable{
 			WantErr: true,
 		},
 	},
-	Suite[string, Printable[string]]{
-		{
-			Name:  "printable string",
-			Input: "lorem ipsum❤️",
-		},
-		{
-			Name:    "mixed with unprintable",
-			Input:   "lorem ipsum\x00",
-			WantErr: true,
-		},
-		{
-			Name:    "all unprintable",
-			Input:   "\x1B\x08",
-			WantErr: true,
-		},
-	},
 	Suite[string, Base64[string]]{
 		{
 			Name:  "valid base64 string",
@@ -238,7 +223,7 @@ var suites = []Testable{
 			WantErr: true,
 		},
 	},
-	Suite[string, ASCII[string]]{
+	Suite[string, Charset[string, charset.ASCII]]{
 		{
 			Name:  "ascii only",
 			Input: "The quick brown fox jumps over the lazy dog",
@@ -250,22 +235,6 @@ var suites = []Testable{
 		{
 			Name:    "non-ascii",
 			Input:   "Eĥoŝanĝoj ĉiuĵaŭde.", // esperanto btw
-			WantErr: true,
-		},
-	},
-	Suite[string, PrintableASCII[string]]{
-		{
-			Name:  "ascii only",
-			Input: "The quick brown fox jumps over the lazy dog",
-		},
-		{
-			Name:    "ascii with unprintable ascii",
-			Input:   "hello\x1B",
-			WantErr: true,
-		},
-		{
-			Name:    "non-ascii",
-			Input:   "Eĥoŝanĝoj ĉiuĵaŭde.",
 			WantErr: true,
 		},
 	},

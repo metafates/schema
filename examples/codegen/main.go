@@ -8,6 +8,7 @@ import (
 	schemajson "github.com/metafates/schema/encoding/json"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
+	"github.com/metafates/schema/validate/charset"
 
 	_ "embed"
 )
@@ -15,9 +16,9 @@ import (
 //go:generate schemagen -type User
 
 type User struct {
-	ID    required.UUID[string]             `json:"id"`
-	Name  required.NonZeroPrintable[string] `json:"name"`
-	Birth optional.InPast[time.Time]        `json:"birth"`
+	ID    required.UUID[string]                          `json:"id"`
+	Name  required.NonZeroCharset[string, charset.Print] `json:"name"`
+	Birth optional.InPast[time.Time]                     `json:"birth"`
 
 	Meta struct {
 		Preferences optional.Unique[[]string, string] `json:"preferences"`
@@ -27,15 +28,15 @@ type User struct {
 	Friends []UserFriend `json:"friends"`
 
 	Addresses []struct {
-		Tag       optional.NonZeroPrintable[string] `json:"tag"`
-		Latitude  required.Latitude[float64]        `json:"latitude"`
-		Longitude required.Longitude[float64]       `json:"longitude"`
+		Tag       optional.NonZeroCharset[string, charset.Print] `json:"tag"`
+		Latitude  required.Latitude[float64]                     `json:"latitude"`
+		Longitude required.Longitude[float64]                    `json:"longitude"`
 	} `json:"addresses"`
 }
 
 type UserFriend struct {
-	ID   required.UUID[string]             `json:"id"`
-	Name required.NonZeroPrintable[string] `json:"name"`
+	ID   required.UUID[string]                          `json:"id"`
+	Name required.NonZeroCharset[string, charset.Print] `json:"name"`
 }
 
 var (
