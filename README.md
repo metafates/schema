@@ -322,7 +322,7 @@ BenchmarkUnmarshalJSON/codegen/without_validation-12      45649 ns/op
 ## Validators
 
 Not listed here yet, but can see a full list
-of available validators in [validate/validate.go](./validate/validate.go)
+of available validators in [validate/validators.go](./validate/validators.go)
 
 ## TODO
 
