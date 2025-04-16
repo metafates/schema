@@ -410,7 +410,7 @@ func (MIME[T]) Validate(value T) error {
 
 func (UUID[T]) Validate(value T) error {
 	// converting to bytes is cheaper than vice versa
-	if err := uuid.Validate([]byte(value)); err != nil {
+	if err := uuid.Validate(string(value)); err != nil {
 		return err
 	}
 
@@ -418,7 +418,7 @@ func (UUID[T]) Validate(value T) error {
 }
 
 func (JSON[T]) Validate(value T) error {
-	if !json.Valid([]byte(value)) {
+	if !json.Valid([]byte(string(value))) {
 		return errors.New("invalid json")
 	}
 

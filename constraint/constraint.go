@@ -20,7 +20,7 @@ type Unsigned interface {
 
 type Real interface{ Float | Integer }
 
-type Text interface{ ~string | ~[]byte }
+type Text interface{ ~string | ~[]rune | ~[]byte }
 
 type Comparable[T any] interface{ Compare(T) int }
 

@@ -1,9 +1,9 @@
 package uuid
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 // xvalues returns the value of a byte as a hexadecimal digit or 255.
@@ -36,7 +36,7 @@ func xtob(x1, x2 byte) (byte, bool) {
 // Validate if given string is a valid UUID.
 //
 // https://github.com/google/uuid/blob/0f11ee6918f41a04c201eceeadf612a377bc7fbc/uuid.go#L195
-func Validate(s []byte) error {
+func Validate(s string) error {
 	const standardLen = 36
 
 	switch len(s) {
@@ -45,7 +45,7 @@ func Validate(s []byte) error {
 
 	// UUID with "urn:uuid:" prefix
 	case standardLen + 9:
-		if !bytes.EqualFold(s[:9], []byte("urn:uuid:")) {
+		if !strings.EqualFold(s[:9], "urn:uuid:") {
 			return fmt.Errorf("invalid urn prefix: %q", s[:9])
 		}
 		s = s[9:]
