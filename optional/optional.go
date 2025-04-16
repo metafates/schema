@@ -86,6 +86,17 @@ type (
 		Custom[T, validate.IP[T]]
 	}
 
+	// IP accepts an IP V4 address (e.g. "192.0.2.1").
+	IPV4[T constraint.Text] struct {
+		Custom[T, validate.IPV4[T]]
+	}
+
+	// IP accepts an IP V6 address, including IPv4-mapped IPv6 addresses.
+	// The address can be regular IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
+	IPV6[T constraint.Text] struct {
+		Custom[T, validate.IPV6[T]]
+	}
+
 	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address
 	MAC[T constraint.Text] struct {
 		Custom[T, validate.MAC[T]]
