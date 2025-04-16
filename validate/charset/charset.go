@@ -2,6 +2,7 @@ package charset
 
 import (
 	"errors"
+	"fmt"
 	"unicode"
 )
 
@@ -92,12 +93,13 @@ func (Or[A, B]) Filter(r rune) error {
 }
 
 func (Not[F]) Filter(r rune) error {
-	if err := (*new(F)).Filter(r); err != nil {
+	var f F
+
+	if err := f.Filter(r); err != nil {
 		return nil
 	}
 
-	// TODO: find a way to make this message less generic?
-	return errors.New("rune did not match filter")
+	return errors.New("not: " + fmt.Sprint(f))
 }
 
 func assert(condition bool, msg string) error {

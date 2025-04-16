@@ -21,68 +21,100 @@ import (
 )
 
 type (
-	// Any accepts any value of T
+	// Any accepts any value of T.
 	Any[T any] struct{}
 
-	// NonZero accepts all non-zero values
+	// Zero accepts all zero values.
 	//
 	// The zero value is:
 	// - 0 for numeric types,
 	// - false for the boolean type, and
 	// - "" (the empty string) for strings.
-	NonZero[T comparable] struct{}
-
-	// Positive accepts all positive real numbers and zero
 	//
-	// See also [Negative]
+	// See [NonZero]
+	Zero[T comparable] struct{}
+
+	// NonZero accepts all non-zero values.
+	//
+	// The zero value is:
+	// - 0 for numeric types,
+	// - false for the boolean type, and
+	// - "" (the empty string) for strings.
+	//
+	// See [Zero]
+	NonZero[T comparable] struct {
+		Not[T, Zero[T]]
+	}
+
+	// Positive accepts all positive real numbers excluding zero.
+	//
+	// See [PositiveZero] for zero inlcuding variant.
 	Positive[T constraint.Real] struct{}
 
-	// Negative accepts all negative real numbers and zero
+	// Negative accepts all negative real numbers excluding zero.
 	//
-	// See also [Positive]
-	Negative[T constraint.Real] struct{}
+	// See [NegativeZero] for zero including variant.
+	Negative[T constraint.Real] struct {
+		Not[T, PositiveZero[T]]
+	}
 
-	// Even accepts integers divisible by two
+	// PositiveZero accepts all positive real numbers including zero.
+	//
+	// See [Positive] for zero excluding variant.
+	PositiveZero[T constraint.Real] struct {
+		Or[T, Positive[T], Zero[T]]
+	}
+
+	// NegativeZero accepts all negative real numbers including zero.
+	//
+	// See [Negative] for zero excluding variant.
+	NegativeZero[T constraint.Real] struct {
+		Or[T, Negative[T], Zero[T]]
+	}
+
+	// Even accepts integers divisible by two.
 	Even[T constraint.Integer] struct{}
 
-	// Odd accepts integers not divisible by two
-	Odd[T constraint.Integer] struct{}
+	// Odd accepts integers not divisible by two.
+	Odd[T constraint.Integer] struct {
+		Not[T, Even[T]]
+	}
 
-	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"
+	// Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>".
 	Email[T constraint.Text] struct{}
 
 	// URL accepts a single url.
-	// The url may be relative (a path, without a host) or absolute (starting with a scheme)
+	// The url may be relative (a path, without a host) or absolute (starting with a scheme).
 	//
-	// See also [HTTPURL]
+	// See also [HTTPURL].
 	URL[T constraint.Text] struct{}
 
 	// HTTPURL accepts a single http(s) url.
 	//
-	// See also [URL]
+	// See also [URL].
 	HTTPURL[T constraint.Text] struct{}
 
 	// IP accepts an IP address.
-	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
+	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
 	IP[T constraint.Text] struct{}
 
 	// IP accepts an IP V4 address (e.g. "192.0.2.1").
 	IPV4[T constraint.Text] struct{}
 
 	// IP accepts an IP V6 address, including IPv4-mapped IPv6 addresses.
-	// The address can be regular IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18")
+	// The address can be regular IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
 	IPV6[T constraint.Text] struct{}
 
-	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address
+	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address.
 	MAC[T constraint.Text] struct{}
 
-	// CIDR accepts CIDR notation IP address and prefix length, like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291
+	// CIDR accepts CIDR notation IP address and prefix length, like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291.
 	CIDR[T constraint.Text] struct{}
 
-	// Base64 accepts valid base64 encoded strings
+	// Base64 accepts valid base64 encoded strings.
 	Base64[T constraint.Text] struct{}
 
-	// Charset accepts text which contains only runes acceptable by filter
+	// Charset accepts text which contains only runes acceptable by filter.
 	//
 	// NOTE: empty strings will also pass. Use [NonZeroCharset] if you need non-empty strings
 	Charset[T constraint.Text, F charset.Filter] struct{}
@@ -183,43 +215,34 @@ func (Any[T]) Validate(T) error {
 	return nil
 }
 
-func (NonZero[T]) Validate(value T) error {
+func (Zero[T]) String() string { return "zero value" }
+func (Zero[T]) Validate(value T) error {
 	var empty T
 
-	if value == empty {
-		return errors.New("empty value")
+	if value != empty {
+		return errors.New("non-zero value")
 	}
 
 	return nil
 }
 
+func (Positive[T]) String() string { return "positive" }
 func (Positive[T]) Validate(value T) error {
 	if value < 0 {
 		return errors.New("negative value")
 	}
 
-	return nil
-}
-
-func (Negative[T]) Validate(value T) error {
-	if value > 0 {
-		return errors.New("positive value")
+	if value == 0 {
+		return errors.New("zero value")
 	}
 
 	return nil
 }
 
+func (Even[T]) String() string { return "even" }
 func (Even[T]) Validate(value T) error {
 	if value%2 != 0 {
-		return fmt.Errorf("value must be even")
-	}
-
-	return nil
-}
-
-func (Odd[T]) Validate(value T) error {
-	if value%2 == 0 {
-		return fmt.Errorf("value must be odd")
+		return fmt.Errorf("odd value")
 	}
 
 	return nil
@@ -487,9 +510,11 @@ func (Or[T, A, B]) Validate(value T) error {
 }
 
 func (Not[T, V]) Validate(value T) error {
-	if err := (*new(V)).Validate(value); err != nil {
+	var v V
+
+	if err := v.Validate(value); err != nil {
 		return nil
 	}
 
-	return errors.New("validation failed")
+	return errors.New("not: " + fmt.Sprint(v))
 }

@@ -84,34 +84,14 @@ var suites = []Testable{
 		},
 	},
 	Suite[int, Positive[int]]{
-		{
-			Name:  "positive",
-			Input: 42,
-		},
-		{
-			Name:  "zero",
-			Input: 0,
-		},
-		{
-			Name:    "negative",
-			Input:   -14,
-			WantErr: true,
-		},
+		{Name: "positive", Input: 42},
+		{Name: "zero", Input: 0, WantErr: true},
+		{Name: "negative", Input: -14, WantErr: true},
 	},
 	Suite[int, Negative[int]]{
-		{
-			Name:    "positive",
-			Input:   42,
-			WantErr: true,
-		},
-		{
-			Name:  "zero",
-			Input: 0,
-		},
-		{
-			Name:  "negative",
-			Input: -14,
-		},
+		{Name: "positive", Input: 42, WantErr: true},
+		{Name: "zero", Input: 0, WantErr: true},
+		{Name: "negative", Input: -14},
 	},
 	Suite[string, Email[string]]{
 		{
@@ -479,6 +459,11 @@ var suites = []Testable{
 		{Name: "zero", Input: 0},
 		{Name: "negative even", Input: -2},
 		{Name: "negative odd", Input: -3, WantErr: true},
+	},
+	Suite[int, Not[int, Positive[int]]]{
+		{Name: "positive", Input: 42, WantErr: true},
+		{Name: "zero", Input: 0},
+		{Name: "negative", Input: -14},
 	},
 }
 
