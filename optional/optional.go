@@ -232,6 +232,7 @@ func (c *Custom[T, V]) TypeValidate() error {
 		return validate.ValidationError{Inner: err}
 	}
 
+	// validate nested types recursively
 	if err := validate.Validate(&c.value); err != nil {
 		return err
 	}

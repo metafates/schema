@@ -164,14 +164,19 @@ type (
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
 	//
-	// See also [Or]
+	// See also [Or], [Not]
 	And[T any, A Validator[T], B Validator[T]] struct{}
 
 	// And is a meta validator that combines other validators with OR operator.
 	// Validators are called in the same order as type parameters.
 	//
-	// See also [And]
+	// See also [And], [Not]
 	Or[T any, A Validator[T], B Validator[T]] struct{}
+
+	// Not is a meta validator that inverts given validator.
+	//
+	// See also [And], [Or]
+	Not[T any, V Validator[T]] struct{}
 )
 
 func (Any[T]) Validate(T) error {
@@ -479,4 +484,12 @@ func (Or[T, A, B]) Validate(value T) error {
 	}
 
 	return errors.Join(errA, errB)
+}
+
+func (Not[T, V]) Validate(value T) error {
+	if err := (*new(V)).Validate(value); err != nil {
+		return nil
+	}
+
+	return errors.New("validation failed")
 }

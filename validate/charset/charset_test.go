@@ -78,6 +78,12 @@ func TestFilter(t *testing.T) {
 			valid:   []rune{'A', '1'},
 			invalid: []rune{' ', '?'},
 		},
+		{
+			name:    "not",
+			filter:  Not[Number]{},
+			valid:   []rune{'A', '?'},
+			invalid: []rune{'1', '0'},
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("valid", func(t *testing.T) {

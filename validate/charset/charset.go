@@ -48,6 +48,9 @@ type (
 
 	// Or is a meta filter that combines multiple filters using OR operator
 	Or[A, B Filter] struct{}
+
+	// Not is a meta filter that inverts given filter
+	Not[F Filter] struct{}
 )
 
 func (Any) Filter(rune) error       { return nil }
@@ -86,6 +89,15 @@ func (Or[A, B]) Filter(r rune) error {
 	}
 
 	return errors.Join(errA, errB)
+}
+
+func (Not[F]) Filter(r rune) error {
+	if err := (*new(F)).Filter(r); err != nil {
+		return nil
+	}
+
+	// TODO: find a way to make this message less generic?
+	return errors.New("rune did not match filter")
 }
 
 func assert(condition bool, msg string) error {
