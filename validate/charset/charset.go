@@ -6,6 +6,7 @@ import (
 	"unicode"
 )
 
+// Filter represents charset filter
 type Filter interface {
 	Filter(r rune) error
 }

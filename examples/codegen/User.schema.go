@@ -15,7 +15,7 @@ import (
 func _() {
 	type locked struct {
 		ID    required.UUID[string]                          `json:"id"`
-		Name  required.NonZeroCharset[string, charset.Print] `json:"name"`
+		Name  required.Charset[string, charset.Print] `json:"name"`
 		Birth optional.InPast[time.Time]                     `json:"birth"`
 		Meta  struct {
 			Preferences optional.UniqueSlice[string] `json:"preferences"`

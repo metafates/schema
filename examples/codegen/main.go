@@ -16,9 +16,9 @@ import (
 //go:generate schemagen -type User
 
 type User struct {
-	ID    required.UUID[string]                          `json:"id"`
-	Name  required.NonZeroCharset[string, charset.Print] `json:"name"`
-	Birth optional.InPast[time.Time]                     `json:"birth"`
+	ID    required.UUID[string]                   `json:"id"`
+	Name  required.Charset[string, charset.Print] `json:"name"`
+	Birth optional.InPast[time.Time]              `json:"birth"`
 
 	Meta struct {
 		Preferences optional.UniqueSlice[string] `json:"preferences"`
@@ -35,8 +35,8 @@ type User struct {
 }
 
 type UserFriend struct {
-	ID   required.UUID[string]                          `json:"id"`
-	Name required.NonZeroCharset[string, charset.Print] `json:"name"`
+	ID   required.UUID[string]                   `json:"id"`
+	Name required.Charset[string, charset.Print] `json:"name"`
 }
 
 var (

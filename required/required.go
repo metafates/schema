@@ -114,15 +114,15 @@ type (
 		Custom[T, validate.Base64[T]]
 	}
 
-	// Charset accepts text which contains only runes acceptable by filter
+	// Charset0 accepts (possibly empty) text which contains only runes acceptable by filter.
 	//
-	// NOTE: empty strings will also pass. Use [NonZeroCharset] if you need non-empty strings
-	Charset[T constraint.Text, F charset.Filter] struct {
+	// See [Charset] for a non-empty variant.
+	Charset0[T constraint.Text, F charset.Filter] struct {
 		Custom[T, validate.Charset0[T, F]]
 	}
 
-	// NonZeroCharset combines [NonZero] and [Charset]
-	NonZeroCharset[T constraint.Text, F charset.Filter] struct {
+	// Charset accepts non-empty text which contains only runes acceptable by filter.
+	Charset[T constraint.Text, F charset.Filter] struct {
 		Custom[T, validate.Charset[T, F]]
 	}
 
