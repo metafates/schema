@@ -18,8 +18,8 @@ func _() {
 		Name  required.NonZeroCharset[string, charset.Print] `json:"name"`
 		Birth optional.InPast[time.Time]                     `json:"birth"`
 		Meta  struct {
-			Preferences optional.Unique[[]string, string] `json:"preferences"`
-			Admin       bool                              `json:"admin"`
+			Preferences optional.UniqueSlice[string] `json:"preferences"`
+			Admin       bool                         `json:"admin"`
 		} `json:"meta"`
 		Friends   []UserFriend `json:"friends"`
 		Addresses []struct {
