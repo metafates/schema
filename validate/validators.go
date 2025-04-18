@@ -114,6 +114,8 @@ type (
 	Charset0[T constraint.Text, F charset.Filter] struct{}
 
 	// Charset accepts non-empty text which contains only runes acceptable by filter.
+	//
+	// See also [Charset0]
 	Charset[T constraint.Text, F charset.Filter] struct{}
 
 	// Latitude accepts any number in the range [-90; 90]

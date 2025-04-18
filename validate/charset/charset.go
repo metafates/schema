@@ -55,6 +55,21 @@ type (
 	Not[F Filter] struct{}
 )
 
+// common aliases
+type (
+	// ASCIINumber intersects [ASCII] and [Number]
+	ASCIINumber struct{ And[ASCII, Number] }
+
+	// ASCIIPrint intersects [ASCII] and [Print]
+	ASCIIPrint struct{ And[ASCII, Print] }
+
+	// ASCIILetter intersects [ASCII] and [Letter]
+	ASCIILetter struct{ And[ASCII, Letter] }
+
+	// ASCIIPunct intersects [ASCII] and [Punct]
+	ASCIIPunct struct{ And[ASCII, Punct] }
+)
+
 func (Any) Filter(rune) error       { return nil }
 func (ASCII) Filter(r rune) error   { return assert(r <= unicode.MaxASCII, "non-ascii character") }
 func (Graphic) Filter(r rune) error { return assert(unicode.IsGraphic(r), "non-graphic character") }
