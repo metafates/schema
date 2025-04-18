@@ -28,9 +28,9 @@ type User struct {
 	Friends []UserFriend `json:"friends"`
 
 	Addresses []struct {
-		Tag       optional.NonZeroCharset[string, charset.Print] `json:"tag"`
-		Latitude  required.Latitude[float64]                     `json:"latitude"`
-		Longitude required.Longitude[float64]                    `json:"longitude"`
+		Tag       optional.Charset[string, charset.Print] `json:"tag"`
+		Latitude  required.Latitude[float64]              `json:"latitude"`
+		Longitude required.Longitude[float64]             `json:"longitude"`
 	} `json:"addresses"`
 }
 

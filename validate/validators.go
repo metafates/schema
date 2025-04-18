@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"github.com/metafates/schema/constraint"
-	"github.com/metafates/schema/internal/validateutil/iso"
-	"github.com/metafates/schema/internal/validateutil/uuid"
+	"github.com/metafates/schema/internal/iso"
+	"github.com/metafates/schema/internal/uuid"
 	"github.com/metafates/schema/validate/charset"
 )
 
