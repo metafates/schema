@@ -250,7 +250,7 @@ func (c Custom[T, V]) HasValue() bool { return c.hasValue }
 //
 // Panics if value was not validated yet
 func (c Custom[T, V]) Get() (T, bool) {
-	if c.hasValue && !c.validated {
+	if !c.validated {
 		panic("called Value() on unvalidated value")
 	}
 

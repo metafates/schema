@@ -7,6 +7,41 @@ import (
 	"github.com/metafates/schema/internal/testutil"
 )
 
+func TestCustom_Parse(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		value   int
+		wantErr bool
+	}{
+		{name: "valid", value: 5},
+		{name: "invalid", value: -2, wantErr: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var positive Positive[int]
+
+			err := positive.Parse(tc.value)
+
+			if tc.wantErr {
+				testutil.Error(t, err)
+				testutil.Equal(t, false, positive.validated)
+				testutil.Equal(t, false, positive.hasValue)
+				testutil.Equal(t, 0, positive.value)
+				testutil.Panic(t, func() {
+					positive.Get()
+				})
+			} else {
+				testutil.NoError(t, err)
+				testutil.Equal(t, true, positive.validated)
+				testutil.Equal(t, true, positive.hasValue)
+				testutil.Equal(t, tc.value, positive.value)
+				testutil.NoPanic(t, func() {
+					positive.Get()
+				})
+			}
+		})
+	}
+}
+
 func TestRequired(t *testing.T) {
 	t.Run("missing value", func(t *testing.T) {
 		var foo Any[string]
