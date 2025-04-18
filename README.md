@@ -326,11 +326,10 @@ of available validators in [validate/validators.go](./validate/validators.go)
 
 ## TODO
 
-- [ ] Support for manual construction (similar to `.parse(...)` in zod) (using codegen)
+- [x] Support for manual construction (similar to `.parse(...)` in zod) (using codegen)
 - [ ] Stabilize API
 - [ ] Better documentation
 - [x] More tests
 - [x] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
-- [ ] Think about validating gRPC generated structs somehow (codegen?)
 - [x] Add benchmarks for validators itself. E.g. email validator
 - [ ] More validation types as seen in https://github.com/go-playground/validator
