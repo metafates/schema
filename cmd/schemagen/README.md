@@ -11,8 +11,6 @@ Unless performance is top-priority and validation is indeed a bottleneck (usuall
 
 ## How to use
 
-**WIP**: no stable version yet
-
 <details>
 <summary>Go 1.24+ (with tool directive)</summary>
 
@@ -78,12 +76,12 @@ go generate ./...
 
 You should see the following files generated:
 
-- `Foo.schema.go`
-- `Bar.schema.go`
+- `Foo_schema.go`
+- `Bar_schema.go`
 
 ## What does it do
 
-It generates `YOUR_TYPE.schema.gen` file with `Validate() error` method for each type specified.
+It generates `YOUR_TYPE_schema.gen` file with `Validate() error` method for each type specified.
 Therefore `validate.Validate(v any) error` will call this method instead of reflection-based field traversal.
 
 That's it! It will reduce validataion overhead to almost zero.

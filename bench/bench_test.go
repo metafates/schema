@@ -9,6 +9,9 @@ import (
 	"github.com/metafates/schema/validate"
 )
 
+//go:generate schemagen -type A
+type A struct{}
+
 //go:embed testdata.json
 var testdata []byte
 

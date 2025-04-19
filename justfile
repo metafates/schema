@@ -10,5 +10,8 @@ coverage:
 	go test -coverprofile=coverage.html ./...
 	go tool cover -html=coverage.html
 
-generate:
+generate: install-schemagen
 	go generate ./...
+
+install-schemagen:
+	go install ./cmd/schemagen
