@@ -1,6 +1,6 @@
-// Required types must be present.
+// Required types must be present and pass validation.
 //
-// They support the following encoding/decoding:
+// Required types support the following encoding/decoding formats:
 // - json
 // - sql
 // - text
@@ -50,6 +50,20 @@ type (
 	// See also [Positive]
 	Negative[T constraint.Real] struct {
 		Custom[T, validate.Negative[T]]
+	}
+
+	// Positive0 accepts all positive real numbers including zero.
+	//
+	// See [Positive] for zero excluding variant.
+	Positive0[T constraint.Real] struct {
+		Custom[T, validate.Positive0[T]]
+	}
+
+	// Negative0 accepts all negative real numbers including zero.
+	//
+	// See [Negative] for zero excluding variant.
+	Negative0[T constraint.Real] struct {
+		Custom[T, validate.Negative0[T]]
 	}
 
 	// Even accepts real numbers divisible by two

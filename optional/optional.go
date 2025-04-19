@@ -1,6 +1,6 @@
-// Optional types may be either empty or contain a value.
+// Optional types may be either empty (null) or contain a value that must pass validation.
 //
-// They support the following encoding/decoding:
+// Optional types support the following encoding/decoding formats:
 // - json
 // - sql
 // - text
@@ -48,6 +48,20 @@ type (
 	// See also [Positive]
 	Negative[T constraint.Real] struct {
 		Custom[T, validate.Negative[T]]
+	}
+
+	// Positive0 accepts all positive real numbers including zero.
+	//
+	// See [Positive] for zero excluding variant.
+	Positive0[T constraint.Real] struct {
+		Custom[T, validate.Positive0[T]]
+	}
+
+	// Negative0 accepts all negative real numbers including zero.
+	//
+	// See [Negative] for zero excluding variant.
+	Negative0[T constraint.Real] struct {
+		Custom[T, validate.Negative0[T]]
 	}
 
 	// Even accepts real numbers divisible by two
@@ -287,6 +301,8 @@ func (c Custom[T, V]) Must() T {
 // Parse checks if given value is valid.
 // If it is, a value is used to initialize this type.
 // Initialized type is validated, therefore it is safe to call [Custom.Get] afterwards
+//
+// Passing nil pointer results a valid empty instance.
 func (c *Custom[T, V]) Parse(value *T) error {
 	var aux Custom[T, V]
 
