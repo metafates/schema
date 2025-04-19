@@ -1,5 +1,7 @@
 # 📐 Schema
 
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/metafates/schema)
+
 > Work in progress!
 
 Go schema declaration and validation with static types.
