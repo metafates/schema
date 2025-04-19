@@ -16,7 +16,7 @@ No stable version yet, but you can use it like that.
 go get github.com/metafates/schema@main
 ```
 
-**Work in progress, API may (and will) change significantly without further notice! This is just an experiment for now**
+**Work in progress, API may change significantly without further notice!**
 
 ## Features
 
