@@ -189,6 +189,17 @@ type (
 	// CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code
 	CurrencyAlpha[T constraint.Text] struct{}
 
+	// LangAlpha2 accepts case-insesitive ISO 639 2-letter language code.
+	LangAlpha2[T constraint.Text] struct{}
+
+	// LangAlpha3 accepts case-insesitive ISO 639 3-letter language code.
+	LangAlpha3[T constraint.Text] struct{}
+
+	// LangAlpha accepts either [LangAlpha2] or [LangAlpha3]
+	LangAlpha[T constraint.Text] struct {
+		Or[T, LangAlpha2[T], LangAlpha3[T]]
+	}
+
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
 	//
@@ -501,6 +512,26 @@ func (CurrencyAlpha[T]) Validate(value T) error {
 
 	if _, ok := iso.CurrencyAlpha[v]; !ok {
 		return errors.New("unknown currency alphabetic code")
+	}
+
+	return nil
+}
+
+func (LangAlpha2[T]) Validate(value T) error {
+	v := strings.ToLower(string(value))
+
+	if _, ok := iso.LanguageAlpha2[v]; !ok {
+		return errors.New("unknown 2-letter language code")
+	}
+
+	return nil
+}
+
+func (LangAlpha3[T]) Validate(value T) error {
+	v := strings.ToLower(string(value))
+
+	if _, ok := iso.LanguageAlpha3[v]; !ok {
+		return errors.New("unknown 3-letter language code")
 	}
 
 	return nil

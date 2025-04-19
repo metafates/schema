@@ -448,6 +448,56 @@ var suites = []Testable{
 			WantErr: true,
 		},
 	},
+	Suite[string, LangAlpha2[string]]{
+		{
+			Name:  "valid lang code",
+			Input: "en",
+		},
+		{
+			Name:  "valid uppercase lang code",
+			Input: "EN",
+		},
+		{
+			Name:    "invalid lang code",
+			Input:   "..",
+			WantErr: true,
+		},
+		{
+			Name:    "empty lang code",
+			Input:   "",
+			WantErr: true,
+		},
+		{
+			Name:    "long lang code",
+			Input:   "eng",
+			WantErr: true,
+		},
+	},
+	Suite[string, LangAlpha3[string]]{
+		{
+			Name:  "valid lang code",
+			Input: "eng",
+		},
+		{
+			Name:  "valid uppercase lang code",
+			Input: "ENG",
+		},
+		{
+			Name:    "invalid lang code",
+			Input:   "...",
+			WantErr: true,
+		},
+		{
+			Name:    "empty lang code",
+			Input:   "",
+			WantErr: true,
+		},
+		{
+			Name:    "short lang code",
+			Input:   "en",
+			WantErr: true,
+		},
+	},
 	Suite[int, And[int, NonZero[int], Positive[int]]]{
 		{Name: "positive non zero", Input: 2},
 		{Name: "zero", Input: 0, WantErr: true},

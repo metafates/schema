@@ -220,6 +220,21 @@ type (
 	CurrencyAlpha[T constraint.Text] struct {
 		Custom[T, validate.CurrencyAlpha[T]]
 	}
+
+	// LangAlpha2 accepts case-insesitive ISO 639 2-letter language code.
+	LangAlpha2[T constraint.Text] struct {
+		Custom[T, validate.LangAlpha2[T]]
+	}
+
+	// LangAlpha2 accepts case-insesitive ISO 639 3-letter language code.
+	LangAlpha3[T constraint.Text] struct {
+		Custom[T, validate.LangAlpha3[T]]
+	}
+
+	// LangAlpha accepts either [LangAlpha2] or [LangAlpha3]
+	LangAlpha[T constraint.Text] struct {
+		Custom[T, validate.LangAlpha[T]]
+	}
 )
 
 // TypeValidate implements the [validate.TypeValidateable] interface.
