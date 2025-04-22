@@ -2,6 +2,7 @@ test: generate
 	go test ./...
 	go run ./examples/tour
 	go run ./examples/codegen
+	go run ./examples/parse
 
 bench: generate
 	go test ./... -bench=. -benchmem

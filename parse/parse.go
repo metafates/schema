@@ -10,8 +10,15 @@ type Parser interface {
 	Parse(v any) error
 }
 
-// Parse fills the struct pointed to by src based on fields/keys in target.
-// It returns an error if types cannot be assigned/converted.
+// Parse attempts to copy data from src into dst. If dst implements the [Parser] interface,
+// Parse simply calls dst.Parse(src). Otherwise, it uses reflection to assign fields or
+// elements to dst. To succeed, dst must be a non-nil pointer to a settable value.
+//
+// The function supports struct-to-struct, map-to-struct, and slice-to-slice copying,
+// as well as direct conversions between basic types (and special handling for []byte to string).
+// If src is nil, no assignment is performed. If dst is not a valid pointer, an [InvalidParseError]
+// is returned. If a type conversion is not possible, an [UnconvertableTypeError] is returned.
+// Any errors encountered during parsing are wrapped in a [ParseError].
 func Parse(dst, src any) error {
 	if parser, ok := dst.(Parser); ok {
 		if err := parser.Parse(src); err != nil {

@@ -3,45 +3,48 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/parse"
 	"github.com/metafates/schema/required"
+	"github.com/metafates/schema/validate/charset"
 )
 
+type User struct {
+	Name required.Charset[string, charset.Print]
+
+	Birth optional.InPast[time.Time]
+
+	Bio string
+}
+
 func main() {
-	type Dst struct {
-		Name   required.NonZero[string]
-		Age    int
-		Arr    []struct{ X int }
-		Nested struct{ Foo int }
-	}
+	{
+		var user User
 
-	for i, src := range []any{
-		map[string]any{
-			"Name":   "hi",
-			"Age":    2,
-			"Arr":    []map[string]any{{"X": 9}},
-			"Nested": map[string]any{"Foo": 249},
-		},
-		struct {
-			Name   string
-			Age    int
-			Arr    []struct{ X int }
-			Nested struct{ Foo int }
-		}{
-			Name:   "hi",
-			Age:    2,
-			Arr:    []struct{ X int }{{X: 9}},
-			Nested: struct{ Foo int }{Foo: 249},
-		},
-		struct{ Name string }{Name: "hello"},
-	} {
-		var dst Dst
-
-		if err := parse.Parse(&dst, src); err != nil {
-			log.Fatalf("%d: %v", i, err)
+		err := parse.Parse(&user, map[string]any{
+			"Name":  "john",
+			"Birth": time.Date(1900, time.September, 10, 0, 0, 0, 0, time.UTC),
+			"Bio":   "...",
+		})
+		if err != nil {
+			log.Fatalln(err)
 		}
 
-		fmt.Printf("dst: %#+v\n", dst)
+		fmt.Println(user.Name.Get())
+		// john
+	}
+
+	{
+		var user User
+
+		err := parse.Parse(&user, struct{ Name string }{Name: "john"})
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Println(user.Name.Get())
+		// john
 	}
 }
