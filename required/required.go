@@ -7,12 +7,18 @@
 package required
 
 import (
+	"reflect"
+
 	"github.com/metafates/schema/constraint"
+	"github.com/metafates/schema/parse"
 	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
 )
 
-var ErrMissingValue = validate.ValidationError{Msg: "missing required value"}
+var (
+	ErrMissingValue  = validate.ValidationError{Msg: "missing required value"}
+	ErrParseNilValue = parse.ParseError{Msg: "nil value passed for parsing"}
+)
 
 type (
 	// Custom required type.
@@ -284,10 +290,32 @@ func (c Custom[T, V]) Get() T {
 
 // Parse checks if given value is valid.
 // If it is, a value is used to initialize this type.
+// Value is converted to the target type T, if possible. If not - [parse.UnconvertableTypeError] is returned.
+// It is allowed to pass convertable type wrapped in required type.
+//
 // Initialized type is validated, therefore it is safe to call [Custom.Get] afterwards
-func (c *Custom[T, V]) Parse(value T) error {
+func (c *Custom[T, V]) Parse(value any) error {
+	if value == nil {
+		return ErrParseNilValue
+	}
+
+	rValue := reflect.ValueOf(value)
+	tType := reflect.TypeFor[T]()
+
+	if _, ok := value.(interface{ isRequired() }); ok {
+		// NOTE: ensure this method name is in sync with [Custom.Get]
+		rValue = rValue.MethodByName("Get").Call(nil)[0]
+	}
+
+	if !rValue.CanConvert(tType) {
+		return parse.UnconvertableTypeError{
+			Target:   tType.String(),
+			Original: rValue.Type().String(),
+		}
+	}
+
 	aux := Custom[T, V]{
-		value:     value,
+		value:     rValue.Convert(tType).Interface().(T),
 		hasValue:  true,
 		validated: false,
 	}
@@ -299,3 +327,11 @@ func (c *Custom[T, V]) Parse(value T) error {
 	*c = aux
 	return nil
 }
+
+func (c *Custom[T, V]) MustParse(value any) {
+	if err := c.Parse(value); err != nil {
+		panic("MustParse failed")
+	}
+}
+
+func (Custom[T, V]) isRequired() {}

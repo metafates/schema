@@ -1,50 +1,51 @@
-package validate
+package parse
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 )
 
-// InvalidValidateError describes an invalid argument passed to [Validate].
-// (The argument to [Validate] must be a non-nil pointer.)
-type InvalidValidateError struct {
+// InvalidParseError describes an invalid argument passed to [Parse].
+// (The argument to [Parse] must be a non-nil pointer.)
+type InvalidParseError struct {
 	Type reflect.Type
 }
 
-func (e InvalidValidateError) Error() string {
+func (e InvalidParseError) Error() string {
 	if e.Type == nil {
-		return "Validate(nil)"
+		return "Parse(nil)"
 	}
 
 	if e.Type.Kind() != reflect.Pointer {
-		return "Validate(non-pointer " + e.Type.String() + ")"
+		return "Parse(non-pointer " + e.Type.String() + ")"
 	}
 
 	return "Validate(nil " + e.Type.String() + ")"
 }
 
-// ValidationError describes validation error occured at [validate.Validate]
-type ValidationError struct {
+type UnconvertableTypeError struct {
+	Target, Original string
+}
+
+func (e UnconvertableTypeError) Error() string {
+	return fmt.Sprintf("can not convert %s to %s", e.Original, e.Target)
+}
+
+type ParseError struct {
 	Msg   string
 	Inner error
 
 	path string
 }
 
-// WithPath returns a copy of [ValidationError] with the given path set
-func (e ValidationError) WithPath(path string) ValidationError {
-	e.path = path
-
-	return e
-}
-
 // Path returns the path to the value which raised this error
-func (e ValidationError) Path() string {
+func (e ParseError) Path() string {
 	var recursive func(path []string, err error) []string
 
 	recursive = func(path []string, err error) []string {
-		validationErr, ok := err.(ValidationError)
+		validationErr, ok := err.(ParseError)
 		if !ok {
 			return path
 		}
@@ -59,7 +60,7 @@ func (e ValidationError) Path() string {
 	return strings.Join(recursive(nil, e), "")
 }
 
-func (e ValidationError) Error() string {
+func (e ParseError) Error() string {
 	segments := make([]string, 0, 3)
 
 	if e.path != "" {
@@ -78,8 +79,8 @@ func (e ValidationError) Error() string {
 	return strings.Join(segments, ": ")
 }
 
-func (e ValidationError) Is(err error) bool {
-	other, ok := err.(ValidationError)
+func (e ParseError) Is(err error) bool {
+	other, ok := err.(ParseError)
 	if !ok {
 		return errors.Is(e.Inner, err)
 	}

@@ -2,6 +2,7 @@ package required
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 
 	"github.com/metafates/schema/internal/testutil"
@@ -10,11 +11,14 @@ import (
 func TestCustom_Parse(t *testing.T) {
 	for _, tc := range []struct {
 		name    string
-		value   int
+		value   any
 		wantErr bool
 	}{
-		{name: "valid", value: 5},
-		{name: "invalid", value: -2, wantErr: true},
+		{name: "valid int", value: 5},
+		{name: "valid float", value: 5.2},
+		{name: "invalid string", value: "hello", wantErr: true},
+		{name: "invalid int", value: -2, wantErr: true},
+		{name: "nil", value: nil, wantErr: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var positive Positive[int]
@@ -33,7 +37,7 @@ func TestCustom_Parse(t *testing.T) {
 				testutil.NoError(t, err)
 				testutil.Equal(t, true, positive.validated)
 				testutil.Equal(t, true, positive.hasValue)
-				testutil.Equal(t, tc.value, positive.value)
+				testutil.Equal(t, reflect.ValueOf(tc.value).Convert(reflect.TypeFor[int]()).Interface().(int), positive.value)
 				testutil.NoPanic(t, func() {
 					positive.Get()
 				})

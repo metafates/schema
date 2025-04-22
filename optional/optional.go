@@ -7,7 +7,10 @@
 package optional
 
 import (
+	"reflect"
+
 	"github.com/metafates/schema/constraint"
+	"github.com/metafates/schema/parse"
 	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
 )
@@ -253,7 +256,6 @@ type (
 // You should not call this function directly.
 func (c *Custom[T, V]) TypeValidate() error {
 	if !c.hasValue {
-		c.validated = true
 		return nil
 	}
 
@@ -277,13 +279,35 @@ func (c Custom[T, V]) HasValue() bool { return c.hasValue }
 // Get returns the contained value and a boolean stating its presence.
 // True if value exists, false otherwise.
 //
-// Panics if value was not validated yet
+// Panics if value was not validated yet.
+// See also [Custom.GetPtr]
 func (c Custom[T, V]) Get() (T, bool) {
-	if !c.validated {
-		panic("called Value() on unvalidated value")
+	if c.hasValue && !c.validated {
+		panic("called Get() on non-empty unvalidated value")
 	}
 
 	return c.value, c.hasValue
+}
+
+// Get returns the pointer to the contained value.
+// Non-nil if value exists, nil otherwise.
+// Pointed value is a shallow copy.
+//
+// Panics if value was not validated yet.
+// See also [Custom.Get]
+func (c Custom[T, V]) GetPtr() *T {
+	if c.hasValue && !c.validated {
+		panic("called GetPtr() on non-empty unvalidated value")
+	}
+
+	var value *T
+
+	if c.hasValue {
+		copy := c.value
+		value = &copy
+	}
+
+	return value
 }
 
 // Must returns the contained value and panics if it does not have one.
@@ -300,17 +324,54 @@ func (c Custom[T, V]) Must() T {
 
 // Parse checks if given value is valid.
 // If it is, a value is used to initialize this type.
-// Initialized type is validated, therefore it is safe to call [Custom.Get] afterwards
+// Value is converted to the target type T, if possible. If not - [parse.UnconvertableTypeError] is returned.
+// It is allowed to pass convertable type wrapped in optional type.
 //
-// Passing nil pointer results a valid empty instance.
-func (c *Custom[T, V]) Parse(value *T) error {
+// Initialized type is validated, therefore it is safe to call [Custom.Get] afterwards.
+//
+// Passing nil results a valid empty instance.
+func (c *Custom[T, V]) Parse(value any) error {
 	var aux Custom[T, V]
 
 	if value != nil {
-		aux.hasValue = true
-		aux.value = *value
+		rValue := reflect.ValueOf(value)
+
+		if rValue.Kind() == reflect.Pointer && rValue.IsNil() {
+			goto validate
+		}
+
+		tType := reflect.TypeFor[T]()
+
+		if _, ok := value.(interface{ isOptional() }); ok {
+			// NOTE: ensure this method name is in sync with [Custom.Get]
+			res := rValue.MethodByName("Get").Call(nil)
+
+			v, ok := res[0], res[1].Bool()
+			if !ok {
+				goto validate
+			}
+
+			rValue = v
+		}
+
+		switch {
+		case rValue.CanConvert(tType):
+			aux.hasValue = true
+			aux.value = rValue.Convert(tType).Interface().(T)
+
+		case rValue.Kind() == reflect.Pointer && rValue.Elem().CanConvert(tType):
+			aux.hasValue = true
+			aux.value = rValue.Elem().Convert(tType).Interface().(T)
+
+		default:
+			return parse.UnconvertableTypeError{
+				Target:   tType.String(),
+				Original: rValue.Type().String(),
+			}
+		}
 	}
 
+validate:
 	if err := aux.TypeValidate(); err != nil {
 		return err
 	}
@@ -318,3 +379,11 @@ func (c *Custom[T, V]) Parse(value *T) error {
 	*c = aux
 	return nil
 }
+
+func (c *Custom[T, V]) MustParse(value any) {
+	if err := c.Parse(value); err != nil {
+		panic("MustParse failed")
+	}
+}
+
+func (Custom[T, V]) isOptional() {}
