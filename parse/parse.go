@@ -19,7 +19,7 @@ type Parser interface {
 // If src is nil, no assignment is performed. If dst is not a valid pointer, an [InvalidParseError]
 // is returned. If a type conversion is not possible, an [UnconvertableTypeError] is returned.
 // Any errors encountered during parsing are wrapped in a [ParseError].
-func Parse(dst, src any) error {
+func Parse(src, dst any) error {
 	if parser, ok := dst.(Parser); ok {
 		if err := parser.Parse(src); err != nil {
 			return ParseError{Inner: err}
@@ -34,10 +34,10 @@ func Parse(dst, src any) error {
 		return InvalidParseError{Type: v.Type()}
 	}
 
-	return parse(v.Elem(), src, "")
+	return parse(src, v.Elem(), "")
 }
 
-func parse(dst reflect.Value, src any, dstPath string) error {
+func parse(src any, dst reflect.Value, dstPath string) error {
 	// If src is nil, we stop (do not set anything).
 	if src == nil {
 		return nil
@@ -79,7 +79,7 @@ func parse(dst reflect.Value, src any, dstPath string) error {
 					continue
 				}
 
-				if err := parse(field, vSrc.MapIndex(mk).Interface(), dstPath+"."+keyStr); err != nil {
+				if err := parse(vSrc.MapIndex(mk).Interface(), field, dstPath+"."+keyStr); err != nil {
 					return err
 				}
 			}
@@ -95,7 +95,7 @@ func parse(dst reflect.Value, src any, dstPath string) error {
 					continue
 				}
 
-				if err := parse(fieldDst, vSrc.Field(i).Interface(), dstPath+"."+fieldName); err != nil {
+				if err := parse(vSrc.Field(i).Interface(), fieldDst, dstPath+"."+fieldName); err != nil {
 					return err
 				}
 			}
@@ -120,7 +120,7 @@ func parse(dst reflect.Value, src any, dstPath string) error {
 		slice := reflect.MakeSlice(dst.Type(), vSrc.Len(), vSrc.Len())
 
 		for i := 0; i < vSrc.Len(); i++ {
-			if err := parse(slice.Index(i), vSrc.Index(i).Interface(), "["+strconv.Itoa(i)+"]"); err != nil {
+			if err := parse(vSrc.Index(i).Interface(), slice.Index(i), "["+strconv.Itoa(i)+"]"); err != nil {
 				return err
 			}
 		}

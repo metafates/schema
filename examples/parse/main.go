@@ -82,7 +82,7 @@ func main() {
 	} {
 		var user User
 
-		if err := parse.Parse(&user, data); err != nil {
+		if err := parse.Parse(data, &user); err != nil {
 			log.Fatalln(err)
 		}
 

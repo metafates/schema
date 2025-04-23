@@ -43,7 +43,7 @@ func TestParse(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				var dst int
 
-				err := parse.Parse(&dst, tc.value)
+				err := parse.Parse(tc.value, &dst)
 
 				if tc.wantErr {
 					testutil.Error(t, err)
@@ -108,7 +108,7 @@ func TestParse(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				var dst []Foo
 
-				err := parse.Parse(&dst, tc.value)
+				err := parse.Parse(tc.value, &dst)
 
 				if tc.wantErr {
 					testutil.Error(t, err)
@@ -209,7 +209,7 @@ func TestParse(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				var dst Target
 
-				err := parse.Parse(&dst, tc.value)
+				err := parse.Parse(tc.value, &dst)
 
 				if tc.wantErr {
 					testutil.Error(t, err)
