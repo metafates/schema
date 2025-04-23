@@ -217,6 +217,30 @@ var suites = []Testable{
 			Input:   "Eĥoŝanĝoj ĉiuĵaŭde.", // esperanto btw
 			WantErr: true,
 		},
+		{
+			Name:  "empty",
+			Input: "",
+		},
+	},
+	Suite[string, Charset[string, charset.ASCII]]{
+		{
+			Name:  "ascii only",
+			Input: "The quick brown fox jumps over the lazy dog",
+		},
+		{
+			Name:  "ascii with unprintable ascii",
+			Input: "hello\x1B",
+		},
+		{
+			Name:    "non-ascii",
+			Input:   "Eĥoŝanĝoj ĉiuĵaŭde.", // esperanto btw
+			WantErr: true,
+		},
+		{
+			Name:    "empty",
+			Input:   "",
+			WantErr: true,
+		},
 	},
 	Suite[float64, Latitude[float64]]{
 		{
