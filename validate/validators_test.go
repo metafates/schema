@@ -518,6 +518,10 @@ var suites = []Testable{
 }
 
 func BenchmarkValidator(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipped benchmarking validators due to -short flag")
+	}
+
 	for _, s := range suites {
 		b.Run(s.GetName(), s.Benchmark)
 	}

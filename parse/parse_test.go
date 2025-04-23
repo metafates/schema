@@ -1,6 +1,7 @@
 package parse_test
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -8,6 +9,8 @@ import (
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/parse"
 	"github.com/metafates/schema/required"
+	"github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate/charset"
 )
 
 func TestParse(t *testing.T) {
@@ -219,5 +222,97 @@ func TestParse(t *testing.T) {
 				}
 			})
 		}
+	})
+}
+
+func BenchmarkParse(b *testing.B) {
+	type Friend struct {
+		ID   required.UUID[string]
+		Name required.Charset[string, charset.Print]
+	}
+
+	type User struct {
+		ID    required.UUID[string]
+		Name  required.Charset[string, charset.Print]
+		Birth optional.InPast[time.Time]
+
+		FavoriteNumber int
+
+		Friends []Friend
+	}
+
+	b.Run("manual", func(b *testing.B) {
+		var user User
+
+		for b.Loop() {
+			if err := user.ID.Parse("2c376d16-321d-43b3-8648-2e64798cc6b3"); err != nil {
+				b.Fatal(err)
+			}
+
+			if err := user.Name.Parse("john"); err != nil {
+				b.Fatal(err)
+			}
+
+			user.FavoriteNumber = 42
+			user.Friends = make([]Friend, 1)
+
+			if err := user.Friends[0].ID.Parse("7f735045-c8d2-4a60-9184-0fc033c40a6a"); err != nil {
+				b.Fatal(err)
+			}
+
+			if err := user.Friends[0].Name.Parse("jane"); err != nil {
+				b.Fatal(err)
+			}
+		}
+
+		_ = user
+	})
+
+	b.Run("parse", func(b *testing.B) {
+		data := map[string]any{
+			"ID":             "2c376d16-321d-43b3-8648-2e64798cc6b3",
+			"Name":           "john",
+			"FavoriteNumber": 42,
+			"Friends": []map[string]any{
+				{"ID": "7f735045-c8d2-4a60-9184-0fc033c40a6a", "Name": "jane"},
+			},
+		}
+
+		var user User
+
+		for b.Loop() {
+			if err := parse.Parse(data, &user); err != nil {
+				b.Fatal(err)
+			}
+		}
+
+		_ = user
+	})
+
+	b.Run("unmarshal", func(b *testing.B) {
+		data := []byte(`
+		{
+			"ID": "2c376d16-321d-43b3-8648-2e64798cc6b3",
+			"Name": "john",
+			"FavoriteNumber": 42,
+			"Friends": [
+				{"ID": "7f735045-c8d2-4a60-9184-0fc033c40a6a", "Name": "jane"}
+			]
+		}
+		`)
+
+		var user User
+
+		for b.Loop() {
+			if err := json.Unmarshal(data, &user); err != nil {
+				b.Fatal(err)
+			}
+
+			if err := validate.Validate(&user); err != nil {
+				b.Fatal(err)
+			}
+		}
+
+		_ = user
 	})
 }
