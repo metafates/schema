@@ -28,6 +28,7 @@ go get github.com/metafates/schema@main
 - No DSL or code duplication
 - Cross-field validation support
 - Helpful errors
+- Parse arbitrary types into schema
 
 ## Example
 
@@ -287,6 +288,11 @@ func main() {
 	}
 }
 ```
+
+## Parsing
+
+If needed, you can parse arbitrary types into your schemas through `parse` package.
+See [parse example](./examples/parse/main.go) for more information.
 
 ## Performance
 
