@@ -18,6 +18,9 @@ type Parser interface {
 // as well as direct conversions between basic types (and special handling for []byte to string).
 // If src is nil, no assignment is performed. If dst is not a valid pointer, an [InvalidParseError]
 // is returned. If a type conversion is not possible, an [UnconvertableTypeError] is returned.
+//
+// Successfully parsed value is already validated and can be used safely.
+//
 // Any errors encountered during parsing are wrapped in a [ParseError].
 func Parse(src, dst any) error {
 	if parser, ok := dst.(Parser); ok {
@@ -145,9 +148,11 @@ func parse(src any, dst reflect.Value, dstPath string) error {
 			return nil
 		}
 
-		return UnconvertableTypeError{
-			Target:   dst.Type().String(),
-			Original: reflect.TypeOf(src).String(),
+		return ParseError{
+			Inner: UnconvertableTypeError{
+				Target:   dst.Type().String(),
+				Original: reflect.TypeOf(src).String(),
+			},
 		}
 	}
 

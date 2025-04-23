@@ -327,51 +327,57 @@ func (c Custom[T, V]) Must() T {
 // Value is converted to the target type T, if possible. If not - [parse.UnconvertableTypeError] is returned.
 // It is allowed to pass convertable type wrapped in optional type.
 //
-// Initialized type is validated, therefore it is safe to call [Custom.Get] afterwards.
+// Parsed type is validated, therefore it is safe to call [Custom.Get] afterwards.
 //
 // Passing nil results a valid empty instance.
 func (c *Custom[T, V]) Parse(value any) error {
+	if value == nil {
+		*c = Custom[T, V]{}
+		return nil
+	}
+
+	rValue := reflect.ValueOf(value)
+
+	if rValue.Kind() == reflect.Pointer && rValue.IsNil() {
+		*c = Custom[T, V]{}
+		return nil
+	}
+
+	tType := reflect.TypeFor[T]()
+
+	if _, ok := value.(interface{ isOptional() }); ok {
+		// NOTE: ensure this method name is in sync with [Custom.Get]
+		res := rValue.MethodByName("Get").Call(nil)
+
+		v, ok := res[0], res[1].Bool()
+		if !ok {
+			*c = Custom[T, V]{}
+			return nil
+		}
+
+		rValue = v
+	}
+
 	var aux Custom[T, V]
 
-	if value != nil {
-		rValue := reflect.ValueOf(value)
+	switch {
+	case rValue.CanConvert(tType):
+		aux.hasValue = true
+		aux.value = rValue.Convert(tType).Interface().(T)
 
-		if rValue.Kind() == reflect.Pointer && rValue.IsNil() {
-			goto validate
-		}
+	case rValue.Kind() == reflect.Pointer && rValue.Elem().CanConvert(tType):
+		aux.hasValue = true
+		aux.value = rValue.Elem().Convert(tType).Interface().(T)
 
-		tType := reflect.TypeFor[T]()
-
-		if _, ok := value.(interface{ isOptional() }); ok {
-			// NOTE: ensure this method name is in sync with [Custom.Get]
-			res := rValue.MethodByName("Get").Call(nil)
-
-			v, ok := res[0], res[1].Bool()
-			if !ok {
-				goto validate
-			}
-
-			rValue = v
-		}
-
-		switch {
-		case rValue.CanConvert(tType):
-			aux.hasValue = true
-			aux.value = rValue.Convert(tType).Interface().(T)
-
-		case rValue.Kind() == reflect.Pointer && rValue.Elem().CanConvert(tType):
-			aux.hasValue = true
-			aux.value = rValue.Elem().Convert(tType).Interface().(T)
-
-		default:
-			return parse.UnconvertableTypeError{
+	default:
+		return parse.ParseError{
+			Inner: parse.UnconvertableTypeError{
 				Target:   tType.String(),
 				Original: rValue.Type().String(),
-			}
+			},
 		}
 	}
 
-validate:
 	if err := aux.TypeValidate(); err != nil {
 		return err
 	}

@@ -293,13 +293,22 @@ func (c Custom[T, V]) Get() T {
 // Value is converted to the target type T, if possible. If not - [parse.UnconvertableTypeError] is returned.
 // It is allowed to pass convertable type wrapped in required type.
 //
-// Initialized type is validated, therefore it is safe to call [Custom.Get] afterwards
+// Parsed type is validated, therefore it is safe to call [Custom.Get] afterwards.
 func (c *Custom[T, V]) Parse(value any) error {
 	if value == nil {
 		return ErrParseNilValue
 	}
 
 	rValue := reflect.ValueOf(value)
+
+	if rValue.Kind() == reflect.Pointer {
+		if rValue.IsNil() {
+			return ErrParseNilValue
+		}
+
+		rValue = rValue.Elem()
+	}
+
 	tType := reflect.TypeFor[T]()
 
 	if _, ok := value.(interface{ isRequired() }); ok {
@@ -308,9 +317,11 @@ func (c *Custom[T, V]) Parse(value any) error {
 	}
 
 	if !rValue.CanConvert(tType) {
-		return parse.UnconvertableTypeError{
-			Target:   tType.String(),
-			Original: rValue.Type().String(),
+		return parse.ParseError{
+			Inner: parse.UnconvertableTypeError{
+				Target:   tType.String(),
+				Original: rValue.Type().String(),
+			},
 		}
 	}
 
