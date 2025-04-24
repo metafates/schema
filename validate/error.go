@@ -1,7 +1,6 @@
 package validate
 
 import (
-	"errors"
 	"reflect"
 	"strings"
 )
@@ -86,23 +85,6 @@ func (e ValidationError) error() string {
 	return strings.Join(segments, ": ")
 }
 
-func (e ValidationError) Is(err error) bool {
-	other, ok := err.(ValidationError)
-	if !ok {
-		return errors.Is(e.Inner, err)
-	}
-
-	switch {
-	case e.Inner == nil && other.Inner == nil:
-		return e.Msg == other.Msg
-
-	case e.Inner == nil && other.Inner != nil:
-		return errors.Is(e, other.Inner)
-
-	case e.Inner != nil && other.Inner == nil:
-		return errors.Is(e.Inner, other)
-
-	default:
-		return errors.Is(e.Inner, other.Inner)
-	}
+func (e ValidationError) Unwrap() error {
+	return e.Inner
 }

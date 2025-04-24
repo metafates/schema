@@ -1,7 +1,6 @@
 package parse
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -95,23 +94,6 @@ func (e ParseError) error() string {
 	return strings.Join(segments, ": ")
 }
 
-func (e ParseError) Is(err error) bool {
-	other, ok := err.(ParseError)
-	if !ok {
-		return errors.Is(e.Inner, err)
-	}
-
-	switch {
-	case e.Inner == nil && other.Inner == nil:
-		return e.Msg == other.Msg
-
-	case e.Inner == nil && other.Inner != nil:
-		return errors.Is(e, other.Inner)
-
-	case e.Inner != nil && other.Inner == nil:
-		return errors.Is(e.Inner, other)
-
-	default:
-		return errors.Is(e.Inner, other.Inner)
-	}
+func (e ParseError) Unwrap() error {
+	return e.Inner
 }
