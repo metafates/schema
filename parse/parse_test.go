@@ -258,22 +258,33 @@ func TestParse(t *testing.T) {
 	})
 }
 
+type Friend struct {
+	ID   required.UUID[string]
+	Name required.Charset[string, charset.Print]
+}
+
+type User struct {
+	ID    required.UUID[string]
+	Name  required.Charset[string, charset.Print]
+	Birth optional.InPast[time.Time]
+
+	FavoriteNumber int
+
+	Friends []Friend
+}
+
+//go:generate schemagen -type UserWithGen
+type UserWithGen struct {
+	ID    required.UUID[string]
+	Name  required.Charset[string, charset.Print]
+	Birth optional.InPast[time.Time]
+
+	FavoriteNumber int
+
+	Friends []Friend
+}
+
 func BenchmarkParse(b *testing.B) {
-	type Friend struct {
-		ID   required.UUID[string]
-		Name required.Charset[string, charset.Print]
-	}
-
-	type User struct {
-		ID    required.UUID[string]
-		Name  required.Charset[string, charset.Print]
-		Birth optional.InPast[time.Time]
-
-		FavoriteNumber int
-
-		Friends []Friend
-	}
-
 	b.Run("manual", func(b *testing.B) {
 		var user User
 
@@ -301,29 +312,30 @@ func BenchmarkParse(b *testing.B) {
 		_ = user
 	})
 
-	b.Run("parse", func(b *testing.B) {
-		data := map[string]any{
-			"ID":             "2c376d16-321d-43b3-8648-2e64798cc6b3",
-			"Name":           "john",
-			"FavoriteNumber": 42,
-			"Friends": []map[string]any{
-				{"ID": "7f735045-c8d2-4a60-9184-0fc033c40a6a", "Name": "jane"},
-			},
-		}
-
-		var user User
-
-		for b.Loop() {
-			if err := parse.Parse(data, &user); err != nil {
-				b.Fatal(err)
+	b.Run("without codegen", func(b *testing.B) {
+		b.Run("parse", func(b *testing.B) {
+			data := map[string]any{
+				"ID":             "2c376d16-321d-43b3-8648-2e64798cc6b3",
+				"Name":           "john",
+				"FavoriteNumber": 42,
+				"Friends": []map[string]any{
+					{"ID": "7f735045-c8d2-4a60-9184-0fc033c40a6a", "Name": "jane"},
+				},
 			}
-		}
 
-		_ = user
-	})
+			var user User
 
-	b.Run("unmarshal", func(b *testing.B) {
-		data := []byte(`
+			for b.Loop() {
+				if err := parse.Parse(data, &user); err != nil {
+					b.Fatal(err)
+				}
+			}
+
+			_ = user
+		})
+
+		b.Run("unmarshal", func(b *testing.B) {
+			data := []byte(`
 		{
 			"ID": "2c376d16-321d-43b3-8648-2e64798cc6b3",
 			"Name": "john",
@@ -334,18 +346,69 @@ func BenchmarkParse(b *testing.B) {
 		}
 		`)
 
-		var user User
+			var user User
 
-		for b.Loop() {
-			if err := json.Unmarshal(data, &user); err != nil {
-				b.Fatal(err)
+			for b.Loop() {
+				if err := json.Unmarshal(data, &user); err != nil {
+					b.Fatal(err)
+				}
+
+				if err := validate.Validate(&user); err != nil {
+					b.Fatal(err)
+				}
 			}
 
-			if err := validate.Validate(&user); err != nil {
-				b.Fatal(err)
+			_ = user
+		})
+	})
+
+	b.Run("with codegen", func(b *testing.B) {
+		b.Run("parse", func(b *testing.B) {
+			data := map[string]any{
+				"ID":             "2c376d16-321d-43b3-8648-2e64798cc6b3",
+				"Name":           "john",
+				"FavoriteNumber": 42,
+				"Friends": []map[string]any{
+					{"ID": "7f735045-c8d2-4a60-9184-0fc033c40a6a", "Name": "jane"},
+				},
 			}
+
+			var user UserWithGen
+
+			for b.Loop() {
+				if err := parse.Parse(data, &user); err != nil {
+					b.Fatal(err)
+				}
+			}
+
+			_ = user
+		})
+
+		b.Run("unmarshal", func(b *testing.B) {
+			data := []byte(`
+		{
+			"ID": "2c376d16-321d-43b3-8648-2e64798cc6b3",
+			"Name": "john",
+			"FavoriteNumber": 42,
+			"Friends": [
+				{"ID": "7f735045-c8d2-4a60-9184-0fc033c40a6a", "Name": "jane"}
+			]
 		}
+		`)
 
-		_ = user
+			var user UserWithGen
+
+			for b.Loop() {
+				if err := json.Unmarshal(data, &user); err != nil {
+					b.Fatal(err)
+				}
+
+				if err := validate.Validate(&user); err != nil {
+					b.Fatal(err)
+				}
+			}
+
+			_ = user
+		})
 	})
 }
