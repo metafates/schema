@@ -9,6 +9,7 @@ import (
 
 	schemajson "github.com/metafates/schema/encoding/json"
 	"github.com/metafates/schema/optional"
+	"github.com/metafates/schema/parse"
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
@@ -249,4 +250,52 @@ func main() {
 		fmt.Println(errors.Is(err, required.ErrMissingValue))
 		// true
 	}
+
+	// one more feature - parsing!
+	// not all data comes from json - sometimes we already have some initialized values (structs, maps) as go values.
+	//
+	// for example, we may have some generated code with gRPC and we want to validate it.
+	// what we can do with this library:
+
+	// first, let's define some structure
+	type Example struct {
+		ID           required.UUID[string]
+		Content      string
+		Tags         required.NonEmptySlice[string]
+		RandomNumber float64
+	}
+
+	// second, let's assume we have the following grpc message generated
+	type GRPCExample struct {
+		ID           string
+		Content      string
+		Tags         []string
+		RandomNumber int8 // yes, the types are different, but they will be converted
+	}
+
+	// third, parse it (field names must match exactly)
+	var example Example
+
+	err = parse.Parse(
+		GRPCExample{
+			ID:           "03973e64-358c-4a26-b095-150f18e8bfe7",
+			Content:      "lorem ipsum",
+			Tags:         []string{"foo", "bar"},
+			RandomNumber: 9,
+		},
+		&example,
+
+		// this function also accepts variadic options.
+		// here we say that unknown fields will result parsing error (by default they won't. just like json)
+		parse.WithDisallowUnknownFields(),
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// parsed values are already validated, therefore we can use it
+	fmt.Println(example.ID.Get())
+	// Output: 03973e64-358c-4a26-b095-150f18e8bfe7
+
+	// By the way, parsing from maps and slices is also supported.
 }
