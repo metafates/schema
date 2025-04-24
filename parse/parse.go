@@ -24,7 +24,7 @@ type Parser interface {
 // Successfully parsed value is already validated and can be used safely.
 //
 // Any errors encountered during parsing are wrapped in a [ParseError].
-func Parse(src, dst any) error {
+func Parse(src, dst any, options ...Option) error {
 	if parser, ok := dst.(Parser); ok {
 		if err := parser.Parse(src); err != nil {
 			return ParseError{Inner: err}
@@ -39,18 +39,24 @@ func Parse(src, dst any) error {
 		return InvalidParseError{Type: v.Type()}
 	}
 
-	if err := parse(src, v.Elem(), ""); err != nil {
-		return err
+	var cfg config
+
+	for _, apply := range options {
+		apply(&cfg)
+	}
+
+	if err := parse(src, v.Elem(), "", &cfg); err != nil {
+		return fmt.Errorf("parse: %w", err)
 	}
 
 	if err := validate.Validate(dst); err != nil {
-		return err
+		return fmt.Errorf("validate: %w", err)
 	}
 
 	return nil
 }
 
-func parse(src any, dst reflect.Value, dstPath string) error {
+func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 	// If src is nil, we stop (do not set anything).
 	if src == nil {
 		return nil
@@ -97,10 +103,16 @@ func parse(src any, dst reflect.Value, dstPath string) error {
 
 				// If not found or not settable, ignore.
 				if !field.IsValid() || !field.CanSet() {
+					if cfg.DisallowUnknownFields {
+						return ParseError{
+							Inner: UnknownFieldError{Name: keyStr},
+						}
+					}
+
 					continue
 				}
 
-				if err := parse(vSrc.MapIndex(mk).Interface(), field, dstPath+"."+keyStr); err != nil {
+				if err := parse(vSrc.MapIndex(mk).Interface(), field, dstPath+"."+keyStr, cfg); err != nil {
 					return err
 				}
 			}
@@ -110,13 +122,26 @@ func parse(src any, dst reflect.Value, dstPath string) error {
 			srcType := vSrc.Type()
 
 			for i := 0; i < srcType.NumField(); i++ {
-				fieldName := srcType.Field(i).Name
-				fieldDst := dst.FieldByName(fieldName)
-				if !fieldDst.IsValid() || !fieldDst.CanSet() {
+				fieldSrc := srcType.Field(i)
+				if !fieldSrc.IsExported() {
 					continue
 				}
 
-				if err := parse(vSrc.Field(i).Interface(), fieldDst, dstPath+"."+fieldName); err != nil {
+				fieldName := fieldSrc.Name
+
+				fieldDst := dst.FieldByName(fieldName)
+
+				if !fieldDst.IsValid() || !fieldDst.CanSet() {
+					if cfg.DisallowUnknownFields {
+						return ParseError{
+							Inner: UnknownFieldError{Name: fieldName},
+						}
+					}
+
+					continue
+				}
+
+				if err := parse(vSrc.Field(i).Interface(), fieldDst, dstPath+"."+fieldName, cfg); err != nil {
 					return err
 				}
 			}
@@ -141,7 +166,7 @@ func parse(src any, dst reflect.Value, dstPath string) error {
 		slice := reflect.MakeSlice(dst.Type(), vSrc.Len(), vSrc.Len())
 
 		for i := 0; i < vSrc.Len(); i++ {
-			if err := parse(vSrc.Index(i).Interface(), slice.Index(i), "["+strconv.Itoa(i)+"]"); err != nil {
+			if err := parse(vSrc.Index(i).Interface(), slice.Index(i), "["+strconv.Itoa(i)+"]", cfg); err != nil {
 				return err
 			}
 		}

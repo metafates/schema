@@ -4,6 +4,7 @@ test: generate
 	go run ./examples/tour
 	go run ./examples/codegen
 	go run ./examples/parse
+	go run ./examples/parse-grpc
 
 # Run benchmarks. May take a long time, use bench-short to avoid.
 bench: generate

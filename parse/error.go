@@ -33,6 +33,14 @@ func (e UnconvertableTypeError) Error() string {
 	return fmt.Sprintf("can not convert %s to %s", e.Original, e.Target)
 }
 
+type UnknownFieldError struct {
+	Name string
+}
+
+func (e UnknownFieldError) Error() string {
+	return fmt.Sprintf("unknown field: %s", e.Name)
+}
+
 type ParseError struct {
 	Msg   string
 	Inner error

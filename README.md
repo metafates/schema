@@ -28,7 +28,7 @@ go get github.com/metafates/schema@main
 - No DSL or code duplication
 - Cross-field validation support
 - Helpful errors
-- Parse arbitrary types into schema
+- Parse arbitrary types into schema. E.g. validate **gRPC** generated messages by parsing into schema structs.
 
 ## Example
 
@@ -293,6 +293,8 @@ func main() {
 
 If needed, you can parse arbitrary types into your schemas through `parse` package.
 See [parse example](./examples/parse/main.go) for more information.
+
+Parsing gRPC messages is also supported, see [grpc parse example](./examples/parse-grpc/main.go)
 
 ## Performance
 

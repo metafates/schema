@@ -177,6 +177,7 @@ func TestParse(t *testing.T) {
 			value   any
 			want    Target
 			wantErr bool
+			options []parse.Option
 		}{
 			{
 				name: "valid map with all fields",
@@ -241,11 +242,20 @@ func TestParse(t *testing.T) {
 				},
 				wantErr: true,
 			},
+			{
+				name: "unknown field",
+				value: map[string]any{
+					"Name": "john",
+					"Foo":  9,
+				},
+				options: []parse.Option{parse.WithDisallowUnknownFields()},
+				wantErr: true,
+			},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
 				var dst Target
 
-				err := parse.Parse(tc.value, &dst)
+				err := parse.Parse(tc.value, &dst, tc.options...)
 
 				if tc.wantErr {
 					testutil.Error(t, err)
