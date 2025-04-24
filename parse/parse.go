@@ -24,6 +24,8 @@ type Parser interface {
 // Successfully parsed value is already validated and can be used safely.
 //
 // Any errors encountered during parsing are wrapped in a [ParseError].
+//
+// Parse also accepts options. See [Option]
 func Parse(src, dst any, options ...Option) error {
 	if parser, ok := dst.(Parser); ok {
 		if err := parser.Parse(src); err != nil {
