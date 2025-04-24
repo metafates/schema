@@ -4,6 +4,8 @@
 
 > Work in progress!
 
+<img src="https://github.com/user-attachments/assets/54aafdf2-df4d-4b92-9a46-37bc59d99e6e" align="right" width=300 />
+
 Go schema declaration and validation with static types.
 No field tags or code duplication.
 
