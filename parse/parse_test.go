@@ -42,6 +42,16 @@ func TestParse(t *testing.T) {
 				value: 42.42,
 				want:  42,
 			},
+			{
+				name:  "non-nil pointer",
+				value: func() *int { n := 42; return &n }(),
+				want:  42,
+			},
+			{
+				name:  "nil pointer",
+				value: (*int)(nil),
+				want:  0,
+			},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
 				var dst int
@@ -185,15 +195,38 @@ func TestParse(t *testing.T) {
 			},
 			{
 				name: "valid map with partial fields",
+				want: Target{Name: sample.Name, Extra: Additional{CreatedAt: sample.Extra.CreatedAt}},
+				value: map[string]any{
+					"Name": sample.Name,
+					"Extra": map[string]any{
+						"CreatedAt": sample.Extra.CreatedAt,
+					},
+				},
+			},
+			{
+				name: "invalid map with partial fields",
 				want: Target{Bio: sample.Bio},
 				value: map[string]any{
 					"Bio": sample.Bio,
 				},
+				wantErr: true,
 			},
 			{
-				name:  "valid struct with partial fields",
-				want:  Target{Name: sample.Name, Bio: sample.Bio},
-				value: struct{ Name, Bio string }{Name: sample.Name.Get(), Bio: sample.Bio},
+				name:    "invalid struct with partial fields",
+				want:    Target{Name: sample.Name, Bio: sample.Bio},
+				value:   struct{ Name, Bio string }{Name: sample.Name.Get(), Bio: sample.Bio},
+				wantErr: true,
+			},
+			{
+				name: "valid struct with partial fields",
+				want: Target{Name: sample.Name, Extra: Additional{CreatedAt: sample.Extra.CreatedAt}},
+				value: struct {
+					Name  string
+					Extra struct{ CreatedAt time.Time }
+				}{
+					Name:  sample.Name.Get(),
+					Extra: struct{ CreatedAt time.Time }{CreatedAt: sample.Extra.CreatedAt.Get()},
+				},
 			},
 			{
 				name:  "valid same struct",

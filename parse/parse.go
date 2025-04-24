@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+
+	"github.com/metafates/schema/validate"
 )
 
 type Parser interface {
@@ -37,7 +39,15 @@ func Parse(src, dst any) error {
 		return InvalidParseError{Type: v.Type()}
 	}
 
-	return parse(src, v.Elem(), "")
+	if err := parse(src, v.Elem(), ""); err != nil {
+		return err
+	}
+
+	if err := validate.Validate(dst); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func parse(src any, dst reflect.Value, dstPath string) error {
@@ -58,6 +68,14 @@ func parse(src any, dst reflect.Value, dstPath string) error {
 	}
 
 	vSrc := reflect.ValueOf(src)
+
+	if vSrc.Kind() == reflect.Pointer {
+		if vSrc.IsNil() {
+			return nil
+		}
+
+		vSrc = vSrc.Elem()
+	}
 
 	switch dst.Kind() {
 	case reflect.Struct:
