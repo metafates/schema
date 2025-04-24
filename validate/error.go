@@ -60,6 +60,10 @@ func (e ValidationError) Path() string {
 }
 
 func (e ValidationError) Error() string {
+	return "validate: " + e.error()
+}
+
+func (e ValidationError) error() string {
 	segments := make([]string, 0, 3)
 
 	if e.path != "" {
@@ -71,7 +75,11 @@ func (e ValidationError) Error() string {
 	}
 
 	if e.Inner != nil {
-		segments = append(segments, e.Inner.Error())
+		if ve, ok := e.Inner.(ValidationError); ok {
+			segments = append(segments, ve.error())
+		} else {
+			segments = append(segments, e.Inner.Error())
+		}
 	}
 
 	// path: msg: inner error

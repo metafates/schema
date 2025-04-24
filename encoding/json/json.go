@@ -2,7 +2,6 @@ package schemajson
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 
 	"github.com/metafates/schema/validate"
@@ -31,7 +30,7 @@ func (dec *Decoder) Decode(v any) error {
 	}
 
 	if err := validate.Validate(v); err != nil {
-		return fmt.Errorf("validate: %w", err)
+		return err
 	}
 
 	return nil
@@ -46,7 +45,7 @@ func Unmarshal(data []byte, v any) error {
 	}
 
 	if err := validate.Validate(v); err != nil {
-		return fmt.Errorf("validate: %w", err)
+		return err
 	}
 
 	return nil

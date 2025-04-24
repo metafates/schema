@@ -46,11 +46,11 @@ func Parse(src, dst any, options ...Option) error {
 	}
 
 	if err := parse(src, v.Elem(), "", &cfg); err != nil {
-		return fmt.Errorf("parse: %w", err)
+		return err
 	}
 
 	if err := validate.Validate(dst); err != nil {
-		return fmt.Errorf("validate: %w", err)
+		return err
 	}
 
 	return nil

@@ -69,6 +69,10 @@ func (e ParseError) Path() string {
 }
 
 func (e ParseError) Error() string {
+	return "parse: " + e.error()
+}
+
+func (e ParseError) error() string {
 	segments := make([]string, 0, 3)
 
 	if e.path != "" {
@@ -80,7 +84,11 @@ func (e ParseError) Error() string {
 	}
 
 	if e.Inner != nil {
-		segments = append(segments, e.Inner.Error())
+		if pe, ok := e.Inner.(ParseError); ok {
+			segments = append(segments, pe.error())
+		} else {
+			segments = append(segments, e.Inner.Error())
+		}
 	}
 
 	// path: msg: inner error
