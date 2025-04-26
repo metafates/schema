@@ -2,6 +2,8 @@ package parse_test
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -12,6 +14,39 @@ import (
 	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
 )
+
+func ExampleParse() {
+	type User struct {
+		Name    required.Any[string] `json:"such_tags_are_ignored_by_default"`
+		Comment string
+		Age     int
+	}
+
+	var user1, user2 User
+
+	parse.Parse(map[string]any{
+		"Name":         "john",
+		"Comment":      "lorem ipsum",
+		"Age":          99,
+		"UnknownField": "this field will be ignored",
+	}, &user1)
+
+	parse.Parse(struct {
+		Name, Comment string
+		Age           uint8 // types will be converted
+	}{
+		Name:    "jane",
+		Comment: "dolor sit",
+		Age:     55,
+	}, &user2)
+
+	fmt.Printf("user1: name=%q comment=%q age=%v\n", user1.Name.Get(), user1.Comment, user1.Age)
+	fmt.Printf("user2: name=%q comment=%q age=%v\n", user2.Name.Get(), user2.Comment, user2.Age)
+
+	// Output:
+	// user1: name="john" comment="lorem ipsum" age=99
+	// user2: name="jane" comment="dolor sit" age=55
+}
 
 func TestParse(t *testing.T) {
 	t.Run("basic dst", func(t *testing.T) {
@@ -250,6 +285,22 @@ func TestParse(t *testing.T) {
 				},
 				options: []parse.Option{parse.WithDisallowUnknownFields()},
 				wantErr: true,
+			},
+			{
+				name: "renamed fields",
+				want: Target{Name: sample.Name, Extra: Additional{CreatedAt: sample.Extra.CreatedAt}},
+				value: map[string]any{
+					"name": sample.Name.Get(),
+					"extra": map[string]any{
+						"createdAt": sample.Extra.CreatedAt.Get(),
+					},
+				},
+				options: []parse.Option{
+					parse.WithDisallowUnknownFields(),
+					parse.WithRenameFunc(func(s string) string {
+						return strings.ToUpper(string(s[0])) + s[1:]
+					}),
+				},
 			},
 		} {
 			t.Run(tc.name, func(t *testing.T) {

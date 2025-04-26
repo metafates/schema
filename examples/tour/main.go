@@ -286,7 +286,7 @@ func main() {
 		&example,
 
 		// this function also accepts variadic options.
-		// here we say that unknown fields will result parsing error (by default they won't. just like json)
+		// here we say that unknown fields will result parsing error (by default they won't, just like json)
 		parse.WithDisallowUnknownFields(),
 	)
 	if err != nil {

@@ -17,7 +17,7 @@ type Parser interface {
 // elements to dst. To succeed, dst must be a non-nil pointer to a settable value.
 //
 // The function supports struct-to-struct, map-to-struct, and slice-to-slice copying,
-// as well as direct conversions between basic types (and special handling for []byte to string).
+// as well as direct conversions between basic types (including []byte to string).
 // If src is nil, no assignment is performed. If dst is not a valid pointer, an [InvalidParseError]
 // is returned. If a type conversion is not possible, an [UnconvertableTypeError] is returned.
 //
@@ -41,7 +41,7 @@ func Parse(src, dst any, options ...Option) error {
 		return InvalidParseError{Type: v.Type()}
 	}
 
-	var cfg config
+	cfg := defaultConfig()
 
 	for _, apply := range options {
 		apply(&cfg)
@@ -101,6 +101,8 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 					}
 				}
 
+				keyStr = cfg.RenameFunc(keyStr)
+
 				field := dst.FieldByName(keyStr)
 
 				// If not found or not settable, ignore.
@@ -129,7 +131,7 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 					continue
 				}
 
-				fieldName := fieldSrc.Name
+				fieldName := cfg.RenameFunc(fieldSrc.Name)
 
 				fieldDst := dst.FieldByName(fieldName)
 
@@ -175,7 +177,7 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 
 		dst.Set(slice)
 
-	// You could handle arrays here if needed.
+	// TODO: handle arrays?
 
 	default:
 		// For basic types, try direct conversion.
