@@ -1,9 +1,9 @@
 // Required types must be present and pass validation.
 //
 // Required types support the following encoding/decoding formats:
-// - json
-// - sql
-// - text
+//   - json
+//   - sql
+//   - text
 package required
 
 import (

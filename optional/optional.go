@@ -1,9 +1,9 @@
 // Optional types may be either empty (null) or contain a value that must pass validation.
 //
 // Optional types support the following encoding/decoding formats:
-// - json
-// - sql
-// - text
+//   - json
+//   - sql
+//   - text
 package optional
 
 import (
