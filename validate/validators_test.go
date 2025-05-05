@@ -68,6 +68,22 @@ type Testable interface {
 }
 
 var suites = []Testable{
+	Suite[string, Zero[string]]{
+		{
+			Name:    "non zero string",
+			Input:   "foo bar",
+			WantErr: true,
+		},
+		{
+			Name:  "zero string",
+			Input: "",
+		},
+		{
+			Name:    "zero-width space",
+			Input:   "\u200B",
+			WantErr: true,
+		},
+	},
 	Suite[string, NonZero[string]]{
 		{
 			Name:  "non zero string",
@@ -149,6 +165,38 @@ var suites = []Testable{
 		{
 			Name:  "valid ipv4",
 			Input: "127.0.0.1",
+		},
+		{
+			Name:  "valid ipv6",
+			Input: "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+		},
+		{
+			Name:    "invalid ip",
+			Input:   "127.0.0.A",
+			WantErr: true,
+		},
+	},
+	Suite[string, IPV4[string]]{
+		{
+			Name:  "valid ipv4",
+			Input: "127.0.0.1",
+		},
+		{
+			Name:    "valid ipv6",
+			Input:   "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+			WantErr: true,
+		},
+		{
+			Name:    "invalid ip",
+			Input:   "127.0.0.A",
+			WantErr: true,
+		},
+	},
+	Suite[string, IPV6[string]]{
+		{
+			Name:    "valid ipv4",
+			Input:   "127.0.0.1",
+			WantErr: true,
 		},
 		{
 			Name:  "valid ipv6",
