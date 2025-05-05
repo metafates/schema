@@ -9,15 +9,15 @@ if TYPE_CHECKING:
 # go package name
 PKG = "iso"
 
-# https://github.com/datasets/country-codes/blob/main/data/country-codes.csv
+# https://raw.githubusercontent.com/datasets/country-codes/refs/heads/main/data/country-codes.csv
 COUNTRIES = "countries.csv"
 COUNTRIES_OUT = "countries.go"
 
-# https://github.com/datasets/currency-codes/blob/main/data/codes-all.csv
+# https://raw.githubusercontent.com/datasets/currency-codes/refs/heads/main/data/codes-all.csv
 CURRENCIES = "currencies.csv"
 CURRENCIES_OUT = "currencies.go"
 
-# https://github.com/datasets/language-codes/blob/main/data/language-codes-3b2.csv
+# https://raw.githubusercontent.com/datasets/language-codes/refs/heads/main/data/language-codes-3b2.csv
 LANGUAGES = "languages.csv"
 LANGUAGES_OUT = "languages.go"
 
