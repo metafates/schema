@@ -26,11 +26,12 @@ var xvalues = [256]byte{
 	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 }
 
-// xtob converts hex characters x1 and x2 into a byte.
-func xtob(x1, x2 byte) (byte, bool) {
+// xtob states whether hex characters x1 and x2 could be converted into a byte.
+func xtob(x1, x2 byte) bool {
 	b1 := xvalues[x1]
 	b2 := xvalues[x2]
-	return (b1 << 4) | b2, b1 != 255 && b2 != 255
+
+	return b1 != 255 && b2 != 255
 }
 
 // Validate if given string is a valid UUID.
@@ -48,20 +49,21 @@ func Validate(s string) error {
 		if !strings.EqualFold(s[:9], "urn:uuid:") {
 			return fmt.Errorf("invalid urn prefix: %q", s[:9])
 		}
+
 		s = s[9:]
 
 	// UUID enclosed in braces
 	case standardLen + 2:
 		if s[0] != '{' || s[len(s)-1] != '}' {
-			return fmt.Errorf("invalid bracketed UUID format")
+			return errors.New("invalid bracketed UUID format")
 		}
+
 		s = s[1 : len(s)-1]
 
 	// UUID without hyphens
 	case standardLen - 4:
 		for i := 0; i < len(s); i += 2 {
-			_, ok := xtob(s[i], s[i+1])
-			if !ok {
+			if !xtob(s[i], s[i+1]) {
 				return errors.New("invalid UUID format")
 			}
 		}
@@ -77,7 +79,7 @@ func Validate(s string) error {
 		}
 
 		for _, x := range []int{0, 2, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 28, 30, 32, 34} {
-			if _, ok := xtob(s[x], s[x+1]); !ok {
+			if !xtob(s[x], s[x+1]) {
 				return errors.New("invalid UUID format")
 			}
 		}

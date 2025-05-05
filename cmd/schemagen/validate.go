@@ -49,6 +49,7 @@ func (vg *validateGenerator) gen(g *jen.Group, path Path, t types.Type, isPtr, a
 	switch t := t.(type) {
 	default:
 		vg.genBot(g, path, isPtr, addressable)
+
 		return true
 
 	case *types.Pointer:
@@ -129,6 +130,7 @@ func (vg *validateGenerator) genStruct(g *jen.Group, path Path, s *types.Struct,
 		if !field.Exported() {
 			continue
 		}
+
 		fieldPath := path.Join(PathSegment{Name: field.Name()})
 
 		if vg.gen(g, fieldPath, field.Type(), isPtr, addressable) {

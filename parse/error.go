@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -52,8 +53,9 @@ func (e ParseError) Path() string {
 	var recursive func(path []string, err error) []string
 
 	recursive = func(path []string, err error) []string {
-		validationErr, ok := err.(ParseError)
-		if !ok {
+		var validationErr ParseError
+
+		if !errors.As(err, &validationErr) {
 			return path
 		}
 
@@ -71,6 +73,10 @@ func (e ParseError) Error() string {
 	return "parse: " + e.error()
 }
 
+func (e ParseError) Unwrap() error {
+	return e.Inner
+}
+
 func (e ParseError) error() string {
 	segments := make([]string, 0, 3)
 
@@ -83,7 +89,9 @@ func (e ParseError) error() string {
 	}
 
 	if e.Inner != nil {
-		if pe, ok := e.Inner.(ParseError); ok {
+		var pe ParseError
+
+		if errors.As(e.Inner, &pe) {
 			segments = append(segments, pe.error())
 		} else {
 			segments = append(segments, e.Inner.Error())
@@ -92,8 +100,4 @@ func (e ParseError) error() string {
 
 	// path: msg: inner error
 	return strings.Join(segments, ": ")
-}
-
-func (e ParseError) Unwrap() error {
-	return e.Inner
 }

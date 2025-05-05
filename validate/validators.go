@@ -206,7 +206,7 @@ type (
 	// See also [Or], [Not]
 	And[T any, A Validator[T], B Validator[T]] struct{}
 
-	// And is a meta validator that combines other validators with OR operator.
+	// Or is a meta validator that combines other validators with OR operator.
 	// Validators are called in the same order as type parameters.
 	//
 	// See also [And], [Not]
@@ -268,7 +268,7 @@ func (Negative[T]) Validate(value T) error {
 
 func (Even[T]) Validate(value T) error {
 	if value%2 != 0 {
-		return fmt.Errorf("odd value")
+		return errors.New("odd value")
 	}
 
 	return nil
@@ -276,7 +276,7 @@ func (Even[T]) Validate(value T) error {
 
 func (Odd[T]) Validate(value T) error {
 	if value%2 == 0 {
-		return fmt.Errorf("even value")
+		return errors.New("even value")
 	}
 
 	return nil
@@ -374,7 +374,6 @@ func (CIDR[T]) Validate(value T) error {
 
 func (Base64[T]) Validate(value T) error {
 	// TODO: implement it without allocating buffer and converting to string
-
 	_, err := base64.StdEncoding.DecodeString(string(value))
 	if err != nil {
 		return err
@@ -400,7 +399,7 @@ func (Charset[T, F]) Validate(value T) error {
 		return errors.New("empty text")
 	}
 
-	return (*new(Charset0[T, F])).Validate(value)
+	return Charset0[T, F]{}.Validate(value)
 }
 
 func (Latitude[T]) Validate(value T) error {

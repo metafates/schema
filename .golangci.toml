@@ -1,0 +1,17 @@
+version = "2"
+
+[linters]
+default = "all"
+disable = ["ireturn", "depguard", "err113", "exhaustive", "exhaustruct", "wrapcheck", "varnamelen", "mnd"]
+
+[[linters.exclusions.rules]]
+path = "examples/"
+linters = ["forbidigo", "wsl", "revive"]
+
+[[linters.exclusions.rules]]
+path = "internal/uuid/"
+linters = ["gochecknoglobals"]
+
+[[linters.exclusions.rules]]
+linters = ["revive"]
+text = "exported:"

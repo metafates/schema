@@ -157,7 +157,7 @@ func (g *generator) genPackage(pkg *packages.Package) {
 func parsePackages(patterns ...string) []*packages.Package {
 	cfg := packages.Config{
 		Mode:  packages.LoadAllSyntax,
-		Tests: true, // TODO: enable
+		Tests: true,
 	}
 
 	pkgs, err := packages.Load(&cfg, patterns...)

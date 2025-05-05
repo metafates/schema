@@ -1,6 +1,10 @@
+check: test run-examples lint
+
 # Run all tests including examples
 test: generate
 	go test ./...
+
+run-examples:
 	go run ./examples/tour
 	go run ./examples/codegen
 	go run ./examples/parse
@@ -34,3 +38,6 @@ update-iso: && generate
 	curl -f -L -o ./internal/iso/currencies.csv https://raw.githubusercontent.com/datasets/currency-codes/refs/heads/main/data/codes-all.csv
 
 	curl -f -L -o ./internal/iso/languages.csv https://raw.githubusercontent.com/datasets/language-codes/refs/heads/main/data/language-codes-3b2.csv
+
+lint:
+	golangci-lint run --tests=false

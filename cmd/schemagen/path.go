@@ -32,6 +32,7 @@ func (p Path) printf() (format string, args []string) {
 
 		if s.Dynamic {
 			formatBuilder.WriteString("%v")
+
 			args = append(args, s.Name)
 		} else {
 			formatBuilder.WriteString(s.Name)

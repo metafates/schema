@@ -36,11 +36,14 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 		if v.IsNil() {
 			return nil
 		}
+
 		ptr := v.Pointer()
 		if visited[ptr] {
 			return nil
 		}
+
 		visited[ptr] = true
+
 		return walkRecursive(path, v.Elem(), visitor, visited)
 
 	case reflect.Interface:
@@ -48,6 +51,7 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 		if v.IsNil() {
 			return nil
 		}
+
 		return walkRecursive(path, v.Elem(), visitor, visited)
 
 	case reflect.Struct:
@@ -56,6 +60,7 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 
 		for i := range v.NumField() {
 			fieldVal := v.Field(i)
+
 			// Skip unexported fields.
 			if !fieldVal.CanInterface() {
 				continue
@@ -120,6 +125,7 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 
 			valuePath := path + "[" + keyStr + "]"
 			val := v.MapIndex(key)
+
 			if err := walkRecursive(valuePath, val, visitor, visited); err != nil {
 				return err
 			}

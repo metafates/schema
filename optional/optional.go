@@ -303,8 +303,8 @@ func (c Custom[T, V]) GetPtr() *T {
 	var value *T
 
 	if c.hasValue {
-		copy := c.value
-		value = &copy
+		valueCopy := c.value
+		value = &valueCopy
 	}
 
 	return value

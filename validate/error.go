@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 )
@@ -43,8 +44,9 @@ func (e ValidationError) Path() string {
 	var recursive func(path []string, err error) []string
 
 	recursive = func(path []string, err error) []string {
-		validationErr, ok := err.(ValidationError)
-		if !ok {
+		var validationErr ValidationError
+
+		if !errors.As(err, &validationErr) {
 			return path
 		}
 
@@ -62,6 +64,10 @@ func (e ValidationError) Error() string {
 	return "validate: " + e.error()
 }
 
+func (e ValidationError) Unwrap() error {
+	return e.Inner
+}
+
 func (e ValidationError) error() string {
 	segments := make([]string, 0, 3)
 
@@ -74,7 +80,9 @@ func (e ValidationError) error() string {
 	}
 
 	if e.Inner != nil {
-		if ve, ok := e.Inner.(ValidationError); ok {
+		var ve ValidationError
+
+		if errors.As(e.Inner, &ve) {
 			segments = append(segments, ve.error())
 		} else {
 			segments = append(segments, e.Inner.Error())
@@ -83,8 +91,4 @@ func (e ValidationError) error() string {
 
 	// path: msg: inner error
 	return strings.Join(segments, ": ")
-}
-
-func (e ValidationError) Unwrap() error {
-	return e.Inner
 }

@@ -69,6 +69,7 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 			field := t.Field(i)
 			tag := t.Tag(i)
 			fieldCode := jen.Id(field.Name()).Add(c.ConvertType(field.Type()))
+
 			if tag != "" {
 				tagMap := parseStructTag(tag)
 				fieldCode = fieldCode.Tag(tagMap)
@@ -125,8 +126,10 @@ func parseStructTag(tag string) map[string]string {
 			if tag[i] == '"' && tag[i-1] != '\\' {
 				break
 			}
+
 			i++
 		}
+
 		if i >= len(tag) {
 			break
 		}
