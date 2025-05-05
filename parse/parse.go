@@ -125,7 +125,7 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 			// We can copy fields from one struct to the other if they match by name.
 			srcType := vSrc.Type()
 
-			for i := 0; i < srcType.NumField(); i++ {
+			for i := range srcType.NumField() {
 				fieldSrc := srcType.Field(i)
 				if !fieldSrc.IsExported() {
 					continue
@@ -169,7 +169,7 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 		// Create a new slice of the appropriate type/length.
 		slice := reflect.MakeSlice(dst.Type(), vSrc.Len(), vSrc.Len())
 
-		for i := 0; i < vSrc.Len(); i++ {
+		for i := range vSrc.Len() {
 			if err := parse(vSrc.Index(i).Interface(), slice.Index(i), "["+strconv.Itoa(i)+"]", cfg); err != nil {
 				return err
 			}

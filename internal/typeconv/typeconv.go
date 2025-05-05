@@ -35,11 +35,14 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 
 			// Handle type arguments if present
 			typeArgs := t.TypeArgs()
+
 			if typeArgs != nil && typeArgs.Len() > 0 {
 				var args []jen.Code
-				for i := 0; i < typeArgs.Len(); i++ {
+
+				for i := range typeArgs.Len() {
 					args = append(args, c.ConvertType(typeArgs.At(i)))
 				}
+
 				return qual.Types(args...)
 			}
 
@@ -61,7 +64,8 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 
 	case *types.Struct:
 		fields := make([]jen.Code, 0, t.NumFields())
-		for i := 0; i < t.NumFields(); i++ {
+
+		for i := range t.NumFields() {
 			field := t.Field(i)
 			tag := t.Tag(i)
 			fieldCode := jen.Id(field.Name()).Add(c.ConvertType(field.Type()))
@@ -92,6 +96,7 @@ func parseStructTag(tag string) map[string]string {
 		for i < len(tag) && tag[i] == ' ' {
 			i++
 		}
+
 		tag = tag[i:]
 		if tag == "" {
 			break
@@ -102,6 +107,7 @@ func parseStructTag(tag string) map[string]string {
 		for i < len(tag) && tag[i] != ':' {
 			i++
 		}
+
 		if i >= len(tag) {
 			break
 		}

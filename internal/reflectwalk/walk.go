@@ -53,8 +53,8 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 	case reflect.Struct:
 		// Walk struct fields.
 		t := v.Type()
-		numField := v.NumField()
-		for i := 0; i < numField; i++ {
+
+		for i := range v.NumField() {
 			fieldVal := v.Field(i)
 			// Skip unexported fields.
 			if !fieldVal.CanInterface() {
@@ -75,8 +75,7 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 			return nil
 		}
 
-		length := v.Len()
-		for i := 0; i < length; i++ {
+		for i := range v.Len() {
 			indexPath := path + "[" + strconv.Itoa(i) + "]"
 			if err := walkRecursive(indexPath, v.Index(i), visitor, visited); err != nil {
 				return err
