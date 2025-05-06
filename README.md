@@ -1,6 +1,7 @@
 # 📐 Schema
 
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/metafates/schema)
+[![Go Report Card](https://goreportcard.com/badge/github.com/metafates/schema)](https://goreportcard.com/report/github.com/metafates/schema)
 
 > Work in progress!
 
