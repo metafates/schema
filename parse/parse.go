@@ -88,122 +88,144 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 
 	switch dst.Kind() {
 	case reflect.Struct:
-		// If dst is a struct, then src should be either a struct or a map.
-		switch vSrc.Kind() {
-		case reflect.Map:
-			// For each key in the map, look for a field of the same name in dst.
-			for _, mk := range vSrc.MapKeys() {
-				// We only handle string keys here.
-				keyStr, ok := mk.Interface().(string)
-				if !ok {
-					return ParseError{
-						Msg:  fmt.Sprintf("map key %v is not a string, cannot set struct field", mk),
-						path: dstPath,
-					}
-				}
-
-				keyStr = cfg.RenameFunc(keyStr)
-
-				field := dst.FieldByName(keyStr)
-
-				// If not found or not settable, ignore.
-				if !field.IsValid() || !field.CanSet() {
-					if cfg.DisallowUnknownFields {
-						return ParseError{
-							Inner: UnknownFieldError{Name: keyStr},
-						}
-					}
-
-					continue
-				}
-
-				if err := parse(vSrc.MapIndex(mk).Interface(), field, dstPath+"."+keyStr, cfg); err != nil {
-					return err
-				}
-			}
-
-		case reflect.Struct:
-			// We can copy fields from one struct to the other if they match by name.
-			srcType := vSrc.Type()
-
-			for i := range srcType.NumField() {
-				fieldSrc := srcType.Field(i)
-				if !fieldSrc.IsExported() {
-					continue
-				}
-
-				fieldName := cfg.RenameFunc(fieldSrc.Name)
-
-				fieldDst := dst.FieldByName(fieldName)
-
-				if !fieldDst.IsValid() || !fieldDst.CanSet() {
-					if cfg.DisallowUnknownFields {
-						return ParseError{
-							Inner: UnknownFieldError{Name: fieldName},
-						}
-					}
-
-					continue
-				}
-
-				if err := parse(vSrc.Field(i).Interface(), fieldDst, dstPath+"."+fieldName, cfg); err != nil {
-					return err
-				}
-			}
-
-		default:
-			return ParseError{
-				Msg:  fmt.Sprintf("cannot set struct from %T", src),
-				path: dstPath,
-			}
-		}
+		return parseToStruct(vSrc, dst, dstPath, cfg)
 
 	case reflect.Slice:
-		// If dst is a slice, src must be a slice too.
-		if vSrc.Kind() != reflect.Slice {
+		return parseToSlice(vSrc, dst, dstPath, cfg)
+
+	default:
+		return parseToBasic(vSrc, dst)
+	}
+}
+
+func parseToBasic(src reflect.Value, dst reflect.Value) error {
+	// For basic types, try direct conversion.
+	if src.CanConvert(dst.Type()) {
+		dst.Set(src.Convert(dst.Type()))
+
+		return nil
+	}
+
+	// Special-case []byte -> string
+	if dst.Kind() == reflect.String &&
+		src.Kind() == reflect.Slice &&
+		src.Type().Elem().Kind() == reflect.Uint8 {
+		dst.SetString(string(src.Bytes()))
+
+		return nil
+	}
+
+	return ParseError{
+		Inner: UnconvertableTypeError{
+			Target:   dst.Type().String(),
+			Original: reflect.TypeOf(src).String(),
+		},
+	}
+}
+
+func parseToStruct(src reflect.Value, dst reflect.Value, dstPath string, cfg *config) error {
+	// If dst is a struct, then src should be either a struct or a map.
+	switch src.Kind() {
+	case reflect.Map:
+		return parseMapToStruct(src, dst, dstPath, cfg)
+
+	case reflect.Struct:
+		return parseStructToStruct(src, dst, dstPath, cfg)
+
+	default:
+		return ParseError{
+			Msg:  fmt.Sprintf("cannot set struct from %T", src),
+			path: dstPath,
+		}
+	}
+}
+
+func parseStructToStruct(src reflect.Value, dst reflect.Value, dstPath string, cfg *config) error {
+	// We can copy fields from one struct to the other if they match by name.
+	srcType := src.Type()
+
+	for i := range srcType.NumField() {
+		fieldSrc := srcType.Field(i)
+		if !fieldSrc.IsExported() {
+			continue
+		}
+
+		fieldName := cfg.RenameFunc(fieldSrc.Name)
+
+		fieldDst := dst.FieldByName(fieldName)
+
+		if !fieldDst.IsValid() || !fieldDst.CanSet() {
+			if cfg.DisallowUnknownFields {
+				return ParseError{
+					Inner: UnknownFieldError{Name: fieldName},
+				}
+			}
+
+			continue
+		}
+
+		if err := parse(src.Field(i).Interface(), fieldDst, dstPath+"."+fieldName, cfg); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func parseMapToStruct(src reflect.Value, dst reflect.Value, dstPath string, cfg *config) error {
+	// For each key in the map, look for a field of the same name in dst.
+	for _, mk := range src.MapKeys() {
+		// We only handle string keys here.
+		keyStr, ok := mk.Interface().(string)
+		if !ok {
 			return ParseError{
-				Msg:  fmt.Sprintf("cannot set slice from %T", src),
+				Msg:  fmt.Sprintf("map key %v is not a string, cannot set struct field", mk),
 				path: dstPath,
 			}
 		}
 
-		// Create a new slice of the appropriate type/length.
-		slice := reflect.MakeSlice(dst.Type(), vSrc.Len(), vSrc.Len())
+		keyStr = cfg.RenameFunc(keyStr)
 
-		for i := range vSrc.Len() {
-			if err := parse(vSrc.Index(i).Interface(), slice.Index(i), "["+strconv.Itoa(i)+"]", cfg); err != nil {
-				return err
+		field := dst.FieldByName(keyStr)
+
+		// If not found or not settable, ignore.
+		if !field.IsValid() || !field.CanSet() {
+			if cfg.DisallowUnknownFields {
+				return ParseError{
+					Inner: UnknownFieldError{Name: keyStr},
+				}
 			}
+
+			continue
 		}
 
-		dst.Set(slice)
-
-	// TODO: handle arrays?
-
-	default:
-		// For basic types, try direct conversion.
-		if vSrc.CanConvert(dst.Type()) {
-			dst.Set(vSrc.Convert(dst.Type()))
-
-			return nil
-		}
-
-		// Special-case []byte -> string
-		if dst.Kind() == reflect.String &&
-			vSrc.Kind() == reflect.Slice &&
-			vSrc.Type().Elem().Kind() == reflect.Uint8 {
-			dst.SetString(string(vSrc.Bytes()))
-
-			return nil
-		}
-
-		return ParseError{
-			Inner: UnconvertableTypeError{
-				Target:   dst.Type().String(),
-				Original: reflect.TypeOf(src).String(),
-			},
+		if err := parse(src.MapIndex(mk).Interface(), field, dstPath+"."+keyStr, cfg); err != nil {
+			return err
 		}
 	}
+
+	return nil
+}
+
+func parseToSlice(src reflect.Value, dst reflect.Value, dstPath string, cfg *config) error {
+	// If dst is a slice, src must be a slice too.
+	if src.Kind() != reflect.Slice {
+		return ParseError{
+			Msg:  fmt.Sprintf("cannot set slice from %T", src),
+			path: dstPath,
+		}
+	}
+
+	// Create a new slice of the appropriate type/length.
+	slice := reflect.MakeSlice(dst.Type(), src.Len(), src.Len())
+
+	for i := range src.Len() {
+		if err := parse(src.Index(i).Interface(), slice.Index(i), "["+strconv.Itoa(i)+"]", cfg); err != nil {
+			return err
+		}
+	}
+
+	dst.Set(slice)
 
 	return nil
 }

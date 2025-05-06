@@ -6,7 +6,7 @@ disable = ["ireturn", "depguard", "err113", "exhaustive", "exhaustruct", "wrapch
 
 [[linters.exclusions.rules]]
 path = "examples/"
-linters = ["forbidigo", "wsl", "revive", "godot"]
+linters = ["forbidigo", "wsl", "revive", "godot", "funlen"]
 
 [[linters.exclusions.rules]]
 path = "internal/uuid/"
