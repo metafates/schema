@@ -1,3 +1,4 @@
+// Package parse provides parsing functionality for converting similar looking values into others with validation.
 package parse
 
 import (
@@ -25,7 +26,7 @@ type Parser interface {
 //
 // Any errors encountered during parsing are wrapped in a [ParseError].
 //
-// Parse also accepts options. See [Option]
+// Parse also accepts options. See [Option].
 func Parse(src, dst any, options ...Option) error {
 	if parser, ok := dst.(Parser); ok {
 		if err := parser.Parse(src); err != nil {
@@ -192,6 +193,7 @@ func parse(src any, dst reflect.Value, dstPath string, cfg *config) error {
 			vSrc.Kind() == reflect.Slice &&
 			vSrc.Type().Elem().Kind() == reflect.Uint8 {
 			dst.SetString(string(vSrc.Bytes()))
+
 			return nil
 		}
 

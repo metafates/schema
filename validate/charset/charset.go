@@ -1,3 +1,4 @@
+// Package charset provides various charset filters to be used in combination with charset validator
 package charset
 
 import (
@@ -6,67 +7,67 @@ import (
 	"unicode"
 )
 
-// Filter represents charset filter
+// Filter represents charset filter.
 type Filter interface {
 	Filter(r rune) error
 }
 
 type (
-	// Any accepts any rune
+	// Any accepts any rune.
 	Any struct{}
 
-	// ASCII accepts ASCII runes
+	// ASCII accepts ASCII runes.
 	ASCII struct{}
 
-	// Graphic wraps [unicode.IsGraphic]
+	// Graphic wraps [unicode.IsGraphic].
 	Graphic struct{}
 
-	// Print wraps [unicode.IsPrint]
+	// Print wraps [unicode.IsPrint].
 	Print struct{}
 
-	// Control wraps [unicode.IsControl]
+	// Control wraps [unicode.IsControl].
 	Control struct{}
 
-	// Letter wraps [unicode.IsLetter]
+	// Letter wraps [unicode.IsLetter].
 	Letter struct{}
 
-	// Mark wraps [unicode.IsMark]
+	// Mark wraps [unicode.IsMark].
 	Mark struct{}
 
-	// Number wraps [unicode.IsNumber]
+	// Number wraps [unicode.IsNumber].
 	Number struct{}
 
-	// Punct wraps [unicode.IsPunct]
+	// Punct wraps [unicode.IsPunct].
 	Punct struct{}
 
-	// Space wraps [unicode.IsSpace]
+	// Space wraps [unicode.IsSpace].
 	Space struct{}
 
-	// Symbol wraps [unicode.IsSymbol]
+	// Symbol wraps [unicode.IsSymbol].
 	Symbol struct{}
 
-	// And is a meta filter that combines multiple filters using AND operator
+	// And is a meta filter that combines multiple filters using AND operator.
 	And[A, B Filter] struct{}
 
-	// Or is a meta filter that combines multiple filters using OR operator
+	// Or is a meta filter that combines multiple filters using OR operator.
 	Or[A, B Filter] struct{}
 
-	// Not is a meta filter that inverts given filter
+	// Not is a meta filter that inverts given filter.
 	Not[F Filter] struct{}
 )
 
-// common aliases
+// Common aliases.
 type (
-	// ASCIINumber intersects [ASCII] and [Number]
+	// ASCIINumber intersects [ASCII] and [Number].
 	ASCIINumber struct{ And[ASCII, Number] }
 
-	// ASCIIPrint intersects [ASCII] and [Print]
+	// ASCIIPrint intersects [ASCII] and [Print].
 	ASCIIPrint struct{ And[ASCII, Print] }
 
-	// ASCIILetter intersects [ASCII] and [Letter]
+	// ASCIILetter intersects [ASCII] and [Letter].
 	ASCIILetter struct{ And[ASCII, Letter] }
 
-	// ASCIIPunct intersects [ASCII] and [Punct]
+	// ASCIIPunct intersects [ASCII] and [Punct].
 	ASCIIPunct struct{ And[ASCII, Punct] }
 )
 
@@ -112,6 +113,7 @@ func (Not[F]) Filter(r rune) error {
 	var f F
 
 	if err := f.Filter(r); err != nil {
+		//nolint:nilerr
 		return nil
 	}
 

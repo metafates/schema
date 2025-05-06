@@ -15,35 +15,6 @@ type Path struct {
 	Segments []PathSegment
 }
 
-func (p Path) printf() (format string, args []string) {
-	var formatBuilder strings.Builder
-
-	for _, s := range p.Segments[1:] {
-		var prefix, suffix string
-
-		if s.Index {
-			prefix = "["
-			suffix = "]"
-		} else {
-			prefix = "."
-		}
-
-		formatBuilder.WriteString(prefix)
-
-		if s.Dynamic {
-			formatBuilder.WriteString("%v")
-
-			args = append(args, s.Name)
-		} else {
-			formatBuilder.WriteString(s.Name)
-		}
-
-		formatBuilder.WriteString(suffix)
-	}
-
-	return formatBuilder.String(), args
-}
-
 func (p Path) Join(segment PathSegment) Path {
 	return Path{
 		Segments: append(slices.Clone(p.Segments), segment),
@@ -70,4 +41,36 @@ func (p Path) String() string {
 	}
 
 	return root + rest.String()
+}
+
+// printf returns f-template (go style) and its arguments for this path.
+func (p Path) printf() (string, []string) {
+	var formatBuilder strings.Builder
+
+	var args []string
+
+	for _, s := range p.Segments[1:] {
+		var prefix, suffix string
+
+		if s.Index {
+			prefix = "["
+			suffix = "]"
+		} else {
+			prefix = "."
+		}
+
+		formatBuilder.WriteString(prefix)
+
+		if s.Dynamic {
+			formatBuilder.WriteString("%v")
+
+			args = append(args, s.Name)
+		} else {
+			formatBuilder.WriteString(s.Name)
+		}
+
+		formatBuilder.WriteString(suffix)
+	}
+
+	return formatBuilder.String(), args
 }

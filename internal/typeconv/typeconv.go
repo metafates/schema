@@ -8,12 +8,12 @@ import (
 
 // NOTE: generated with AI. Validate it
 
-func NewTypeConverter() TypeConverter {
-	return TypeConverter{imports: make(map[string]string)}
-}
-
 type TypeConverter struct {
 	imports map[string]string
+}
+
+func NewTypeConverter() TypeConverter {
+	return TypeConverter{imports: make(map[string]string)}
 }
 
 func (c *TypeConverter) AddImports(f *jen.File) {
@@ -48,6 +48,7 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 
 			return qual
 		}
+
 		return jen.Id(t.Obj().Name())
 
 	case *types.Basic:
@@ -86,7 +87,7 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 	}
 }
 
-// parseStructTag parses a raw struct tag string into a map[string]string
+// parseStructTag parses a raw struct tag string into a map[string]string.
 func parseStructTag(tag string) map[string]string {
 	tags := make(map[string]string)
 

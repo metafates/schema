@@ -14,6 +14,7 @@ type FieldVisitor func(path string, value reflect.Value) error
 func WalkFields(data any, visitor FieldVisitor) error {
 	// Track visited pointers to prevent infinite recursion on cycles.
 	visited := make(map[uintptr]bool)
+
 	return walkRecursive("", reflect.ValueOf(data), visitor, visited)
 }
 

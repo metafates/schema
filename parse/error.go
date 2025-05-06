@@ -38,7 +38,7 @@ type UnknownFieldError struct {
 }
 
 func (e UnknownFieldError) Error() string {
-	return fmt.Sprintf("unknown field: %s", e.Name)
+	return "unknown field: " + e.Name
 }
 
 type ParseError struct {
@@ -48,7 +48,7 @@ type ParseError struct {
 	path string
 }
 
-// Path returns the path to the value which raised this error
+// Path returns the path to the value which raised this error.
 func (e ParseError) Path() string {
 	var recursive func(path []string, err error) []string
 

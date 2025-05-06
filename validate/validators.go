@@ -31,7 +31,7 @@ type (
 	// - false for the boolean type, and
 	// - "" (the empty string) for strings.
 	//
-	// See [NonZero]
+	// See [NonZero].
 	Zero[T comparable] struct{}
 
 	// NonZero accepts all non-zero values.
@@ -41,12 +41,12 @@ type (
 	// - false for the boolean type, and
 	// - "" (the empty string) for strings.
 	//
-	// See [Zero]
+	// See [Zero].
 	NonZero[T comparable] struct{}
 
 	// Positive accepts all positive real numbers excluding zero.
 	//
-	// See [Positive0] for zero inlcuding variant.
+	// See [Positive0] for zero including variant.
 	Positive[T constraint.Real] struct{}
 
 	// Negative accepts all negative real numbers excluding zero.
@@ -89,20 +89,23 @@ type (
 	HTTPURL[T constraint.Text] struct{}
 
 	// IP accepts an IP address.
-	// The address can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
+	// The address can be in dotted decimal ("192.0.2.1"),
+	// IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
 	IP[T constraint.Text] struct{}
 
-	// IP accepts an IP V4 address (e.g. "192.0.2.1").
+	// IPV4 accepts an IP V4 address (e.g. "192.0.2.1").
 	IPV4[T constraint.Text] struct{}
 
-	// IP accepts an IP V6 address, including IPv4-mapped IPv6 addresses.
-	// The address can be regular IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
+	// IPV6 accepts an IP V6 address, including IPv4-mapped IPv6 addresses.
+	// The address can be regular IPv6 ("2001:db8::68"), or IPv6 with
+	// a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
 	IPV6[T constraint.Text] struct{}
 
 	// MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address.
 	MAC[T constraint.Text] struct{}
 
-	// CIDR accepts CIDR notation IP address and prefix length, like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291.
+	// CIDR accepts CIDR notation IP address and prefix length,
+	// like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291.
 	CIDR[T constraint.Text] struct{}
 
 	// Base64 accepts valid base64 encoded strings.
@@ -115,54 +118,54 @@ type (
 
 	// Charset accepts non-empty text which contains only runes acceptable by filter.
 	//
-	// See also [Charset0]
+	// See also [Charset0].
 	Charset[T constraint.Text, F charset.Filter] struct{}
 
-	// Latitude accepts any number in the range [-90; 90]
+	// Latitude accepts any number in the range [-90; 90].
 	//
-	// See also [Longitude]
+	// See also [Longitude].
 	Latitude[T constraint.Real] struct{}
 
-	// Longitude accepts any number in the range [-180; 180]
+	// Longitude accepts any number in the range [-180; 180].
 	//
-	// See also [Latitude]
+	// See also [Latitude].
 	Longitude[T constraint.Real] struct{}
 
-	// InPast accepts any time before current timestamp
+	// InPast accepts any time before current timestamp.
 	//
-	// See also [InFuture]
+	// See also [InFuture].
 	InPast[T constraint.Time] struct{}
 
-	// InFuture accepts any time after current timestamp
+	// InFuture accepts any time after current timestamp.
 	//
-	// See also [InPast]
+	// See also [InPast].
 	InFuture[T constraint.Time] struct{}
 
-	// Unique accepts a slice-like of unique values
+	// Unique accepts a slice-like of unique values.
 	//
-	// See [UniqueSlice] for a slice shortcut
+	// See [UniqueSlice] for a slice shortcut.
 	Unique[S ~[]T, T comparable] struct{}
 
-	// Unique accepts a slice of unique values
+	// Unique accepts a slice of unique values.
 	//
-	// See [Unique] for a more generic version
+	// See [Unique] for a more generic version.
 	UniqueSlice[T comparable] struct {
 		Unique[[]T, T]
 	}
 
-	// NonEmpty accepts a non-empty slice-like (len > 0)
+	// NonEmpty accepts a non-empty slice-like (len > 0).
 	//
-	// See [NonEmptySlice] for a slice shortcut
+	// See [NonEmptySlice] for a slice shortcut.
 	NonEmpty[S ~[]T, T any] struct{}
 
-	// NonEmpty accepts a non-empty slice (len > 0)
+	// NonEmpty accepts a non-empty slice (len > 0).
 	//
-	// See [NonEmpty] for a more generic version
+	// See [NonEmpty] for a more generic version.
 	NonEmptySlice[T any] struct {
 		NonEmpty[[]T, T]
 	}
 
-	// MIME accepts RFC 1521 mime type string
+	// MIME accepts RFC 1521 mime type string.
 	MIME[T constraint.Text] struct{}
 
 	// UUID accepts a properly formatted UUID in one of the following formats:
@@ -172,21 +175,21 @@ type (
 	//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 	UUID[T constraint.Text] struct{}
 
-	// JSON accepts valid json encoded text
+	// JSON accepts valid json encoded text.
 	JSON[T constraint.Text] struct{}
 
-	// CountryAlpha2 accepts case-insensitive ISO 3166 2-letter country code
+	// CountryAlpha2 accepts case-insensitive ISO 3166 2-letter country code.
 	CountryAlpha2[T constraint.Text] struct{}
 
-	// CountryAlpha2 accepts case-insensitive ISO 3166 3-letter country code
+	// CountryAlpha2 accepts case-insensitive ISO 3166 3-letter country code.
 	CountryAlpha3[T constraint.Text] struct{}
 
-	// CountryAlpha2 accepts either [CountryAlpha2] or [CountryAlpha3]
+	// CountryAlpha2 accepts either [CountryAlpha2] or [CountryAlpha3].
 	CountryAlpha[T constraint.Text] struct {
 		Or[T, CountryAlpha2[T], CountryAlpha3[T]]
 	}
 
-	// CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code
+	// CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code.
 	CurrencyAlpha[T constraint.Text] struct{}
 
 	// LangAlpha2 accepts case-insesitive ISO 639 2-letter language code.
@@ -195,7 +198,7 @@ type (
 	// LangAlpha3 accepts case-insesitive ISO 639 3-letter language code.
 	LangAlpha3[T constraint.Text] struct{}
 
-	// LangAlpha accepts either [LangAlpha2] or [LangAlpha3]
+	// LangAlpha accepts either [LangAlpha2] or [LangAlpha3].
 	LangAlpha[T constraint.Text] struct {
 		Or[T, LangAlpha2[T], LangAlpha3[T]]
 	}
@@ -203,18 +206,18 @@ type (
 	// And is a meta validator that combines other validators with AND operator.
 	// Validators are called in the same order as specified by type parameters.
 	//
-	// See also [Or], [Not]
+	// See also [Or], [Not].
 	And[T any, A Validator[T], B Validator[T]] struct{}
 
 	// Or is a meta validator that combines other validators with OR operator.
 	// Validators are called in the same order as type parameters.
 	//
-	// See also [And], [Not]
+	// See also [And], [Not].
 	Or[T any, A Validator[T], B Validator[T]] struct{}
 
 	// Not is a meta validator that inverts given validator.
 	//
-	// See also [And], [Or]
+	// See also [And], [Or].
 	Not[T any, V Validator[T]] struct{}
 )
 
@@ -565,6 +568,7 @@ func (Or[T, A, B]) Validate(value T) error {
 func (Not[T, V]) Validate(value T) error {
 	var v V
 
+	//nolint:nilerr
 	if err := v.Validate(value); err != nil {
 		return nil
 	}

@@ -33,10 +33,13 @@ install-schemagen:
 
 # Update ISO datasets
 update-iso: && generate
+	# country codes
 	curl -f -L -o ./internal/iso/countries.csv https://raw.githubusercontent.com/datasets/country-codes/refs/heads/main/data/country-codes.csv
 
+	# currencies
 	curl -f -L -o ./internal/iso/currencies.csv https://raw.githubusercontent.com/datasets/currency-codes/refs/heads/main/data/codes-all.csv
 
+	# languages
 	curl -f -L -o ./internal/iso/languages.csv https://raw.githubusercontent.com/datasets/language-codes/refs/heads/main/data/language-codes-3b2.csv
 
 lint:

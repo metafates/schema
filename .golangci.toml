@@ -2,11 +2,11 @@ version = "2"
 
 [linters]
 default = "all"
-disable = ["ireturn", "depguard", "err113", "exhaustive", "exhaustruct", "wrapcheck", "varnamelen", "mnd"]
+disable = ["ireturn", "depguard", "err113", "exhaustive", "exhaustruct", "wrapcheck", "varnamelen", "mnd", "godox"]
 
 [[linters.exclusions.rules]]
 path = "examples/"
-linters = ["forbidigo", "wsl", "revive"]
+linters = ["forbidigo", "wsl", "revive", "godot"]
 
 [[linters.exclusions.rules]]
 path = "internal/uuid/"
@@ -15,3 +15,13 @@ linters = ["gochecknoglobals"]
 [[linters.exclusions.rules]]
 linters = ["revive"]
 text = "exported:"
+
+[[linters.exclusions.rules]]
+path = "internal/"
+linters = ["revive"]
+text = "package-comments:"
+
+[[linters.exclusions.rules]]
+path = "cmd/"
+linters = ["revive"]
+text = "package-comments:"

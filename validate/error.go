@@ -7,7 +7,7 @@ import (
 )
 
 // InvalidValidateError describes an invalid argument passed to [Validate].
-// (The argument to [Validate] must be a non-nil pointer.)
+// The argument to [Validate] must be a non-nil pointer.
 type InvalidValidateError struct {
 	Type reflect.Type
 }
@@ -24,7 +24,7 @@ func (e InvalidValidateError) Error() string {
 	return "Validate(nil " + e.Type.String() + ")"
 }
 
-// ValidationError describes validation error occured at [validate.Validate]
+// ValidationError describes validation error occurred at [Validate].
 type ValidationError struct {
 	Msg   string
 	Inner error
@@ -32,14 +32,14 @@ type ValidationError struct {
 	path string
 }
 
-// WithPath returns a copy of [ValidationError] with the given path set
+// WithPath returns a copy of [ValidationError] with the given path set.
 func (e ValidationError) WithPath(path string) ValidationError {
 	e.path = path
 
 	return e
 }
 
-// Path returns the path to the value which raised this error
+// Path returns the path to the value which raised this error.
 func (e ValidationError) Path() string {
 	var recursive func(path []string, err error) []string
 

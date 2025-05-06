@@ -1,3 +1,4 @@
+// Package constraint provides common type constraints used in validators.
 package constraint
 
 import "time"
@@ -20,7 +21,7 @@ type Unsigned interface {
 
 type Real interface{ Float | Integer }
 
-// Text constraints types that can be converted to string
+// Text constraints types that can be converted to string.
 type Text interface{ ~string | ~[]rune | ~[]byte }
 
 type Comparable[T any] interface{ Compare(other T) int }

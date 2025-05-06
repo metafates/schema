@@ -1,3 +1,4 @@
+// Package validate provides type enforced validators.
 package validate
 
 import (
@@ -20,7 +21,7 @@ type (
 	//
 	// TL;DR: do not implement nor use this method directly (codegen is exception).
 	//
-	// See [Validateable] interface if you want to implement custom validation
+	// See [Validateable] interface if you want to implement custom validation.
 	TypeValidateable interface {
 		TypeValidate() error
 	}
@@ -28,7 +29,7 @@ type (
 	// Validateable is an interface for types that can perform validation logic after
 	// type validation (by [TypeValidateable]) has been called without errors.
 	//
-	// Primary usecase is custom cross-field validation. E.g. if X is true then Y cannot be empty
+	// Primary usecase is custom cross-field validation. E.g. if X is true then Y cannot be empty.
 	Validateable interface {
 		Validate() error
 	}

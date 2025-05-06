@@ -15,10 +15,11 @@ var _ interface {
 
 // Scan implements the [sql.Scanner] interface.
 //
-// Use [Custom.Parse] instead if you need to construct this value manually
+// Use [Custom.Parse] instead if you need to construct this value manually.
 func (c *Custom[T, V]) Scan(src any) error {
 	if src == nil {
 		*c = Custom[T, V]{}
+
 		return nil
 	}
 
@@ -30,12 +31,14 @@ func (c *Custom[T, V]) Scan(src any) error {
 		}
 
 		*c = Custom[T, V]{value: value, hasValue: true}
+
 		return nil
 	}
 
 	if converted, err := driver.DefaultParameterConverter.ConvertValue(src); err == nil {
 		if v, ok := converted.(T); ok {
 			*c = Custom[T, V]{value: v, hasValue: true}
+
 			return nil
 		}
 	}
@@ -57,7 +60,7 @@ func (c *Custom[T, V]) Scan(src any) error {
 
 // Value implements the [driver.Valuer] interface.
 //
-// Use [Custom.Get] method instead for getting the go value
+// Use [Custom.Get] method instead for getting the go value.
 func (c Custom[T, V]) Value() (driver.Value, error) {
 	if !c.validated {
 		panic("called UnmarshalJSON() on unvalidated value")
