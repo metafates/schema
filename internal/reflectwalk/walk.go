@@ -29,109 +29,132 @@ func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited m
 		return err
 	}
 
-	kind := v.Kind()
-
-	switch kind {
+	switch v.Kind() {
 	case reflect.Ptr:
-		// Check for nil pointer and visited pointer cycle first.
-		if v.IsNil() {
-			return nil
-		}
-
-		ptr := v.Pointer()
-		if visited[ptr] {
-			return nil
-		}
-
-		visited[ptr] = true
-
-		return walkRecursive(path, v.Elem(), visitor, visited)
+		return walkPtr(path, v, visitor, visited)
 
 	case reflect.Interface:
-		// If interface is nil, nothing to do.
-		if v.IsNil() {
-			return nil
-		}
-
-		return walkRecursive(path, v.Elem(), visitor, visited)
+		return walkInterface(path, v, visitor, visited)
 
 	case reflect.Struct:
-		// Walk struct fields.
-		t := v.Type()
-
-		for i := range v.NumField() {
-			fieldVal := v.Field(i)
-
-			// Skip unexported fields.
-			if !fieldVal.CanInterface() {
-				continue
-			}
-
-			fieldName := t.Field(i).Name
-			fieldPath := path + "." + fieldName
-
-			if err := walkRecursive(fieldPath, fieldVal, visitor, visited); err != nil {
-				return err
-			}
-		}
+		return walkStruct(path, v, visitor, visited)
 
 	case reflect.Array, reflect.Slice:
-		// After visiting the slice itself, skip if it's nil.
-		if kind == reflect.Slice && v.IsNil() {
-			return nil
-		}
-
-		for i := range v.Len() {
-			indexPath := path + "[" + strconv.Itoa(i) + "]"
-			if err := walkRecursive(indexPath, v.Index(i), visitor, visited); err != nil {
-				return err
-			}
-		}
+		return walkSlice(path, v, visitor, visited)
 
 	case reflect.Map:
-		// After visiting the map itself, skip if it's nil.
-		if v.IsNil() {
-			return nil
+		return walkMap(path, v, visitor, visited)
+
+	default:
+		return nil
+	}
+}
+
+func walkPtr(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+	// Check for nil pointer and visited pointer cycle first.
+	if v.IsNil() {
+		return nil
+	}
+
+	ptr := v.Pointer()
+	if visited[ptr] {
+		return nil
+	}
+
+	visited[ptr] = true
+
+	return walkRecursive(path, v.Elem(), visitor, visited)
+}
+
+func walkInterface(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+	// If interface is nil, nothing to do.
+	if v.IsNil() {
+		return nil
+	}
+
+	return walkRecursive(path, v.Elem(), visitor, visited)
+}
+
+func walkStruct(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+	t := v.Type()
+
+	for i := range v.NumField() {
+		fieldVal := v.Field(i)
+
+		// Skip unexported fields.
+		if !fieldVal.CanInterface() {
+			continue
 		}
 
-		keys := v.MapKeys()
-		for _, key := range keys {
-			// Convert map key to string inlined for performance.
-			var keyStr string
+		fieldName := t.Field(i).Name
+		fieldPath := path + "." + fieldName
 
-			switch k := key.Kind(); k {
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				keyStr = strconv.FormatInt(key.Int(), 10)
-
-			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-				keyStr = strconv.FormatUint(key.Uint(), 10)
-
-			case reflect.Bool:
-				if key.Bool() {
-					keyStr = "true"
-				} else {
-					keyStr = "false"
-				}
-
-			case reflect.Float32, reflect.Float64:
-				keyStr = strconv.FormatFloat(key.Float(), 'g', -1, 64)
-
-			case reflect.String:
-				keyStr = key.String()
-
-			default:
-				// Fallback for complex or otherwise unsupported key kinds.
-				keyStr = fmt.Sprint(key.Interface())
-			}
-
-			valuePath := path + "[" + keyStr + "]"
-			val := v.MapIndex(key)
-
-			if err := walkRecursive(valuePath, val, visitor, visited); err != nil {
-				return err
-			}
+		if err := walkRecursive(fieldPath, fieldVal, visitor, visited); err != nil {
+			return err
 		}
 	}
 
 	return nil
+}
+
+func walkSlice(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+	// After visiting the slice itself, skip if it's nil.
+	if v.Kind() == reflect.Slice && v.IsNil() {
+		return nil
+	}
+
+	for i := range v.Len() {
+		indexPath := path + "[" + strconv.Itoa(i) + "]"
+		if err := walkRecursive(indexPath, v.Index(i), visitor, visited); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func walkMap(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+	// After visiting the map itself, skip if it's nil.
+	if v.IsNil() {
+		return nil
+	}
+
+	keys := v.MapKeys()
+	for _, key := range keys {
+		valuePath := path + "[" + formatStr(key) + "]"
+		val := v.MapIndex(key)
+
+		if err := walkRecursive(valuePath, val, visitor, visited); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func formatStr(v reflect.Value) string {
+	switch v.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return strconv.FormatInt(v.Int(), 10)
+
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return strconv.FormatUint(v.Uint(), 10)
+
+	case reflect.Bool:
+		if v.Bool() {
+			return "true"
+		}
+
+		return "false"
+
+	case reflect.Float32, reflect.Float64:
+		return strconv.FormatFloat(v.Float(), 'g', -1, 64)
+
+	case reflect.String:
+		return v.String()
+
+	default:
+		// Fallback for complex or otherwise unsupported key kinds.
+		return fmt.Sprint(v.Interface())
+	}
 }

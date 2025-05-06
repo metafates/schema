@@ -77,6 +77,10 @@ func Validate(v any) error {
 		return &InvalidValidateError{Type: reflect.TypeOf(v)}
 	}
 
+	return validate(v)
+}
+
+func validate(v any) error {
 	var postValidate []func() error
 
 	err := reflectwalk.WalkFields(v, func(path string, reflectValue reflect.Value) error {

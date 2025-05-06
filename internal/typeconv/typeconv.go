@@ -2,6 +2,8 @@ package typeconv
 
 import (
 	"go/types"
+	"strings"
+	"unicode"
 
 	"github.com/dave/jennifer/jen"
 )
@@ -25,31 +27,7 @@ func (c *TypeConverter) AddImports(f *jen.File) {
 func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 	switch t := t.(type) {
 	case *types.Named:
-		pkg := t.Obj().Pkg()
-		if pkg != nil && pkg.Path() != "" {
-			// Record the import
-			c.imports[pkg.Path()] = pkg.Name()
-
-			// Create a qualified reference
-			qual := jen.Qual(pkg.Path(), t.Obj().Name())
-
-			// Handle type arguments if present
-			typeArgs := t.TypeArgs()
-
-			if typeArgs != nil && typeArgs.Len() > 0 {
-				var args []jen.Code
-
-				for i := range typeArgs.Len() {
-					args = append(args, c.ConvertType(typeArgs.At(i)))
-				}
-
-				return qual.Types(args...)
-			}
-
-			return qual
-		}
-
-		return jen.Id(t.Obj().Name())
+		return c.convertTypeNamed(t)
 
 	case *types.Basic:
 		return jen.Id(t.Name())
@@ -72,7 +50,7 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 			fieldCode := jen.Id(field.Name()).Add(c.ConvertType(field.Type()))
 
 			if tag != "" {
-				tagMap := parseStructTag(tag)
+				tagMap := parseStructTags(tag)
 				fieldCode = fieldCode.Tag(tagMap)
 			}
 
@@ -87,59 +65,93 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 	}
 }
 
-// parseStructTag parses a raw struct tag string into a map[string]string.
-func parseStructTag(tag string) map[string]string {
+func (c *TypeConverter) convertTypeNamed(t *types.Named) jen.Code {
+	pkg := t.Obj().Pkg()
+
+	if pkg != nil && pkg.Path() != "" {
+		// Record the import
+		c.imports[pkg.Path()] = pkg.Name()
+
+		// Create a qualified reference
+		qual := jen.Qual(pkg.Path(), t.Obj().Name())
+
+		// Handle type arguments if present
+		typeArgs := t.TypeArgs()
+
+		if typeArgs != nil && typeArgs.Len() > 0 {
+			var args []jen.Code
+
+			for i := range typeArgs.Len() {
+				args = append(args, c.ConvertType(typeArgs.At(i)))
+			}
+
+			return qual.Types(args...)
+		}
+
+		return qual
+	}
+
+	return jen.Id(t.Obj().Name())
+}
+
+// parseStructTags parses a raw struct tag string into a map[string]string.
+func parseStructTags(tag string) map[string]string {
 	tags := make(map[string]string)
 
 	// Simple state machine to parse tags
 	for tag != "" {
-		// Skip leading space
-		i := 0
-		for i < len(tag) && tag[i] == ' ' {
-			i++
+		name, value, newTag, ok := parseStructTag(tag)
+		if ok {
+			tags[name] = value
 		}
 
-		tag = tag[i:]
-		if tag == "" {
-			break
-		}
-
-		// Scan to colon
-		i = 0
-		for i < len(tag) && tag[i] != ':' {
-			i++
-		}
-
-		if i >= len(tag) {
-			break
-		}
-
-		name := tag[:i]
-		tag = tag[i+1:]
-
-		// Scan to closing quote, handling escaped quotes
-		if tag[0] != '"' {
-			break
-		}
-
-		i = 1
-		for i < len(tag) {
-			if tag[i] == '"' && tag[i-1] != '\\' {
-				break
-			}
-
-			i++
-		}
-
-		if i >= len(tag) {
-			break
-		}
-
-		value := tag[1:i]
-		tag = tag[i+1:]
-
-		tags[name] = value
+		tag = newTag
 	}
 
 	return tags
+}
+
+//nolint:nonamedreturns
+func parseStructTag(tag string) (name, value, rest string, ok bool) {
+	tag = strings.TrimLeftFunc(tag, unicode.IsSpace)
+
+	if tag == "" {
+		return "", "", "", false
+	}
+
+	// Scan to colon
+	i := 0
+	for i < len(tag) && tag[i] != ':' {
+		i++
+	}
+
+	if i >= len(tag) {
+		return "", "", "", false
+	}
+
+	name = tag[:i]
+	tag = tag[i+1:]
+
+	// Scan to closing quote, handling escaped quotes
+	if tag[0] != '"' {
+		return "", "", tag, false
+	}
+
+	i = 1
+	for i < len(tag) {
+		if tag[i] == '"' && tag[i-1] != '\\' {
+			break
+		}
+
+		i++
+	}
+
+	if i >= len(tag) {
+		return "", "", tag, false
+	}
+
+	value = tag[1:i]
+	tag = tag[i+1:]
+
+	return name, value, tag, true
 }

@@ -37,6 +37,8 @@ func xtob(x1, x2 byte) bool {
 // Validate if given string is a valid UUID.
 //
 // https://github.com/google/uuid/blob/0f11ee6918f41a04c201eceeadf612a377bc7fbc/uuid.go#L195
+//
+//nolint:cyclop
 func Validate(s string) error {
 	const standardLen = 36
 
