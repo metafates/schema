@@ -1,5 +1,11 @@
 version = "2"
 
+[formatters]
+enable = ["gci", "gofmt", "gofumpt", "goimports", "golines"]
+
+[formatters.exclusions]
+generated = "strict"
+
 [linters]
 default = "all"
 disable = ["ireturn", "depguard", "err113", "exhaustive", "exhaustruct", "wrapcheck", "varnamelen", "mnd", "godox"]

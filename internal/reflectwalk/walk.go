@@ -18,7 +18,12 @@ func WalkFields(data any, visitor FieldVisitor) error {
 	return walkRecursive("", reflect.ValueOf(data), visitor, visited)
 }
 
-func walkRecursive(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+func walkRecursive(
+	path string,
+	v reflect.Value,
+	visitor FieldVisitor,
+	visited map[uintptr]bool,
+) error {
 	// If we have an invalid (zero) reflect.Value, just fire the visitor.
 	if !v.IsValid() {
 		return visitor(path, v)
@@ -66,7 +71,12 @@ func walkPtr(path string, v reflect.Value, visitor FieldVisitor, visited map[uin
 	return walkRecursive(path, v.Elem(), visitor, visited)
 }
 
-func walkInterface(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+func walkInterface(
+	path string,
+	v reflect.Value,
+	visitor FieldVisitor,
+	visited map[uintptr]bool,
+) error {
 	// If interface is nil, nothing to do.
 	if v.IsNil() {
 		return nil
@@ -75,7 +85,12 @@ func walkInterface(path string, v reflect.Value, visitor FieldVisitor, visited m
 	return walkRecursive(path, v.Elem(), visitor, visited)
 }
 
-func walkStruct(path string, v reflect.Value, visitor FieldVisitor, visited map[uintptr]bool) error {
+func walkStruct(
+	path string,
+	v reflect.Value,
+	visitor FieldVisitor,
+	visited map[uintptr]bool,
+) error {
 	t := v.Type()
 
 	for i := range v.NumField() {
@@ -137,7 +152,12 @@ func formatStr(v reflect.Value) string {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return strconv.FormatInt(v.Int(), 10)
 
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+	case reflect.Uint,
+		reflect.Uint8,
+		reflect.Uint16,
+		reflect.Uint32,
+		reflect.Uint64,
+		reflect.Uintptr:
 		return strconv.FormatUint(v.Uint(), 10)
 
 	case reflect.Bool:

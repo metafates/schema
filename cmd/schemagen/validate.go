@@ -45,7 +45,12 @@ type validateGenerator struct {
 	counter map[string]int
 }
 
-func (vg *validateGenerator) gen(g *jen.Group, path Path, t types.Type, isPtr, addressable bool) bool {
+func (vg *validateGenerator) gen(
+	g *jen.Group,
+	path Path,
+	t types.Type,
+	isPtr, addressable bool,
+) bool {
 	switch t := t.(type) {
 	default:
 		vg.genBot(g, path, isPtr, addressable)
@@ -69,7 +74,12 @@ func (vg *validateGenerator) gen(g *jen.Group, path Path, t types.Type, isPtr, a
 	}
 }
 
-func (vg *validateGenerator) genPointer(g *jen.Group, path Path, s *types.Pointer, addressable bool) bool {
+func (vg *validateGenerator) genPointer(
+	g *jen.Group,
+	path Path,
+	s *types.Pointer,
+	addressable bool,
+) bool {
 	var generated bool
 
 	ifBody := jen.BlockFunc(func(g *jen.Group) {
@@ -83,7 +93,12 @@ func (vg *validateGenerator) genPointer(g *jen.Group, path Path, s *types.Pointe
 	return generated
 }
 
-func (vg *validateGenerator) genSlice(g *jen.Group, path Path, s *types.Slice, isPtr, addressable bool) bool {
+func (vg *validateGenerator) genSlice(
+	g *jen.Group,
+	path Path,
+	s *types.Slice,
+	isPtr, addressable bool,
+) bool {
 	i := vg.unique("i")
 
 	var generatedAny bool
@@ -123,7 +138,12 @@ func (vg *validateGenerator) genMap(g *jen.Group, path Path, s *types.Map, isPtr
 	return generatedAny
 }
 
-func (vg *validateGenerator) genStruct(g *jen.Group, path Path, s *types.Struct, isPtr, addressable bool) bool {
+func (vg *validateGenerator) genStruct(
+	g *jen.Group,
+	path Path,
+	s *types.Struct,
+	isPtr, addressable bool,
+) bool {
 	var generatedAny bool
 
 	for field := range s.Fields() {

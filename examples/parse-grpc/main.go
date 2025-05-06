@@ -79,7 +79,10 @@ func main() {
 		fmt.Printf("book.People[0].Phones: %v\n", len(book.People[0].Phones))
 		// 3
 
-		fmt.Printf("pb.Person_MOBILE == PhoneTypeMobile = %v\n", book.People[0].Phones[1].Type.Must() == PhoneTypeMobile)
+		fmt.Printf(
+			"pb.Person_MOBILE == PhoneTypeMobile = %v\n",
+			book.People[0].Phones[1].Type.Must() == PhoneTypeMobile,
+		)
 		// pb.Person_MOBILE == PhoneTypeMobile = true
 	}
 

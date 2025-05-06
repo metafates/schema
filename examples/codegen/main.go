@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"time"
@@ -9,8 +10,6 @@ import (
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
 	"github.com/metafates/schema/validate/charset"
-
-	_ "embed"
 )
 
 //go:generate schemagen -type User

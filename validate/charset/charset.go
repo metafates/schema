@@ -79,9 +79,14 @@ func (Control) Filter(r rune) error { return assert(unicode.IsControl(r), "non-c
 func (Letter) Filter(r rune) error  { return assert(unicode.IsLetter(r), "non-letter character") }
 func (Mark) Filter(r rune) error    { return assert(unicode.IsMark(r), "non-mark character") }
 func (Number) Filter(r rune) error  { return assert(unicode.IsNumber(r), "non-number character") }
-func (Punct) Filter(r rune) error   { return assert(unicode.IsPunct(r), "non-punctuation character") }
-func (Space) Filter(r rune) error   { return assert(unicode.IsSpace(r), "non-space character") }
-func (Symbol) Filter(r rune) error  { return assert(unicode.IsSymbol(r), "non-symbol character") }
+
+func (Punct) Filter(
+	r rune,
+) error {
+	return assert(unicode.IsPunct(r), "non-punctuation character")
+}
+func (Space) Filter(r rune) error  { return assert(unicode.IsSpace(r), "non-space character") }
+func (Symbol) Filter(r rune) error { return assert(unicode.IsSymbol(r), "non-symbol character") }
 
 func (And[A, B]) Filter(r rune) error {
 	if err := (*new(A)).Filter(r); err != nil {
