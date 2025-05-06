@@ -348,13 +348,11 @@ func (c *Custom[T, V]) Parse(value any) error {
 		return nil
 	}
 
-	tType := reflect.TypeFor[T]()
-
 	if _, ok := value.(interface{ isOptional() }); ok {
 		// NOTE: ensure this method name is in sync with [Custom.Get]
 		res := rValue.MethodByName("Get").Call(nil)
-
 		v, ok := res[0], res[1].Bool()
+
 		if !ok {
 			*c = Custom[T, V]{}
 
@@ -364,28 +362,14 @@ func (c *Custom[T, V]) Parse(value any) error {
 		rValue = v
 	}
 
-	var aux Custom[T, V]
+	v, err := convert[T](rValue)
+	if err != nil {
+		return parse.ParseError{Inner: err}
+	}
 
-	switch {
-	case rValue.CanConvert(tType):
-		aux.hasValue = true
-
-		//nolint:forcetypeassert // checked already by CanConvert
-		aux.value = rValue.Convert(tType).Interface().(T)
-
-	case rValue.Kind() == reflect.Pointer && rValue.Elem().CanConvert(tType):
-		aux.hasValue = true
-
-		//nolint:forcetypeassert // checked already by CanConvert
-		aux.value = rValue.Elem().Convert(tType).Interface().(T)
-
-	default:
-		return parse.ParseError{
-			Inner: parse.UnconvertableTypeError{
-				Target:   tType.String(),
-				Original: rValue.Type().String(),
-			},
-		}
+	aux := Custom[T, V]{
+		hasValue: true,
+		value:    v,
 	}
 
 	if err := aux.TypeValidate(); err != nil {
@@ -395,6 +379,26 @@ func (c *Custom[T, V]) Parse(value any) error {
 	*c = aux
 
 	return nil
+}
+
+func convert[T any](v reflect.Value) (T, error) {
+	tType := reflect.TypeFor[T]()
+
+	switch {
+	case v.CanConvert(tType):
+		//nolint:forcetypeassert // checked already by CanConvert
+		return v.Convert(tType).Interface().(T), nil
+
+	case v.Kind() == reflect.Pointer && v.Elem().CanConvert(tType):
+		//nolint:forcetypeassert // checked already by CanConvert
+		return v.Elem().Convert(tType).Interface().(T), nil
+
+	default:
+		return *new(T), parse.UnconvertableTypeError{
+			Target:   tType.String(),
+			Original: v.Type().String(),
+		}
+	}
 }
 
 func (c *Custom[T, V]) MustParse(value any) {
