@@ -60,6 +60,8 @@ func TestOptional(t *testing.T) {
 		testutil.NoPanic(t, func() { foo.Get() })
 		testutil.NoPanic(t, func() { foo.MarshalJSON() })
 		testutil.NoPanic(t, func() { foo.MarshalText() })
+		testutil.NoPanic(t, func() { foo.MarshalBinary() })
+		testutil.NoPanic(t, func() { foo.GobEncode() })
 		testutil.NoPanic(t, func() { foo.Value() })
 	})
 
@@ -79,6 +81,8 @@ func TestOptional(t *testing.T) {
 		testutil.Panic(t, func() { foo.Get() })
 		testutil.Panic(t, func() { foo.MarshalJSON() })
 		testutil.Panic(t, func() { foo.MarshalText() })
+		testutil.Panic(t, func() { foo.MarshalBinary() })
+		testutil.Panic(t, func() { foo.GobEncode() })
 		testutil.Panic(t, func() { foo.Value() })
 	})
 
@@ -109,6 +113,8 @@ func TestOptional(t *testing.T) {
 		testutil.NoPanic(t, func() { foo.Get() })
 		testutil.NoPanic(t, func() { foo.MarshalJSON() })
 		testutil.NoPanic(t, func() { foo.MarshalText() })
+		testutil.NoPanic(t, func() { foo.MarshalBinary() })
+		testutil.NoPanic(t, func() { foo.GobEncode() })
 		testutil.NoPanic(t, func() { foo.Value() })
 
 		t.Run("reuse as invalid", func(t *testing.T) {
@@ -126,6 +132,8 @@ func TestOptional(t *testing.T) {
 			testutil.Panic(t, func() { foo.Get() })
 			testutil.Panic(t, func() { foo.MarshalJSON() })
 			testutil.Panic(t, func() { foo.MarshalText() })
+			testutil.Panic(t, func() { foo.MarshalBinary() })
+			testutil.Panic(t, func() { foo.GobEncode() })
 			testutil.Panic(t, func() { foo.Value() })
 		})
 	})

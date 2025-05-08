@@ -33,9 +33,5 @@ func (c *Custom[T, V]) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements the [json.Marshaler] interface.
 func (c Custom[T, V]) MarshalJSON() ([]byte, error) {
-	if !c.validated {
-		panic("called UnmarshalJSON() on unvalidated value")
-	}
-
-	return json.Marshal(c.value)
+	return json.Marshal(c.Get())
 }

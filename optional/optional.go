@@ -4,6 +4,8 @@
 //   - json
 //   - sql
 //   - text
+//   - binary
+//   - gob
 package optional
 
 import (
@@ -381,26 +383,6 @@ func (c *Custom[T, V]) Parse(value any) error {
 	return nil
 }
 
-func convert[T any](v reflect.Value) (T, error) {
-	tType := reflect.TypeFor[T]()
-
-	switch {
-	case v.CanConvert(tType):
-		//nolint:forcetypeassert // checked already by CanConvert
-		return v.Convert(tType).Interface().(T), nil
-
-	case v.Kind() == reflect.Pointer && v.Elem().CanConvert(tType):
-		//nolint:forcetypeassert // checked already by CanConvert
-		return v.Elem().Convert(tType).Interface().(T), nil
-
-	default:
-		return *new(T), parse.UnconvertableTypeError{
-			Target:   tType.String(),
-			Original: v.Type().String(),
-		}
-	}
-}
-
 func (c *Custom[T, V]) MustParse(value any) {
 	if err := c.Parse(value); err != nil {
 		panic("MustParse failed")
@@ -408,3 +390,23 @@ func (c *Custom[T, V]) MustParse(value any) {
 }
 
 func (Custom[T, V]) isOptional() {}
+
+func convert[T any](v reflect.Value) (T, error) {
+	tType := reflect.TypeFor[T]()
+
+	original := v
+
+	if v.Kind() == reflect.Pointer {
+		v = v.Elem()
+	}
+
+	if v.CanConvert(tType) {
+		//nolint:forcetypeassert // checked already by CanConvert
+		return v.Convert(tType).Interface().(T), nil
+	}
+
+	return *new(T), parse.UnconvertableTypeError{
+		Target:   tType.String(),
+		Original: original.Type().String(),
+	}
+}

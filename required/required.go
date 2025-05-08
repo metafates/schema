@@ -330,9 +330,8 @@ func (c *Custom[T, V]) Parse(value any) error {
 
 	//nolint:forcetypeassert // checked already by CanConvert
 	aux := Custom[T, V]{
-		value:     rValue.Convert(tType).Interface().(T),
-		hasValue:  true,
-		validated: false,
+		value:    rValue.Convert(tType).Interface().(T),
+		hasValue: true,
 	}
 
 	if err := aux.TypeValidate(); err != nil {

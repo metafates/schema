@@ -62,16 +62,12 @@ func (c *Custom[T, V]) Scan(src any) error {
 //
 // Use [Custom.Get] method instead for getting the go value.
 func (c Custom[T, V]) Value() (driver.Value, error) {
-	if c.hasValue && !c.validated {
-		panic("called UnmarshalJSON() on unvalidated value")
-	}
-
 	if !c.hasValue {
 		//nolint:nilnil
 		return nil, nil
 	}
 
-	value, err := driver.DefaultParameterConverter.ConvertValue(c.value)
+	value, err := driver.DefaultParameterConverter.ConvertValue(c.Must())
 	if err != nil {
 		return nil, fmt.Errorf("convert: %w", err)
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 // InvalidParseError describes an invalid argument passed to [Parse].
-// (The argument to [Parse] must be a non-nil pointer.)
+// The argument to [Parse] must be a non-nil pointer.
 type InvalidParseError struct {
 	Type reflect.Type
 }
