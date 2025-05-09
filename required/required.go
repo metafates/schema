@@ -4,6 +4,8 @@
 //   - json
 //   - sql
 //   - text
+//   - binary
+//   - gob
 package required
 
 import (
