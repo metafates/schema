@@ -3,8 +3,8 @@ package required
 
 import (
 	"github.com/metafates/schema/constraint"
-	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
+	"github.com/metafates/schema/validate"
 )
 
 // Any accepts any value of T.
@@ -174,3 +174,4 @@ type LangAlpha3[T constraint.Text] = Custom[T, validate.LangAlpha3[T]]
 
 // LangAlpha accepts either [LangAlpha2] or [LangAlpha3].
 type LangAlpha[T constraint.Text] = Custom[T, validate.LangAlpha[T]]
+

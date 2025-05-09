@@ -37,7 +37,7 @@ class Data:
 
 
 def read(path: str) -> Data:
-    with open("data.yaml", "r") as f:
+    with open(path, "r") as f:
         data = yaml.safe_load(f)
 
     imports_registry: dict[str, Import] = {}
@@ -154,7 +154,7 @@ def generate_validators(file: SupportsWrite[str], data: Data):
         p()
 
 
-def generate_aliases(file: SupportsWrite[str], pkg: str, data: Data):
+def generate_aliases(file: SupportsWrite[str], data: Data, pkg: str):
     p = make_p(file)
 
     p(PREAMBLE)
@@ -187,17 +187,33 @@ def generate_aliases(file: SupportsWrite[str], pkg: str, data: Data):
         p()
 
 
+def generate_markdown(file: SupportsWrite[str], data: Data):
+    p = make_p(file)
+
+    p("# Validators")
+
+    p("| Name | Description |")
+    p("| ---- | ----------- |")
+    for v in data.validators:
+        desc = "<br/>".join(v.desc.splitlines())
+
+        p(f"| `{v.name}` | {desc} |")
+
+
 def main():
-    data = read("data.yaml")
+    data = read("validators.yaml")
 
     with Path("validate").joinpath("validators.go").open("w+") as out:
         generate_validators(out, data)
 
     with Path("required").joinpath("required.go").open("w+") as out:
-        generate_aliases(out, "required", data)
+        generate_aliases(out, data, pkg="required")
 
     with Path("optional").joinpath("optional.go").open("w+") as out:
-        generate_aliases(out, "optional", data)
+        generate_aliases(out, data, pkg="optional")
+
+    with Path("validators.md").open("w+") as out:
+        generate_markdown(out, data)
 
 
 if __name__ == "__main__":
