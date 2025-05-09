@@ -152,10 +152,10 @@ type NonEmptySlice[T comparable] struct{
 type MIME[T constraint.Text] struct{}
 
 // UUID accepts a properly formatted UUID in one of the following formats:
-//   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-//   urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-//   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+//   - xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+//   - urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+//   - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//   - {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 type UUID[T constraint.Text] struct{}
 
 // JSON accepts valid json encoded text.
@@ -175,10 +175,10 @@ type CountryAlpha[T constraint.Text] struct{
 // CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code.
 type CurrencyAlpha[T constraint.Text] struct{}
 
-// LangAlpha2 accepts case-insesitive ISO 639 2-letter language code.
+// LangAlpha2 accepts case-insensitive ISO 639 2-letter language code.
 type LangAlpha2[T constraint.Text] struct{}
 
-// LangAlpha3 accepts case-insesitive ISO 639 3-letter language code.
+// LangAlpha3 accepts case-insensitive ISO 639 3-letter language code.
 type LangAlpha3[T constraint.Text] struct{}
 
 // LangAlpha accepts either [LangAlpha2] or [LangAlpha3].

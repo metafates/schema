@@ -30,12 +30,12 @@
 | `NonEmpty` | NonEmpty accepts a non-empty slice-like (len > 0).<br/><br/>See [NonEmptySlice] for a slice shortcut. |
 | `NonEmptySlice` | NonEmptySlice accepts a non-empty slice (len > 0).<br/><br/>See [NonEmpty] for a more generic version. |
 | `MIME` | MIME accepts RFC 1521 mime type string. |
-| `UUID` | UUID accepts a properly formatted UUID in one of the following formats:<br/>  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx<br/>  urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx<br/>  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx<br/>  {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx} |
+| `UUID` | UUID accepts a properly formatted UUID in one of the following formats:<br/>  - xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx<br/>  - urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx<br/>  - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx<br/>  - {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx} |
 | `JSON` | JSON accepts valid json encoded text. |
 | `CountryAlpha2` | CountryAlpha2 accepts case-insensitive ISO 3166 2-letter country code. |
 | `CountryAlpha3` | CountryAlpha3 accepts case-insensitive ISO 3166 3-letter country code. |
 | `CountryAlpha` | CountryAlpha accepts either [CountryAlpha2] or [CountryAlpha3]. |
 | `CurrencyAlpha` | CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code. |
-| `LangAlpha2` | LangAlpha2 accepts case-insesitive ISO 639 2-letter language code. |
-| `LangAlpha3` | LangAlpha3 accepts case-insesitive ISO 639 3-letter language code. |
+| `LangAlpha2` | LangAlpha2 accepts case-insensitive ISO 639 2-letter language code. |
+| `LangAlpha3` | LangAlpha3 accepts case-insensitive ISO 639 3-letter language code. |
 | `LangAlpha` | LangAlpha accepts either [LangAlpha2] or [LangAlpha3]. |

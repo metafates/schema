@@ -2,9 +2,9 @@
 package optional
 
 import (
+	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/validate/charset"
-	"github.com/metafates/schema/validate"
 )
 
 // Any accepts any value of T.
@@ -145,10 +145,10 @@ type NonEmptySlice[T comparable] = Custom[[]T, validate.NonEmptySlice[T]]
 type MIME[T constraint.Text] = Custom[T, validate.MIME[T]]
 
 // UUID accepts a properly formatted UUID in one of the following formats:
-//   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-//   urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-//   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//   {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+//   - xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+//   - urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+//   - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//   - {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 type UUID[T constraint.Text] = Custom[T, validate.UUID[T]]
 
 // JSON accepts valid json encoded text.
@@ -166,10 +166,10 @@ type CountryAlpha[T constraint.Text] = Custom[T, validate.CountryAlpha[T]]
 // CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code.
 type CurrencyAlpha[T constraint.Text] = Custom[T, validate.CurrencyAlpha[T]]
 
-// LangAlpha2 accepts case-insesitive ISO 639 2-letter language code.
+// LangAlpha2 accepts case-insensitive ISO 639 2-letter language code.
 type LangAlpha2[T constraint.Text] = Custom[T, validate.LangAlpha2[T]]
 
-// LangAlpha3 accepts case-insesitive ISO 639 3-letter language code.
+// LangAlpha3 accepts case-insensitive ISO 639 3-letter language code.
 type LangAlpha3[T constraint.Text] = Custom[T, validate.LangAlpha3[T]]
 
 // LangAlpha accepts either [LangAlpha2] or [LangAlpha3].

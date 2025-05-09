@@ -271,10 +271,10 @@ validators:
   - name: UUID
     desc: |
       UUID accepts a properly formatted UUID in one of the following formats:
-        xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-        urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+        - xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        - {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
     types:
       - name: T
         constraint: constraint.Text
