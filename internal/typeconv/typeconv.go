@@ -29,6 +29,9 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 	case *types.Named:
 		return c.convertTypeNamed(t)
 
+	case *types.Alias:
+		return c.ConvertType(t.Rhs())
+
 	case *types.Basic:
 		return jen.Id(t.Name())
 
@@ -42,27 +45,31 @@ func (c *TypeConverter) ConvertType(t types.Type) jen.Code {
 		return jen.Map(c.ConvertType(t.Key())).Add(c.ConvertType(t.Elem()))
 
 	case *types.Struct:
-		fields := make([]jen.Code, 0, t.NumFields())
-
-		for i := range t.NumFields() {
-			field := t.Field(i)
-			tag := t.Tag(i)
-			fieldCode := jen.Id(field.Name()).Add(c.ConvertType(field.Type()))
-
-			if tag != "" {
-				tagMap := parseStructTags(tag)
-				fieldCode = fieldCode.Tag(tagMap)
-			}
-
-			fields = append(fields, fieldCode)
-		}
-
-		return jen.Struct(fields...)
+		return c.convertTypeStruct(t)
 
 	default:
 		// Fallback for any other types
 		return jen.Id(t.String())
 	}
+}
+
+func (c *TypeConverter) convertTypeStruct(t *types.Struct) jen.Code {
+	fields := make([]jen.Code, 0, t.NumFields())
+
+	for i := range t.NumFields() {
+		field := t.Field(i)
+		tag := t.Tag(i)
+		fieldCode := jen.Id(field.Name()).Add(c.ConvertType(field.Type()))
+
+		if tag != "" {
+			tagMap := parseStructTags(tag)
+			fieldCode = fieldCode.Tag(tagMap)
+		}
+
+		fields = append(fields, fieldCode)
+	}
+
+	return jen.Struct(fields...)
 }
 
 func (c *TypeConverter) convertTypeNamed(t *types.Named) jen.Code {

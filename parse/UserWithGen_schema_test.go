@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
-	validate "github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
 	"time"
 )
@@ -14,9 +14,9 @@ import (
 // Ensure that [UserWithGen] type was not changed
 func _() {
 	type locked struct {
-		ID             required.UUID[string]
-		Name           required.Charset[string, charset.Print]
-		Birth          optional.InPast[time.Time]
+		ID             required.Custom[string, validate.UUID[string]]
+		Name           required.Custom[string, validate.Charset[string, charset.Print]]
+		Birth          optional.Custom[time.Time, validate.InPast[time.Time]]
 		FavoriteNumber int
 		Friends        []Friend
 	}

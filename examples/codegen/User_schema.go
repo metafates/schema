@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/metafates/schema/optional"
 	"github.com/metafates/schema/required"
-	validate "github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate"
 	"github.com/metafates/schema/validate/charset"
 	"time"
 )
@@ -14,18 +14,18 @@ import (
 // Ensure that [User] type was not changed
 func _() {
 	type locked struct {
-		ID    required.UUID[string]                   `json:"id"`
-		Name  required.Charset[string, charset.Print] `json:"name"`
-		Birth optional.InPast[time.Time]              `json:"birth"`
+		ID    required.Custom[string, validate.UUID[string]]                   `json:"id"`
+		Name  required.Custom[string, validate.Charset[string, charset.Print]] `json:"name"`
+		Birth optional.Custom[time.Time, validate.InPast[time.Time]]           `json:"birth"`
 		Meta  struct {
-			Preferences optional.UniqueSlice[string] `json:"preferences"`
-			Admin       bool                         `json:"admin"`
+			Preferences optional.Custom[[]string, validate.UniqueSlice[string]] `json:"preferences"`
+			Admin       bool                                                    `json:"admin"`
 		} `json:"meta"`
 		Friends   []UserFriend `json:"friends"`
 		Addresses []struct {
-			Tag       optional.Charset[string, charset.Print] `json:"tag"`
-			Latitude  required.Latitude[float64]              `json:"latitude"`
-			Longitude required.Longitude[float64]             `json:"longitude"`
+			Tag       optional.Custom[string, validate.Charset0[string, charset.Print]] `json:"tag"`
+			Latitude  required.Custom[float64, validate.Latitude[float64]]              `json:"latitude"`
+			Longitude required.Custom[float64, validate.Longitude[float64]]             `json:"longitude"`
 		} `json:"addresses"`
 	}
 	var v User

@@ -5,31 +5,31 @@ package bench
 import (
 	"fmt"
 	"github.com/metafates/schema/required"
-	validate "github.com/metafates/schema/validate"
+	"github.com/metafates/schema/validate"
 )
 
 // Ensure that [DataWithGen] type was not changed
 func _() {
 	type locked []struct {
-		ID         required.NonZero[string]    `json:"_id"`
-		Index      int                         `json:"index"`
-		GUID       string                      `json:"guid"`
-		IsActive   bool                        `json:"isActive"`
-		Balance    string                      `json:"balance"`
-		Picture    string                      `json:"picture"`
-		Age        required.Positive[int]      `json:"age"`
-		EyeColor   string                      `json:"eyeColor"`
-		Name       string                      `json:"name"`
-		Gender     string                      `json:"gender"`
-		Company    string                      `json:"company"`
-		Email      string                      `json:"email"`
-		Phone      string                      `json:"phone"`
-		Address    string                      `json:"address"`
-		About      string                      `json:"about"`
-		Registered string                      `json:"registered"`
-		Latitude   required.Latitude[float64]  `json:"latitude"`
-		Longitude  required.Longitude[float64] `json:"longitude"`
-		Tags       []string                    `json:"tags"`
+		ID         required.Custom[string, validate.NonZero[string]]     `json:"_id"`
+		Index      int                                                   `json:"index"`
+		GUID       string                                                `json:"guid"`
+		IsActive   bool                                                  `json:"isActive"`
+		Balance    string                                                `json:"balance"`
+		Picture    string                                                `json:"picture"`
+		Age        required.Custom[int, validate.Positive[int]]          `json:"age"`
+		EyeColor   string                                                `json:"eyeColor"`
+		Name       string                                                `json:"name"`
+		Gender     string                                                `json:"gender"`
+		Company    string                                                `json:"company"`
+		Email      string                                                `json:"email"`
+		Phone      string                                                `json:"phone"`
+		Address    string                                                `json:"address"`
+		About      string                                                `json:"about"`
+		Registered string                                                `json:"registered"`
+		Latitude   required.Custom[float64, validate.Latitude[float64]]  `json:"latitude"`
+		Longitude  required.Custom[float64, validate.Longitude[float64]] `json:"longitude"`
+		Tags       []string                                              `json:"tags"`
 		Friends    []struct {
 			ID   int    `json:"id"`
 			Name string `json:"name"`

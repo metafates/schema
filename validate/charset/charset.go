@@ -59,16 +59,16 @@ type (
 // Common aliases.
 type (
 	// ASCIINumber intersects [ASCII] and [Number].
-	ASCIINumber struct{ And[ASCII, Number] }
+	ASCIINumber = And[ASCII, Number]
 
 	// ASCIIPrint intersects [ASCII] and [Print].
-	ASCIIPrint struct{ And[ASCII, Print] }
+	ASCIIPrint = And[ASCII, Print]
 
 	// ASCIILetter intersects [ASCII] and [Letter].
-	ASCIILetter struct{ And[ASCII, Letter] }
+	ASCIILetter = And[ASCII, Letter]
 
 	// ASCIIPunct intersects [ASCII] and [Punct].
-	ASCIIPunct struct{ And[ASCII, Punct] }
+	ASCIIPunct = And[ASCII, Punct]
 )
 
 func (Any) Filter(rune) error       { return nil }

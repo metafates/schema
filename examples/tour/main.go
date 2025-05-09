@@ -59,18 +59,16 @@ func (ShortStr) Validate(v string) error {
 	return nil
 }
 
-// that's it, basically. now we can use this validator in our request.
+// That's it, basically. Now we can use this validator in our request.
 
-// but we can go extreme! we can combine multiple validators using types
-type ASCIIShortStr struct {
-	// both ASCII and ShortStr must be satisfied.
-	// you can also use [validate.Or] to ensure that at least one condition is satisfied.
-	validate.And[
-		string,
-		validate.Charset0[string, charset.ASCII],
-		ShortStr,
-	]
-}
+// But we can go extreme! It is possible to combine multiple validators using types.
+// both ASCII and ShortStr must be satisfied.
+// you can also use [validate.Or] to ensure that at least one condition is satisfied.
+type ASCIIShortStr = validate.And[
+	string,
+	validate.Charset0[string, charset.ASCII],
+	ShortStr,
+]
 
 // Now, our final request may look something like that
 type Request struct {
