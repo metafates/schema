@@ -2,8 +2,8 @@
 package validate
 
 import (
-	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/validate/charset"
+	"github.com/metafates/schema/constraint"
 )
 
 // Any accepts any value of T.

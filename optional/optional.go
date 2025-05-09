@@ -2,9 +2,9 @@
 package optional
 
 import (
-	"github.com/metafates/schema/validate"
-	"github.com/metafates/schema/constraint"
 	"github.com/metafates/schema/validate/charset"
+	"github.com/metafates/schema/constraint"
+	"github.com/metafates/schema/validate"
 )
 
 // Any accepts any value of T.

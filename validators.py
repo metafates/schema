@@ -196,8 +196,9 @@ def generate_markdown(file: SupportsWrite[str], data: Data):
     p("| ---- | ----------- |")
     for v in data.validators:
         desc = "<br/>".join(v.desc.splitlines())
+        types = list(map(lambda t: t.name, v.types))
 
-        p(f"| `{v.name}` | {desc} |")
+        p(f"| `{v.name}[{', '.join(types)}]` | {desc} |")
 
 
 def main():
