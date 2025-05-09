@@ -27,7 +27,7 @@ validators:
         constraint: comparable
 
   - name: NonZero
-    decs: |
+    desc: |
       NonZero accepts all non-zero values.
 
       The zero value is:
