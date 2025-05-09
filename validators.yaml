@@ -311,13 +311,13 @@ validators:
         constraint: constraint.Text
 
   - name: LangAlpha2
-    desc: LangAlpha2 accepts case-insesitive ISO 639 2-letter language code.
+    desc: LangAlpha2 accepts case-insensitive ISO 639 2-letter language code.
     types:
       - name: T
         constraint: constraint.Text
 
   - name: LangAlpha3
-    desc: LangAlpha3 accepts case-insesitive ISO 639 3-letter language code.
+    desc: LangAlpha3 accepts case-insensitive ISO 639 3-letter language code.
     types:
       - name: T
         constraint: constraint.Text
