@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Optional, TYPE_CHECKING, Protocol
-import yaml
 from pathlib import Path
+import tomllib
 
 if TYPE_CHECKING:
     from _typeshed import SupportsWrite
@@ -37,8 +37,8 @@ class Data:
 
 
 def read(path: str) -> Data:
-    with open(path, "r") as f:
-        data = yaml.safe_load(f)
+    with open(path, "rb") as f:
+        data = tomllib.load(f)
 
     imports_registry: dict[str, Import] = {}
 
@@ -202,7 +202,7 @@ def generate_markdown(file: SupportsWrite[str], data: Data):
 
 
 def main():
-    data = read("validators.yaml")
+    data = read("validators.toml")
 
     with Path("validate").joinpath("validators.go").open("w+") as out:
         generate_validators(out, data)
