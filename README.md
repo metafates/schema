@@ -346,6 +346,10 @@ See [parse example](./examples/parse/main.go) for more information.
 
 Parsing gRPC messages is also supported, see [grpc parse example](./examples/parse-grpc/main.go)
 
+## Validators
+
+For a list of available validators see [validators](./validators.md)
+
 ## Performance
 
 **TL;DR:** you can use codegen for max performance (0-1% overhead) or fallback to reflection (35% overhead).
@@ -378,11 +382,6 @@ BenchmarkUnmarshalJSON/reflection/without_validation-12   45593 ns/op
 BenchmarkUnmarshalJSON/codegen/with_validation-12         45936 ns/op
 BenchmarkUnmarshalJSON/codegen/without_validation-12      45649 ns/op
 ```
-
-## Validators
-
-Not listed here yet, but can see a full list
-of available validators in [validate/validators.go](./validate/validators.go)
 
 ## TODO
 

@@ -492,9 +492,9 @@ func ExampleBase64() {
 	// Invalid base64 error: true
 }
 
-func ExampleCharset() {
-	// Charset allows empty strings
-	var value optional.Charset[string, charset.Letter]
+func ExampleCharset0() {
+	// Charset0 allows empty strings
+	var value optional.Charset0[string, charset.Letter]
 
 	value.MustParse("abcDEF")
 	val, exists := value.Get()
@@ -523,9 +523,9 @@ func ExampleCharset() {
 	// Non-alphabetic error: true
 }
 
-func ExampleNonZeroCharset() {
-	// NonZeroCharset requires non-empty strings
-	var value optional.NonZeroCharset[string, charset.Or[charset.Letter, charset.Number]]
+func ExampleCharset() {
+	// Charset requires non-empty strings
+	var value optional.Charset[string, charset.Or[charset.Letter, charset.Number]]
 
 	value.MustParse("abc123DEF")
 	val, exists := value.Get()
@@ -537,7 +537,7 @@ func ExampleNonZeroCharset() {
 	fmt.Printf("After nil: Exists: %t\n", exists)
 
 	// Empty strings will fail validation
-	var invalidValue optional.NonZeroCharset[string, charset.Or[charset.Letter, charset.Number]]
+	var invalidValue optional.Charset[string, charset.Or[charset.Letter, charset.Number]]
 
 	err := invalidValue.Parse("")
 	fmt.Printf("Empty string error: %t\n", err != nil)

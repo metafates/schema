@@ -49,3 +49,7 @@ fmt:
 # lint source code
 lint:
 	golangci-lint run --tests=false
+
+# Open documentation
+doc:
+	go run golang.org/x/pkgsite/cmd/pkgsite@latest -open

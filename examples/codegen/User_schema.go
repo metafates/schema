@@ -23,9 +23,9 @@ func _() {
 		} `json:"meta"`
 		Friends   []UserFriend `json:"friends"`
 		Addresses []struct {
-			Tag       optional.Custom[string, validate.Charset0[string, charset.Print]] `json:"tag"`
-			Latitude  required.Custom[float64, validate.Latitude[float64]]              `json:"latitude"`
-			Longitude required.Custom[float64, validate.Longitude[float64]]             `json:"longitude"`
+			Tag       optional.Custom[string, validate.Charset[string, charset.Print]] `json:"tag"`
+			Latitude  required.Custom[float64, validate.Latitude[float64]]             `json:"latitude"`
+			Longitude required.Custom[float64, validate.Longitude[float64]]            `json:"longitude"`
 		} `json:"addresses"`
 	}
 	var v User

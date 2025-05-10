@@ -1,0 +1,495 @@
+[[imports]]
+path = "github.com/metafates/schema/constraint"
+pkg = "constraint"
+
+[[imports]]
+path = "github.com/metafates/schema/validate/charset"
+pkg = "charset"
+
+[[validators]]
+name = "Any"
+desc = "Any accepts any value of T."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+[[validators]]
+name = "Zero"
+desc = """
+Zero accepts all zero values.
+
+The zero value is:
+- 0 for numeric types,
+- false for the boolean type, and
+- "" (the empty string) for strings.
+
+See [NonZero].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "comparable"
+
+[[validators]]
+name = "NonZero"
+desc = """
+NonZero accepts all non-zero values.
+
+The zero value is:
+- 0 for numeric types,
+- false for the boolean type, and
+- "" (the empty string) for strings.
+
+See [Zero].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "comparable"
+
+[[validators]]
+name = "Positive"
+desc = """
+Positive accepts all positive real numbers excluding zero.
+
+See [Positive0] for zero including variant.
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Real"
+
+[[validators]]
+name = "Negative"
+desc = """
+Negative accepts all negative real numbers excluding zero.
+
+See [Negative0] for zero including variant.
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Real"
+  imports = "github.com/metafates/schema/constraint"
+
+[[validators]]
+name = "Positive0"
+desc = """
+Positive0 accepts all positive real numbers including zero.
+
+See [Positive] for zero excluding variant.
+"""
+embed = "Or[T, Positive[T], Zero[T]]"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Real"
+
+[[validators]]
+name = "Negative0"
+desc = """
+Negative0 accepts all negative real numbers including zero.
+
+See [Negative] for zero excluding variant.
+"""
+embed = "Or[T, Negative[T], Zero[T]]"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Real"
+
+[[validators]]
+name = "Even"
+desc = "Even accepts integers divisible by two."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Integer"
+
+[[validators]]
+name = "Odd"
+desc = "Odd accepts integers not divisible by two."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Integer"
+
+[[validators]]
+name = "Email"
+desc = 'Email accepts a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>".'
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "URL"
+desc = """
+URL accepts a single url.
+The url may be relative (a path, without a host) or absolute (starting with a scheme).
+
+See also [HTTPURL].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "HTTPURL"
+desc = """
+HTTPURL accepts a single http(s) url.
+
+See also [URL].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "IP"
+desc = """
+IP accepts an IP address.
+The address can be in dotted decimal ("192.0.2.1"),
+IPv6 ("2001:db8::68"), or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "IPV4"
+desc = 'IPV4 accepts an IP V4 address (e.g. "192.0.2.1").'
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "IPV6"
+desc = """
+IPV6 accepts an IP V6 address, including IPv4-mapped IPv6 addresses.
+The address can be regular IPv6 ("2001:db8::68"), or IPv6 with
+a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "MAC"
+desc = "MAC accepts an IEEE 802 MAC-48, EUI-48, EUI-64, or a 20-octet IP over InfiniBand link-layer address."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "CIDR"
+desc = """
+CIDR accepts CIDR notation IP address and prefix length,
+like "192.0.2.0/24" or "2001:db8::/32", as defined in RFC 4632 and RFC 4291.
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "Base64"
+desc = "Base64 accepts valid base64 encoded strings."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "Charset0"
+desc = """
+Charset0 accepts (possibly empty) text which contains only runes acceptable by filter.
+See [Charset] for a non-empty variant."""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+  [[validators.types]]
+  name = "F"
+  constraint = "charset.Filter"
+
+[[validators]]
+name = "Charset"
+desc = """
+Charset accepts non-empty text which contains only runes acceptable by filter.
+See also [Charset0]."""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+  [[validators.types]]
+  name = "F"
+  constraint = "charset.Filter"
+
+[[validators]]
+name = "Latitude"
+desc = """
+Latitude accepts any number in the range [-90; 90].
+
+See also [Longitude].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Real"
+
+[[validators]]
+name = "Longitude"
+desc = """
+Longitude accepts any number in the range [-180; 180].
+
+See also [Latitude].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Real"
+
+[[validators]]
+name = "InPast"
+desc = """
+InFuture accepts any time after current timestamp.
+
+See also [InPast].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Time"
+
+[[validators]]
+name = "InFuture"
+desc = """
+InFuture accepts any time after current timestamp.
+
+See also [InPast].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Time"
+
+[[validators]]
+name = "Unique"
+desc = """
+Unique accepts a slice-like of unique values.
+
+See [UniqueSlice] for a slice shortcut.
+"""
+
+  [[validators.types]]
+  name = "S"
+  constraint = "~[]T"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "comparable"
+
+[[validators]]
+name = "UniqueSlice"
+desc = """
+Unique accepts a slice of unique values.
+
+See [Unique] for a more generic version.
+"""
+embed = "Unique[[]T, T]"
+aliased = "Custom[[]T, validate.UniqueSlice[T]]"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "comparable"
+
+[[validators]]
+name = "NonEmpty"
+desc = """
+NonEmpty accepts a non-empty slice-like (len > 0).
+
+See [NonEmptySlice] for a slice shortcut.
+"""
+
+  [[validators.types]]
+  name = "S"
+  constraint = "~[]T"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+[[validators]]
+name = "NonEmptySlice"
+desc = """
+NonEmptySlice accepts a non-empty slice (len > 0).
+
+See [NonEmpty] for a more generic version.
+"""
+embed = "NonEmpty[[]T, T]"
+aliased = "Custom[[]T, validate.NonEmptySlice[T]]"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "comparable"
+
+[[validators]]
+name = "MIME"
+desc = "MIME accepts RFC 1521 mime type string."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "UUID"
+desc = """
+UUID accepts a properly formatted UUID in one of the following formats:
+  - xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  - urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  - {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "JSON"
+desc = "JSON accepts valid json encoded text."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "CountryAlpha2"
+desc = "CountryAlpha2 accepts case-insensitive ISO 3166 2-letter country code."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "CountryAlpha3"
+desc = "CountryAlpha3 accepts case-insensitive ISO 3166 3-letter country code."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "CountryAlpha"
+desc = "CountryAlpha accepts either [CountryAlpha2] or [CountryAlpha3]."
+embed = "Or[T, CountryAlpha2[T], CountryAlpha3[T]]"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "CurrencyAlpha"
+desc = "CurrencyAlpha accepts case-insensitive ISO 4217 alphabetic currency code."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "LangAlpha2"
+desc = "LangAlpha2 accepts case-insensitive ISO 639 2-letter language code."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "LangAlpha3"
+desc = "LangAlpha3 accepts case-insensitive ISO 639 3-letter language code."
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "LangAlpha"
+desc = "LangAlpha accepts either [LangAlpha2] or [LangAlpha3]."
+embed = "Or[T, LangAlpha2[T], LangAlpha3[T]]"
+
+  [[validators.types]]
+  name = "T"
+  constraint = "constraint.Text"
+
+[[validators]]
+name = "And"
+internal = true
+desc = """
+And is a meta validator that combines other validators with AND operator.
+Validators are called in the same order as specified by type parameters.
+
+See also [Or], [Not].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+  [[validators.types]]
+  name = "A"
+  constraint = "Validator[T]"
+
+  [[validators.types]]
+  name = "B"
+  constraint = "Validator[T]"
+
+
+[[validators]]
+name = "Or"
+internal = true
+desc = """
+Or is a meta validator that combines other validators with OR operator.
+Validators are called in the same order as type parameters.
+
+See also [And], [Not].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+  [[validators.types]]
+  name = "A"
+  constraint = "Validator[T]"
+
+  [[validators.types]]
+  name = "B"
+  constraint = "Validator[T]"
+
+
+[[validators]]
+name = "Not"
+internal = true
+desc = """
+Not is a meta validator that inverts given validator.
+
+See also [And], [Or].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+  [[validators.types]]
+  name = "V"
+  constraint = "Validator[T]"
