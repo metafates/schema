@@ -35,6 +35,6 @@ After changing this file run:
 just generate
 ```
 
-After that change [validators/impl.go](./validators/impl.go) file to add `Validate` method for your new validator.
+After that change [validate/impl.go](./validate/impl.go) file to add `Validate` method for your new validator.
 
 Again, if you have any questions - feel free to open an issue.
