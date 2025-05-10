@@ -18,25 +18,6 @@ import (
 	"github.com/metafates/schema/internal/uuid"
 )
 
-type (
-	// And is a meta validator that combines other validators with AND operator.
-	// Validators are called in the same order as specified by type parameters.
-	//
-	// See also [Or], [Not].
-	And[T any, A Validator[T], B Validator[T]] struct{}
-
-	// Or is a meta validator that combines other validators with OR operator.
-	// Validators are called in the same order as type parameters.
-	//
-	// See also [And], [Not].
-	Or[T any, A Validator[T], B Validator[T]] struct{}
-
-	// Not is a meta validator that inverts given validator.
-	//
-	// See also [And], [Or].
-	Not[T any, V Validator[T]] struct{}
-)
-
 func (Any[T]) Validate(T) error {
 	return nil
 }

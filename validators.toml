@@ -430,3 +430,66 @@ embed = "Or[T, LangAlpha2[T], LangAlpha3[T]]"
   [[validators.types]]
   name = "T"
   constraint = "constraint.Text"
+
+[[validators]]
+name = "And"
+internal = true
+desc = """
+And is a meta validator that combines other validators with AND operator.
+Validators are called in the same order as specified by type parameters.
+
+See also [Or], [Not].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+  [[validators.types]]
+  name = "A"
+  constraint = "Validator[T]"
+
+  [[validators.types]]
+  name = "B"
+  constraint = "Validator[T]"
+
+
+[[validators]]
+name = "Or"
+internal = true
+desc = """
+Or is a meta validator that combines other validators with OR operator.
+Validators are called in the same order as type parameters.
+
+See also [And], [Not].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+  [[validators.types]]
+  name = "A"
+  constraint = "Validator[T]"
+
+  [[validators.types]]
+  name = "B"
+  constraint = "Validator[T]"
+
+
+[[validators]]
+name = "Not"
+internal = true
+desc = """
+Not is a meta validator that inverts given validator.
+
+See also [And], [Or].
+"""
+
+  [[validators.types]]
+  name = "T"
+  constraint = "any"
+
+  [[validators.types]]
+  name = "V"
+  constraint = "Validator[T]"

@@ -186,3 +186,20 @@ type LangAlpha[T constraint.Text] struct{
 	Or[T, LangAlpha2[T], LangAlpha3[T]]
 }
 
+// And is a meta validator that combines other validators with AND operator.
+// Validators are called in the same order as specified by type parameters.
+//
+// See also [Or], [Not].
+type And[T any, A Validator[T], B Validator[T]] struct{}
+
+// Or is a meta validator that combines other validators with OR operator.
+// Validators are called in the same order as type parameters.
+//
+// See also [And], [Not].
+type Or[T any, A Validator[T], B Validator[T]] struct{}
+
+// Not is a meta validator that inverts given validator.
+//
+// See also [And], [Or].
+type Not[T any, V Validator[T]] struct{}
+

@@ -24,6 +24,7 @@ class ValidatorType:
 @dataclass
 class Validator:
     name: str
+    internal: bool
     desc: str
     types: list[ValidatorType]
     embed: Optional[str]
@@ -76,6 +77,7 @@ def read(path: str) -> Data:
 
         validator = Validator(
             name=entry["name"],
+            internal=entry.get("internal", False),
             desc=entry["desc"],
             types=types,
             embed=entry.get("embed"),
@@ -166,7 +168,7 @@ def generate_aliases(file: SupportsWrite[str], data: Data, pkg: str):
 
     generate_imports(file, imports)
 
-    for v in data.validators:
+    for v in filter(lambda v: not v.internal, data.validators):
         types_str = ""
         types = list(map(lambda t: f"{t.name} {t.constraint}", v.types))
 

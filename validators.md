@@ -39,3 +39,6 @@
 | `LangAlpha2[T]` | LangAlpha2 accepts case-insensitive ISO 639 2-letter language code. |
 | `LangAlpha3[T]` | LangAlpha3 accepts case-insensitive ISO 639 3-letter language code. |
 | `LangAlpha[T]` | LangAlpha accepts either [LangAlpha2] or [LangAlpha3]. |
+| `And[T, A, B]` | And is a meta validator that combines other validators with AND operator.<br/>Validators are called in the same order as specified by type parameters.<br/><br/>See also [Or], [Not]. |
+| `Or[T, A, B]` | Or is a meta validator that combines other validators with OR operator.<br/>Validators are called in the same order as type parameters.<br/><br/>See also [And], [Not]. |
+| `Not[T, V]` | Not is a meta validator that inverts given validator.<br/><br/>See also [And], [Or]. |
