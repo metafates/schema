@@ -1,4 +1,7 @@
 # Validators
+
+This table features all available validators.
+
 | Name | Description |
 | ---- | ----------- |
 | `Any[T]` | Any accepts any value of T. |
