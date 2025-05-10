@@ -117,7 +117,7 @@ def generate_imports(file: SupportsWrite[str], imports: set[str]):
     p = make_p(file)
     p("import (")
 
-    for path in imports:
+    for path in sorted(imports):
         p(f'\t"{path}"')
 
     p(")")
