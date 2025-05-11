@@ -130,6 +130,7 @@ def generate_validators(file: SupportsWrite[str], data: Data):
     p = make_p(file)
 
     p(PREAMBLE)
+    p()
     p("package validate")
     p()
 
@@ -160,6 +161,7 @@ def generate_aliases(file: SupportsWrite[str], data: Data, pkg: str):
     p = make_p(file)
 
     p(PREAMBLE)
+    p()
     p(f"package {pkg}")
     p()
 
