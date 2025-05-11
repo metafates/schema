@@ -16,7 +16,7 @@ class Import:
 
 
 @dataclass
-class ValidatorType:
+class Type:
     name: str
     constraint: str
 
@@ -26,7 +26,7 @@ class Validator:
     name: str
     internal: bool
     desc: str
-    types: list[ValidatorType]
+    types: list[Type]
     embed: Optional[str]
     aliased: Optional[str]
 
@@ -54,16 +54,12 @@ def read(path: str) -> Data:
     validators: list[Validator] = []
 
     for entry in data["validators"]:
-        types: list[ValidatorType] = []
+        types: list[Type] = []
 
         for type_ in entry["types"]:
-            validator_type = ValidatorType(
-                name=type_["name"], constraint=type_["constraint"]
-            )
+            validator_type = Type(name=type_["name"], constraint=type_["constraint"])
 
-            types.append(
-                ValidatorType(name=type_["name"], constraint=type_["constraint"])
-            )
+            types.append(validator_type)
 
             if "." in validator_type.constraint:
                 pkg = validator_type.constraint.split(".")[0]
