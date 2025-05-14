@@ -378,13 +378,3 @@ BenchmarkUnmarshalJSON/reflection/without_validation-12   45593 ns/op
 BenchmarkUnmarshalJSON/codegen/with_validation-12         45936 ns/op
 BenchmarkUnmarshalJSON/codegen/without_validation-12      45649 ns/op
 ```
-
-## TODO
-
-- [x] Support for manual construction (similar to `.parse(...)` in zod) (using codegen)
-- [x] Stabilize API
-- [x] Better documentation
-- [x] More tests
-- [x] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
-- [x] Add benchmarks for validators itself. E.g. email validator
-- [x] More validation types as seen in https://github.com/go-playground/validator
