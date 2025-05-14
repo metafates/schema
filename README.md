@@ -3,8 +3,6 @@
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/metafates/schema)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metafates/schema)](https://goreportcard.com/report/github.com/metafates/schema)
 
-> Work in progress!
-
 <img src="https://github.com/user-attachments/assets/54aafdf2-df4d-4b92-9a46-37bc59d99e6e" align="right" width=300 />
 
 Go schema declaration and validation with static types.
@@ -15,13 +13,11 @@ The goal is to eliminate duplicative type declarations.
 You declare a schema once and it will be used as both schema and type itself.
 It's easy to compose simpler types into complex data structures.
 
-No stable version yet, but you can use it like that.
+Install:
 
 ```bash
-go get github.com/metafates/schema@main
+go get github.com/metafates/schema
 ```
-
-**Work in progress, API may change significantly without further notice!**
 
 ## Features
 
@@ -386,7 +382,7 @@ BenchmarkUnmarshalJSON/codegen/without_validation-12      45649 ns/op
 ## TODO
 
 - [x] Support for manual construction (similar to `.parse(...)` in zod) (using codegen)
-- [ ] Stabilize API
+- [x] Stabilize API
 - [x] Better documentation
 - [x] More tests
 - [x] Improve performance. It should not be a bottleneck for most usecases, especially for basic CRUD apps. Still, there is a room for improvement!
